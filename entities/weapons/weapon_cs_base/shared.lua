@@ -186,7 +186,13 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			bul.RandSeed = math.Rand(-100000, 100000)
 			
 			bul.Bullet = DefaultBullet
-			if numbul > 1 then
+			
+			print("abc", self.UseBullet)
+			
+			if self.UseBullet then
+				bul.Bullet = self.UseBullet
+				print("using ", bul.Bullet.Name)
+			elseif numbul > 1 then
 				bul.Bullet = BuckShot
 			elseif dmg > 70 then
 				bul.Bullet = SniperBullet
