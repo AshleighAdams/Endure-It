@@ -4,7 +4,7 @@ local bullets = {}
 local DefaultBullet = {}
 
 -- Bullet shit
-DefaultBullet.Velocity = 10000 -- 2000 feet per second
+DefaultBullet.Velocity = 1500 * 12 -- 2000 feet per second
 DefaultBullet.Damage = 20
 DefaultBullet.GravityModifier = 1
 DefaultBullet.Name = "Default"

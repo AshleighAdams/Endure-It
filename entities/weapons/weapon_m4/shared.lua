@@ -18,6 +18,8 @@ if ( CLIENT ) then
 	
 end
 
+SWEP.UseBullet = StanagBullet_556
+
 SWEP.HoldType			= "ar2"
 SWEP.Base				= "weapon_cs_base"
 SWEP.Category			= "Counter-Strike"
@@ -36,7 +38,7 @@ SWEP.Primary.Sound			= Sound( "Weapon_M4A1.Single" )
 SWEP.Primary.Recoil			= 1
 SWEP.Primary.Damage			= 30
 SWEP.Primary.NumShots		= 1
-SWEP.Primary.Cone			= 0.02
+SWEP.Primary.Cone			= 0.0073
 SWEP.Primary.ClipSize		= 25
 SWEP.Primary.Delay			= 0.1
 SWEP.Primary.DefaultClip	= 50
