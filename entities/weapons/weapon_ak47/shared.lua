@@ -17,6 +17,12 @@ if ( CLIENT ) then
 	
 end
 
+SWEP.UseBullet = AKBullet
+
+
+print(SWEP.UseBullet)
+print("ASD")
+
 SWEP.HoldType			= "ar2"
 SWEP.Base				= "weapon_cs_base"
 SWEP.Category			= "Counter-Strike"
