@@ -1,5 +1,9 @@
 
-GM.Name 	= "Skeleton Gamemode"
+AddCSLuaFile("sh_bullets.lua")
+
+include("sh_bullets.lua")
+
+GM.Name 	= "Endure It"
 GM.Author 	= "N/A"
 GM.Email 	= "N/A"
 GM.Website 	= "N/A"

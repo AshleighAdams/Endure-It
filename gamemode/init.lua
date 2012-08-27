@@ -13,8 +13,8 @@ include( 'shared.lua' )
 ---------------------------------------------------------*/
 function GM:PlayerLoadout( pl )
 
-	pl:GiveAmmo( 255,	"Pistol", 		true )
+	pl:GiveAmmo( 255, "Pistol", true )
 	
-	pl:Give( "empty_weapon" )
+	pl:Give( "weapon_deagle" )
 	
 end
