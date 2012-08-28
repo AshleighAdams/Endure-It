@@ -65,14 +65,18 @@ SWEP.Secondary.Ammo			= "none"
 SWEP.InventorySlots = 10
 SWEP.InventoryPrimary = true
 
-SWEP.ZoomScale = 50;
-SWEP.ZoomSpeed = 1;
+SWEP.ZoomScale = 100;
+SWEP.ZoomSpeed = 0.25;
 
 
 function SWEP:Initialize()	
 	self:SetWeaponHoldType( self.HoldType )
 	self.Weapon:SetNetworkedBool("Zoom", false);
 	self.IronTime = 0;
+	
+	if self.Supressed then
+		self:SendWeaponAnim(ACT_VM_ATTACH_SILENCER)
+	end
 end
 
 function SWEP:Reload()
@@ -158,7 +162,11 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	end
 	
 	self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK ) 		// View model animation
-	self.Owner:MuzzleFlash()								// Crappy muzzle light
+	
+	if self.Supressed then
+		self.Owner:MuzzleFlash()								// Crappy muzzle light
+	end
+	
 	self.Owner:SetAnimation( PLAYER_ATTACK1 )				// 3rd Person Animation
 	
 	if ( self.Owner:IsNPC() ) then return end
@@ -180,13 +188,11 @@ end
 
 function SWEP:Think()	
 	if self.Owner:KeyDown(IN_ATTACK2) and not self.IsZoomedIn then
-		print("ZOOMY")
 		self.IronTime = self.IronTime + self.ZoomSpeed/25;
 		self.Weapon:SetNetworkedBool("Zoom", true);
 		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed);
 		self.IsZoomedIn = true
 	elseif not self.Owner:KeyDown(IN_ATTACK2) and self.IsZoomedIn then
-		print("UNZOOMY")
 		self.IronTime = 0;
 		self.Weapon:SetNetworkedBool("Zoom", false);
 		self.Owner:SetFOV(0, self.ZoomSpeed)

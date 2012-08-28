@@ -45,11 +45,10 @@ if CLIENT then
 			end
 			
 			if v.IsTracer then
-				local distance = (LocalPlayer():GetPos() - Vector1):Length()
-				local size = distance / 1000
-				if size < 0.25 then
-					size = 0.25
-				end
+				local distance = (LocalPlayer():GetPos() - Vector2):Length()
+				local size = distance / 500
+				
+				if distance < 100 then size = 0 end
 				
 				render.SetMaterial(Laser)	
 				render.DrawBeam(Vector1, Vector2, size, 100, 100, Color(255, 0, 0, 255)) 

@@ -48,7 +48,7 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
-SWEP.ZoomScale = 75;
+SWEP.ZoomScale = 30;
 SWEP.ZoomSpeed = 1;
 SWEP.IronSightsPos = Vector (3.6317, -3.6443, 2.7934)
 SWEP.IronSightsAng = Vector (0, 0, 0)
