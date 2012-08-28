@@ -35,7 +35,7 @@ SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
 SWEP.Primary.Sound			= Sound( "Weapon_m249.Single" )
-SWEP.Primary.Recoil			= 2
+SWEP.Primary.Recoil			= 5
 SWEP.Primary.Damage			= 60
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 0.05
@@ -50,4 +50,8 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
-SWEP.IronSightsPos 		= Vector( -4.4, -3, 2 )
+SWEP.ZoomScale = 75;
+SWEP.ZoomSpeed = 1;
+SWEP.IronSightsPos = Vector (3.6317, -3.6443, 2.7934)
+SWEP.IronSightsAng = Vector (0, 0, 0)
+
