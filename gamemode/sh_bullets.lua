@@ -8,6 +8,7 @@ DefaultBullet.Velocity = 1500 * 12 -- 2000 feet per second
 DefaultBullet.Damage = 20
 DefaultBullet.GravityModifier = 1
 DefaultBullet.Name = "Default"
+DefaultBullet.TracerChance = 1
 
 DefaultBullet.DecalMats = {}
 DefaultBullet.DecalMats[MAT_ANTLION] = "Impact.Antlion"
@@ -22,21 +23,42 @@ DefaultBullet.DecalMats[MAT_WOOD] = "Impact.Wood"
 if CLIENT then
 
 	local Tube = Material("trails/tube")
+	local Laser = Material( "cable/redlaser" )
 	
 	DefaultBullet.DrawTracers = function()
 		for k,v in pairs(bullets) do
 			if not v.StartDraw then
 				v.StartDraw = RealTime() + 0.05
+				if v.IsTracer then
+					v.StartDraw = RealTime() + 0.02
+				end
 			end
 			if v.StartDraw > RealTime() and v.Mine then
 				continue
 			end
 			
 			local Vector1 = v.Position
-			local Vector2 = v.LastPos or v.Position
-			 
-			render.SetMaterial(Tube)
-			render.DrawBeam(Vector1, Vector2, 0.5, 100, 100, Color(255, 255, 255, 255)) 
+			local Vector2 = (v.LastPos or v.Position)
+
+			if v.Mine then
+				Vector2 = Vector2 + Vector(0, 0, 2) // so you can see the tracers from behind
+			end
+			
+			if v.IsTracer then
+				local distance = (LocalPlayer():GetPos() - Vector1):Length()
+				local size = distance / 1000
+				if size < 0.25 then
+					size = 0.25
+				end
+				
+				render.SetMaterial(Laser)	
+				render.DrawBeam(Vector1, Vector2, size, 100, 100, Color(255, 0, 0, 255)) 
+			else
+				render.SetMaterial(Tube)	
+				render.DrawBeam(Vector1, Vector2, 0.5, 100, 100, Color(255, 255, 255, 255)) 
+			end
+			
+			
 		end
 	end
 	hook.Add("PostDrawOpaqueRenderables", "DefaultBullet.DrawTracers", DefaultBullet.DrawTracers)
@@ -200,6 +222,11 @@ DefaultBullet.ReceiveShoot = function(umsgr, cl)
 		bul.TraceMask = mask
 		bul.RandSeed = seed
 		
+		if bul.Bullet.TracerChance != nil then
+			math.randomseed(seed)
+			bul.IsTracer = math.random(1, bul.TracerChance) == 1
+		end
+		
 		table.insert(bullets, bul)
 	end
 end
@@ -321,12 +348,17 @@ function ShootBullet(bul, modifyfunc) -- Ohhh, nooo, its client side...... I don
 	end
 	-- print("Shoot_Bullet_" .. bul.Bullet.Name)
 	net.Start("Shoot_Bullet_" .. bul.Bullet.Name) -- Send the effect to everyone..
-		net.WriteVector(bul.Position)
+		net.WriteVector(bul.Position - Vector(0,0,1))
 		net.WriteVector(bul.Velocity)
 		net.WriteTable(bul.TraceIgnore)
 		net.WriteUInt(bul.TraceMask, 32)
 		net.WriteFloat(bul.RandSeed) -- Used to predict the spread when it riches
 	net.SendToServer()
+	
+	if bul.Bullet.TracerChance != nil then
+		math.randomseed(bul.RandSeed)
+		bul.IsTracer = math.random(1, bul.Bullet.TracerChance) == 1
+	end
 	
 	table.insert(bullets, bul)
 end

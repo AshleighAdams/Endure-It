@@ -6,6 +6,7 @@ StanagBullet_556.Velocity = 3250 * 12 -- 2350 feet per second
 StanagBullet_556.Damage = 25
 StanagBullet_556.GravityModifier = 1
 StanagBullet_556.Name = "StanagBullet_556"
+StanagBullet_556.TracerChance = 1
 
 StanagBullet_556.DecalMats = {}
 StanagBullet_556.DecalMats[MAT_ANTLION] = "Impact.Antlion"
@@ -175,6 +176,11 @@ StanagBullet_556.ReceiveShoot = function(umsgr, cl)
 		bul.TraceIgnore = plys
 		bul.TraceMask = mask
 		bul.RandSeed = seed
+		
+		if bul.Bullet.TracerChance != nil then
+			math.randomseed(seed)
+			bul.IsTracer = math.random(1, bul.Bullet.TracerChance) == 1
+		end
 		
 		table.insert(bullets, bul)
 	end
