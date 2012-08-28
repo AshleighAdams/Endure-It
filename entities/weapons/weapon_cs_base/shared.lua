@@ -72,6 +72,7 @@ SWEP.ZoomSpeed = 1;
 function SWEP:Initialize()	
 	self:SetWeaponHoldType( self.HoldType )
 	self.Weapon:SetNetworkedBool("Zoom", false);
+	self.IronTime = 0;
 end
 
 function SWEP:Reload()
@@ -180,9 +181,12 @@ end
 function SWEP:Think()	
 	
 	if(self.Owner:KeyDown(IN_ATTACK2)) then
+		math.Clamp(self.IronTime, 0, 1)
+		self.IronTime = self.IronTime + self.ZoomSpeed/25;
 		self.Weapon:SetNetworkedBool("Zoom", true);
 		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed);
 	else
+		self.IronTime = 0;
 		self.Weapon:SetNetworkedBool("Zoom", false);
 		self.Owner:SetFOV(0, 0);
 	end	
@@ -193,7 +197,9 @@ function SWEP:GetViewModelPosition( pos, ang )
 	local zoom = self.Weapon:GetNetworkedBool("Zoom");
 	
 	if(zoom) then
-		local Offset = self.IronSightsPos
+		
+		local grad = Lerp( self.IronTime, 0, 1)
+		local Offset = LerpVector( 1, self.OldPos, self.IronSightsPos )
 		
 		ang:RotateAroundAxis(ang:Right(), self.IronSightsAng.x)
 		ang:RotateAroundAxis(ang:Up(), self.IronSightsAng.y)
@@ -203,13 +209,14 @@ function SWEP:GetViewModelPosition( pos, ang )
 		local Up = ang:Up()
 		local Forward = ang:Forward()
 	
-		pos = pos + Offset.x * Right 
-		pos = pos + Offset.y * Forward 
-		pos = pos + Offset.z * Up 
+		pos = pos + Offset.x * Right * grad
+		pos = pos + Offset.y * Forward * grad
+		pos = pos + Offset.z * Up * grad
 
 		return pos, ang
 	
 	else
+		self.OldPos = pos;
 		return pos, ang
 	end
 
