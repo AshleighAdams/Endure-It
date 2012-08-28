@@ -181,7 +181,7 @@ end
 function SWEP:Think()	
 	
 	if(self.Owner:KeyDown(IN_ATTACK2)) then
-		math.Clamp(self.IronTime, 0, 1)
+		self.IronTime = math.Clamp(self.IronTime, 0, 1)
 		self.IronTime = self.IronTime + self.ZoomSpeed/25;
 		self.Weapon:SetNetworkedBool("Zoom", true);
 		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed);
