@@ -179,16 +179,18 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 end
 
 function SWEP:Think()	
-	
-	if(self.Owner:KeyDown(IN_ATTACK2)) then
-		self.IronTime = math.Clamp(self.IronTime, 0, 1)
+	if self.Owner:KeyDown(IN_ATTACK2) and not self.IsZoomedIn then
+		print("ZOOMY")
 		self.IronTime = self.IronTime + self.ZoomSpeed/25;
 		self.Weapon:SetNetworkedBool("Zoom", true);
 		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed);
-	else
+		self.IsZoomedIn = true
+	elseif not self.Owner:KeyDown(IN_ATTACK2) and self.IsZoomedIn then
+		print("UNZOOMY")
 		self.IronTime = 0;
 		self.Weapon:SetNetworkedBool("Zoom", false);
-		self.Owner:SetFOV(0, 0);
+		self.Owner:SetFOV(0, self.ZoomSpeed)
+		self.IsZoomedIn = false
 	end	
 end	
 
