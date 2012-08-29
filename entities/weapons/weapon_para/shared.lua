@@ -32,7 +32,7 @@ SWEP.AdminSpawnable		= true
 SWEP.ViewModel			= "models/weapons/v_mach_m249para.mdl"
 SWEP.WorldModel			= "models/weapons/w_mach_m249para.mdl"
 
-SWEP.Weight				= 5
+SWEP.Weight				= 1
 SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
@@ -40,7 +40,7 @@ SWEP.Primary.Sound			= Sound( "Weapon_m249.Single" )
 SWEP.Primary.Recoil			= 5
 SWEP.Primary.Damage			= 60
 SWEP.Primary.NumShots		= 1
-SWEP.Primary.Cone			= 0.05
+SWEP.Primary.Cone			= 0.005
 SWEP.Primary.ClipSize		= 100
 SWEP.Primary.Delay			= 0.09
 SWEP.Primary.DefaultClip	= 200

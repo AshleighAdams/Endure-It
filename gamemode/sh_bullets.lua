@@ -68,19 +68,19 @@ if CLIENT then
 	DefaultBullet.Emitter = ParticleEmitter(Vector())
 	DefaultBullet.Scale = 1
 
-	DefaultBullet.DecalEffects[MAT_CONCRETE] = function(pos, norm, mat)
+	DefaultBullet.DecalEffects[MAT_CONCRETE] = function(self, pos, norm, mat)
 		
-		for i=0, 10 * DefaultBullet.Scale do
+		for i=0, 10 * self.Scale do
 		
-			local Smoke = DefaultBullet.Emitter:Add( "particle/smokesprites_000"..math.random(1,9), pos )
+			local Smoke = self.Emitter:Add( "particle/smokesprites_000"..math.random(1,9), pos )
 			if (Smoke) then
-				Smoke:SetVelocity( norm * math.random( 20,40*DefaultBullet.Scale) + VectorRand() * math.random( 25,50*DefaultBullet.Scale) )
+				Smoke:SetVelocity( norm * math.random( 20,40*self.Scale) + VectorRand() * math.random( 25,50*self.Scale) )
 				Smoke:SetLifeTime( math.Rand( 0 , 1 ) )
-				Smoke:SetDieTime( math.Rand( 1 , 2 )*DefaultBullet.Scale * 2  )
+				Smoke:SetDieTime( math.Rand( 1 , 2 )*self.Scale * 2  )
 				Smoke:SetStartAlpha( math.Rand( 10, 25 ) )
 				Smoke:SetEndAlpha( 0 )
-				Smoke:SetStartSize( 10*DefaultBullet.Scale )
-				Smoke:SetEndSize( 2*DefaultBullet.Scale )
+				Smoke:SetStartSize( 10*self.Scale )
+				Smoke:SetEndSize( 2*self.Scale )
 				Smoke:SetRoll( math.Rand(150, 360) )
 				Smoke:SetRollDelta( math.Rand(-0.2, 0.2) )			
 				Smoke:SetAirResistance( 50 ) 			 
@@ -100,18 +100,18 @@ if CLIENT then
 	DefaultBullet.DecalEffects[MAT_BLOODYFLESH] = DefaultBullet.DecalEffects[MAT_CONCRETE]
 	DefaultBullet.DecalEffects[MAT_ANTLION] = DefaultBullet.DecalEffects[MAT_CONCRETE]
 
-	DefaultBullet.DecalEffects[MAT_METAL] = function(pos, norm, mat)
+	DefaultBullet.DecalEffects[MAT_METAL] = function(self, pos, norm, mat)
 		local Sparks = EffectData()
 			Sparks:SetOrigin( pos )
 			Sparks:SetNormal( norm )
-			Sparks:SetMagnitude( DefaultBullet.Scale )
-			Sparks:SetScale( DefaultBullet.Scale )
-			Sparks:SetRadius( DefaultBullet.Scale )
+			Sparks:SetMagnitude( self.Scale )
+			Sparks:SetScale( self.Scale )
+			Sparks:SetRadius( self.Scale )
 		util.Effect( "Sparks", Sparks )
 		WorldSound("Metal_Barrel.BulletImpact", pos, 50)
 	end
 
-	DefaultBullet.Decal = function(umsg, b, tbl)
+	DefaultBullet.Decal = function(self, umsg, b, tbl)
 		local hit
 		local norm
 		local mat
@@ -128,9 +128,9 @@ if CLIENT then
 			ent = umsg:ReadEntity()
 		end
 		
-		local func = DefaultBullet.DecalEffects[mat]
+		local func = self.DecalEffects[mat]
 		if func then
-			func(hit, norm)
+			func(self, hit, norm)
 		end
 		
 		if ent and (ent:IsPlayer() or ent:IsNPC()) then
@@ -142,11 +142,11 @@ if CLIENT then
 			util.Effect( "BloodImpact", effectdata )	
 		end
 		
-		util.Decal(DefaultBullet.DecalMats[mat] or "Impact.Concrete", hit + norm, hit - norm)
+		util.Decal(self.DecalMats[mat] or "Impact.Concrete", hit + norm, hit - norm)
 	end
 end
 
-DefaultBullet.ReceiveHit = function(len, cl, tbl)
+DefaultBullet.ReceiveHit = function(self, len, cl, tbl)
 	if SERVER then
 		local vel = net.ReadVector()
 		local hitpos = net.ReadVector()
@@ -158,7 +158,7 @@ DefaultBullet.ReceiveHit = function(len, cl, tbl)
 		
 		if ent and ValidEntity(ent) then
 			local dmginfo = DamageInfo()
-			dmginfo:SetDamage( (vel:Length() / DefaultBullet.Velocity) * DefaultBullet.Damage )
+			dmginfo:SetDamage( (vel:Length() / self.Velocity) * self.Damage )
 			dmginfo:SetDamageType(DMG_BULLET) --Bullet damage
 			dmginfo:SetAttacker(cl)
 			dmginfo:SetDamageForce(vel:GetNormal() * 50)
@@ -167,7 +167,7 @@ DefaultBullet.ReceiveHit = function(len, cl, tbl)
 			local RS = RecipientFilter()
 			RS:AddAllPlayers()
 			RS:RemovePlayer(cl)
-			umsg.Start(DefaultBullet.Name .. "_Decal", RS)
+			umsg.Start(self.Name .. "_Decal", RS)
 				umsg.Vector(hitpos)
 				umsg.Vector(norm)
 				umsg.Long(mat)
@@ -175,11 +175,11 @@ DefaultBullet.ReceiveHit = function(len, cl, tbl)
 			umsg.End()
 		end
 	else
-		DefaultBullet.Decal(nil, nil, tbl)
+		self:Decal(nil, nil, tbl)
 	end
 end
 
-DefaultBullet.ReceiveShoot = function(umsgr, cl)
+DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 	if SERVER then -- Just echo the message to other clients, but not our self
 		local pos = net.ReadVector()
 		local vel = net.ReadVector()
@@ -191,7 +191,7 @@ DefaultBullet.ReceiveShoot = function(umsgr, cl)
 		RS:AddAllPlayers()
 		RS:RemovePlayer(cl)
 		
-		umsg.Start("Shoot_Bullet_" .. DefaultBullet.Name, RS)
+		umsg.Start("Shoot_Bullet_" .. self.Name, RS)
 			umsg.Vector(pos)
 			umsg.Vector(vel)
 			umsg.Long(table.Count(plys))
@@ -216,7 +216,7 @@ DefaultBullet.ReceiveShoot = function(umsgr, cl)
 		bul.Direction = vel:GetNormal()
 		bul.Velocity = vel
 		bul.Position = pos
-		bul.Bullet = DefaultBullet
+		bul.Bullet = self
 		bul.TraceIgnore = plys
 		bul.TraceMask = mask
 		bul.RandSeed = seed
@@ -232,17 +232,42 @@ end
 
 function RegisterBullet(bull)
 	print("Registering bullet ", bull.Name)
+	
+	bull.Simulate = bull.Simulate or DefaultBullet.Simulate
+	bull.ReceiveShoot = bull.ReceiveShoot or DefaultBullet.ReceiveShoot
+	bull.ReceiveHit = bull.ReceiveHit or DefaultBullet.ReceiveHit
+	bull.Velocity = bull.Velocity or DefaultBullet.Velocity
+	bull.Damage = bull.Damage or DefaultBullet.Damage
+	bull.GravityModifier = bull.GravityModifier or DefaultBullet.GravityModifier
+	bull.Name = bull.Name or DefaultBullet.Name
+	bull.DecalMats = bull.DecalMats or DefaultBullet.DecalMats
+	bull.Emitter = bull.Emitter or DefaultBullet.Emitter
+	bull.Scale = bull.Scale or DefaultBullet.Scale
+	bull.Decal = bull.Decal or DefaultBullet.Decal
+	
 	if SERVER then
 		util.AddNetworkString("Shoot_Bullet_" .. bull.Name)
 		util.AddNetworkString("Shoot_Bullet_Hit_" .. bull.Name)
 		util.AddNetworkString(bull.Name .. "_Decal")
 		
-		net.Receive("Shoot_Bullet_" .. bull.Name, bull.ReceiveShoot)
-		net.Receive("Shoot_Bullet_Hit_" .. bull.Name, bull.ReceiveHit)
+		net.Receive("Shoot_Bullet_" .. bull.Name, function(...) 
+			bull:ReceiveShoot(...) 
+		end)
+		net.Receive("Shoot_Bullet_Hit_" .. bull.Name, function(...)
+			bull.ReceiveHit(...)
+		end)
 	else
-		usermessage.Hook(bull.Name .. "_Decal", bull.Decal)
-		usermessage.Hook("Shoot_Bullet_" .. bull.Name, bull.ReceiveShoot)
-		usermessage.Hook("Shoot_Bullet_Hit" .. bull.Name, bull.ReceiveHit)
+		usermessage.Hook(bull.Name .. "_Decal", function(...)
+			bull:Decal(...)
+		end)
+		
+		usermessage.Hook("Shoot_Bullet_" .. bull.Name, function(...)
+			bull:ReceiveShoot(...)
+		end)
+		
+		usermessage.Hook("Shoot_Bullet_Hit" .. bull.Name, function(...)
+			bull:ReceiveHit(...)
+		end)
 	end
 	print("Registered bullet ", bull.Name)
 end
@@ -268,32 +293,36 @@ end
 
 -- return true to mark bullet as done
 local GRAVITY = Vector(0, 0, 600)
-DefaultBullet.Simulate = function(self, t) -- t is time passed in seconds
-	local PrePos = self.Position -- Used to check for a hit
-	self.LastPos = self.Position
-	self.Position = self.Position + self.Velocity * t
-	self.Velocity = self.Velocity - (GRAVITY * t) -- take gravity away
-	self.Direction = self.Velocity:GetNormal()
+DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
+	local PrePos = bul.Position -- Used to check for a hit
+	bul.LastPos = bul.Position
+	bul.Position = bul.Position + bul.Velocity * t
+	bul.Velocity = bul.Velocity - (GRAVITY * t) -- take gravity away
+	bul.Direction = bul.Velocity:GetNormal()
+	
+	if self.ExtraSimulate then
+		self:ExtraSimulate(bul, t)
+	end
 	
 	local tr = {}
 	tr.start = PrePos
-	tr.endpos = self.Position
-	tr.filter = self.TraceIgnore
-	tr.mask = self.TraceMask or MASK_SHOT
+	tr.endpos = bul.Position
+	tr.filter = bul.TraceIgnore
+	tr.mask = bul.TraceMask or MASK_SHOT
 	
 	local res = util.TraceLine(tr)
 	
 	if CLIENT then
-		debugoverlay.Line(PrePos, self.Position, 1)
+		debugoverlay.Line(PrePos, bul.Position, 1)
 	end
 	
-	local dot = -self.Direction:Dot(res.HitNormal)
+	local dot = -bul.Direction:Dot(res.HitNormal)
 	
-	if not res.HitSky and res.HitWorld and (self.Velocity:Length() > 100) and dot < 0.5 then -- about 45 deg
-		local vellen = self.Velocity:Length()
+	if not res.HitSky and res.HitWorld and (bul.Velocity:Length() > 100) and dot < 0.5 then -- about 45 deg
+		local vellen = bul.Velocity:Length()
 		
-		self.RandSeed = self.RandSeed + 1
-		math.randomseed(self.RandSeed)
+		bul.RandSeed = bul.RandSeed + 1
+		math.randomseed(bul.RandSeed)
 		math.randomseed(math.Rand(-99999, 99999))
 		
 		local randomspread = Vector(
@@ -303,13 +332,13 @@ DefaultBullet.Simulate = function(self, t) -- t is time passed in seconds
 		)
 		
 		local norm = res.HitNormal
-		local vel_new = self.Direction - 2 * (self.Direction:Dot(norm)) * norm
-		--self.Velocity:Normalize() + (res.HitNormal * (1 - dot))
+		local vel_new = bul.Direction - 2 * (bul.Direction:Dot(norm)) * norm
+		--bul.Velocity:Normalize() + (res.HitNormal * (1 - dot))
 		
-		self.Velocity = ( randomspread + vel_new ) * vellen * (0.5 - dot)
-		self.Position = res.HitPos + res.HitNormal
+		bul.Velocity = ( randomspread + vel_new ) * vellen * (0.5 - dot)
+		bul.Position = res.HitPos + res.HitNormal
 		
-		DefaultBullet.Decal(nil, nil, res)		
+		self:Decal(nil, nil, res)		
 	elseif res.Hit then
 		
 		if res.HitSky then
@@ -317,11 +346,11 @@ DefaultBullet.Simulate = function(self, t) -- t is time passed in seconds
 		end
 		
 		
-		if self.Mine then -- if the bullet is our own, tell the server what we hit
-			DefaultBullet.ReceiveHit(nil, nil, res)
+		if bul.Mine then -- if the bullet is our own, tell the server what we hit
+			self:ReceiveHit(nil, nil, res)
 			
-			net.Start("Shoot_Bullet_Hit_" .. DefaultBullet.Name)
-				net.WriteVector(self.Velocity)
+			net.Start("Shoot_Bullet_Hit_" .. self.Name)
+				net.WriteVector(bul.Velocity)
 				net.WriteVector(res.HitPos)
 				net.WriteVector(res.HitNormal)
 				net.WriteVector(tr.start) -- We might need this
@@ -368,7 +397,7 @@ function SimulateBullets()
 	LastTime = CurTime()
 	
 	for k,v in pairs(bullets) do
-		if v.Bullet.Simulate(v, t) then
+		if v.Bullet:Simulate(v, t) then
 			table.remove(bullets, k)
 		end
 	end
