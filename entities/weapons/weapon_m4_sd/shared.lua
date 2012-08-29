@@ -8,42 +8,41 @@ end
 
 if ( CLIENT ) then
 
-	SWEP.PrintName			= "Para"			
+	SWEP.PrintName			= "M16 Silenced"			
 	SWEP.Author				= "Counter-Strike"
 	SWEP.Slot				= 3
 	SWEP.SlotPos			= 1
-	SWEP.IconLetter			= "z"
+	SWEP.IconLetter			= "w"
 	
-	SWEP.ViewModelFlip		= false
-	
-	killicon.AddFont( "weapon_para", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
+	killicon.AddFont( "weapon_m16", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
 	
 end
 
-SWEP.UseBullet = StanagBullet_556_Para
+SWEP.UseBullet = StanagBullet_556
 
 SWEP.HoldType			= "ar2"
 SWEP.Base				= "weapon_cs_base"
 SWEP.Category			= "Counter-Strike"
+SWEP.Suppressed = true
 
 SWEP.Spawnable			= true
 SWEP.AdminSpawnable		= true
 
-SWEP.ViewModel			= "models/weapons/v_mach_m249para.mdl"
-SWEP.WorldModel			= "models/weapons/w_mach_m249para.mdl"
+SWEP.ViewModel			= "models/weapons/v_rif_m4a1.mdl"
+SWEP.WorldModel			= "models/weapons/w_rif_m4a1_silencer.mdl"
 
-SWEP.Weight				= 1
+SWEP.Weight				= 5
 SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
-SWEP.Primary.Sound			= Sound( "Weapon_m249.Single" )
-SWEP.Primary.Recoil			= 5
-SWEP.Primary.Damage			= 60
+SWEP.Primary.Sound			= Sound( "Weapon_M4A1.Silenced" )
+SWEP.Primary.Recoil			= 1
+SWEP.Primary.Damage			= 30
 SWEP.Primary.NumShots		= 1
-SWEP.Primary.Cone			= 0.005
-SWEP.Primary.ClipSize		= 100
-SWEP.Primary.Delay			= 0.09
-SWEP.Primary.DefaultClip	= 200
+SWEP.Primary.Cone			= 0.0073
+SWEP.Primary.ClipSize		= 30
+SWEP.Primary.Delay			= 0.1
+SWEP.Primary.DefaultClip	= 60
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 
@@ -54,6 +53,7 @@ SWEP.Secondary.Ammo			= "none"
 
 SWEP.ZoomScale = 30;
 SWEP.ZoomSpeed = 1;
+
 SWEP.IronSightsPos = Vector (3.6317, -3.6443, 2.7934)
 SWEP.IronSightsAng = Vector (0, 0, 0)
 

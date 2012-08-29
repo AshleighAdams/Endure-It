@@ -67,14 +67,18 @@ SWEP.Secondary.Ammo			= "none"
 SWEP.InventorySlots = 10
 SWEP.InventoryPrimary = true
 
-SWEP.ZoomScale = 50;
-SWEP.ZoomSpeed = 1;
+SWEP.ZoomScale = 100;
+SWEP.ZoomSpeed = 0.25;
 
 
 function SWEP:Initialize()	
 	self:SetWeaponHoldType( self.HoldType )
 	self.Weapon:SetNetworkedBool("Zoom", false);
 	self.IronTime = 0;
+	
+	if self.Supressed then
+		self:SendWeaponAnim(ACT_VM_ATTACH_SILENCER)
+	end
 end
 
 function SWEP:Reload()
@@ -95,7 +99,7 @@ function SWEP:PrimaryAttack()
 	
 	if ( self.Owner:IsNPC() ) then return end
 	
-	self.Owner:ViewPunch( Angle(math.random(-self.Primary.Recoil, -1), math.random(-self.Primary.Recoil, 1), math.random(-1, 1)) )
+	//self.Owner:ViewPunch( Angle(math.random(-self.Primary.Recoil, -1), math.random(-self.Primary.Recoil, 1), math.random(-1, 1)) )
 	
 	// In singleplayer this function doesn't get called on the client, so we use a networked float
 	// to send the last shoot time. In multiplayer this is predicted clientside so we don't need to 
@@ -159,7 +163,11 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	end
 	
 	self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK ) 		// View model animation
-	self.Owner:MuzzleFlash()								// Crappy muzzle light
+	
+	if self.Supressed then
+		self.Owner:MuzzleFlash()								// Crappy muzzle light
+	end
+	
 	self.Owner:SetAnimation( PLAYER_ATTACK1 )				// 3rd Person Animation
 	
 	if ( self.Owner:IsNPC() ) then return end
@@ -180,16 +188,16 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 end
 
 function SWEP:Think()	
-	
-	if(self.Owner:KeyDown(IN_ATTACK2)) then
-		math.Clamp(self.IronTime, 0, 1)
+	if self.Owner:KeyDown(IN_ATTACK2) and not self.IsZoomedIn then
 		self.IronTime = self.IronTime + self.ZoomSpeed/25;
 		self.Weapon:SetNetworkedBool("Zoom", true);
 		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed);
-	else
+		self.IsZoomedIn = true
+	elseif not self.Owner:KeyDown(IN_ATTACK2) and self.IsZoomedIn then
 		self.IronTime = 0;
 		self.Weapon:SetNetworkedBool("Zoom", false);
-		self.Owner:SetFOV(0, 0);
+		self.Owner:SetFOV(0, self.ZoomSpeed)
+		self.IsZoomedIn = false
 	end	
 end	
 
