@@ -1,7 +1,7 @@
 local bullets = {}
 
 
-local DefaultBullet = {}
+DefaultBullet = {}
 
 -- Bullet shit
 DefaultBullet.Velocity = 1500 * 12 -- 2000 feet per second
@@ -182,7 +182,7 @@ end
 DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 	if SERVER then -- Just echo the message to other clients, but not our self
 		local pos = net.ReadVector()
-		local vel = net.ReadVector()
+		local vel = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
 		local plys = net.ReadTable()
 		local mask = net.ReadUInt(32)
 		local seed = net.ReadFloat()
@@ -191,9 +191,13 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 		RS:AddAllPlayers()
 		RS:RemovePlayer(cl)
 		
+		debugoverlay.Line(pos, pos + vel:GetNormal() * 50, 5, Color(0, 255, 0))
+		
 		umsg.Start("Shoot_Bullet_" .. self.Name, RS)
 			umsg.Vector(pos)
-			umsg.Vector(vel)
+			umsg.Float(vel.x)
+			umsg.Float(vel.y)
+			umsg.Float(vel.z)
 			umsg.Long(table.Count(plys))
 			for k,v in pairs(plys) do
 				umsg.Entity(v)
@@ -204,7 +208,7 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 	else
 		local bul = {}
 		local pos = umsgr:ReadVector()
-		local vel = umsgr:ReadVector()
+		local vel = Vector(umsgr:ReadFloat(), umsgr:ReadFloat(), umsgr:ReadFloat()) -- umsgr:ReadVector()
 		local plys = {}
 		local count = umsgr:ReadLong()
 		for i = 1, count do
@@ -221,9 +225,11 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 		bul.TraceMask = mask
 		bul.RandSeed = seed
 		
+		debugoverlay.Line(bul.Position, bul.Position + bul.Direction * 1000, 5, Color(0, 0, 255))
+		
 		if bul.Bullet.TracerChance != nil then
 			math.randomseed(seed)
-			bul.IsTracer = math.random(1, bul.TracerChance) == 1
+			bul.IsTracer = math.random(1, bul.Bullet.TracerChance) == 1
 		end
 		
 		table.insert(bullets, bul)
@@ -241,6 +247,7 @@ function RegisterBullet(bull)
 	bull.GravityModifier = bull.GravityModifier or DefaultBullet.GravityModifier
 	bull.Name = bull.Name or DefaultBullet.Name
 	bull.DecalMats = bull.DecalMats or DefaultBullet.DecalMats
+	bull.DecalEffects = bull.DecalEffects or DefaultBullet.DecalEffects
 	bull.Emitter = bull.Emitter or DefaultBullet.Emitter
 	bull.Scale = bull.Scale or DefaultBullet.Scale
 	bull.Decal = bull.Decal or DefaultBullet.Decal
@@ -254,7 +261,7 @@ function RegisterBullet(bull)
 			bull:ReceiveShoot(...) 
 		end)
 		net.Receive("Shoot_Bullet_Hit_" .. bull.Name, function(...)
-			bull.ReceiveHit(...)
+			bull:ReceiveHit(...)
 		end)
 	else
 		usermessage.Hook(bull.Name .. "_Decal", function(...)
@@ -319,6 +326,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	local dot = -bul.Direction:Dot(res.HitNormal)
 	
 	if not res.HitSky and res.HitWorld and (bul.Velocity:Length() > 100) and dot < 0.5 then -- about 45 deg
+		
 		local vellen = bul.Velocity:Length()
 		
 		bul.RandSeed = bul.RandSeed + 1
@@ -376,13 +384,17 @@ function ShootBullet(bul, modifyfunc) -- Ohhh, nooo, its client side...... I don
 	end
 	-- print("Shoot_Bullet_" .. bul.Bullet.Name)
 	net.Start("Shoot_Bullet_" .. bul.Bullet.Name) -- Send the effect to everyone..
-		net.WriteVector(bul.Position - Vector(0,0,1))
-		net.WriteVector(bul.Velocity)
+		net.WriteVector(bul.Position)
+		net.WriteFloat(bul.Velocity.x)
+		net.WriteFloat(bul.Velocity.y)
+		net.WriteFloat(bul.Velocity.z)
 		net.WriteTable(bul.TraceIgnore)
 		net.WriteUInt(bul.TraceMask, 32)
 		net.WriteFloat(bul.RandSeed) -- Used to predict the spread when it riches
 	net.SendToServer()
 	
+	debugoverlay.Line(bul.Position, bul.Position + bul.Velocity:GetNormal() * 50, 5, Color(255, 0, 0))
+		
 	if bul.Bullet.TracerChance != nil then
 		math.randomseed(bul.RandSeed)
 		bul.IsTracer = math.random(1, bul.Bullet.TracerChance) == 1
@@ -397,7 +409,7 @@ function SimulateBullets()
 	LastTime = CurTime()
 	
 	for k,v in pairs(bullets) do
-		if v.Bullet:Simulate(v, t) then
+		if v.Bullet.Simulate == nil or v.Bullet:Simulate(v, t) then
 			table.remove(bullets, k)
 		end
 	end
