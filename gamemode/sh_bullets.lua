@@ -41,7 +41,7 @@ if CLIENT then
 			local Vector2 = (v.LastPos or v.Position)
 
 			if v.Mine then
-				Vector2 = Vector2 + Vector(0, 0, 2) // so you can see the tracers from behind
+				Vector2 = Vector2 - Vector(0, 0, 3) // so you can see the tracers from behind
 			end
 			
 			if v.IsTracer then
@@ -485,7 +485,7 @@ local function BulletCam(ply, pos, angles, fov)
 		return
 	end
 	
-	Cooldown = RealTime() + 0.5
+	Cooldown = RealTime() + 0.75
 	CooldownPos = bul.Position - bul.Direction * 100
 	CooldownAng = bul.Direction
 	
