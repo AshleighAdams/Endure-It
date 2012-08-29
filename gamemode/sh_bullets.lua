@@ -453,3 +453,60 @@ concommand.Add("-firebul", function()
 	timer.Destroy("pewpew")
 end)
 
+
+
+local bulletcam = false
+
+local FindBullet = function()
+	for k,v in pairs(bullets) do
+		if v.Mine then
+			return v
+		end
+	end
+end
+
+local Cooldown = 0
+local CooldownPos
+local CooldownAng
+
+local function BulletCam(ply, pos, angles, fov)
+	if not bulletcam then return end
+	
+	local bul = FindBullet()
+	if bul == nil then
+		if Cooldown > RealTime() then
+			local view = {}
+			view.origin = CooldownPos
+			view.angles = CooldownAng:Angle()
+			view.fov = fov
+		 
+			return view
+		end
+		return
+	end
+	
+	Cooldown = RealTime() + 0.5
+	CooldownPos = bul.Position - bul.Direction * 100
+	CooldownAng = bul.Direction
+	
+	local view = {}
+    view.origin = bul.Position
+    view.angles = bul.Direction:Angle()
+    view.fov = fov
+ 
+    return view
+end
+hook.Add("CalcView", "Bullets.BulletCam", BulletCam)
+
+hook.Add("ShouldDrawLocalPlayer", "Bullets.BulletCamShouldDrawLocalPlayer", function(ply)
+    if not bulletcam then return end
+	
+	if Cooldown > RealTime() then return true end
+	
+	return FindBullet() != nil
+end)
+
+concommand.Add("bulletcam_toggle", function()
+	bulletcam = not bulletcam
+	print("Bullet cam toggled!")
+end)

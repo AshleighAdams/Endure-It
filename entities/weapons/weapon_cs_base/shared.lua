@@ -82,6 +82,7 @@ function SWEP:Initialize()
 end
 
 function SWEP:Reload()
+	self.Weapon:SetNetworkedBool("Zoom", false);
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );
 end
 
@@ -165,7 +166,7 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	
 	self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK ) 		// View model animation
 	
-	if self.Supressed then
+	if not self.Supressed then
 		self.Owner:MuzzleFlash()								// Crappy muzzle light
 	end
 	
@@ -188,15 +189,21 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 
 end
 
-function SWEP:Think()	
+function SWEP:Think()
+	if self.IsZoomedIn then
+		self.IronTime = self.IronTime + self.ZoomSpeed/25
+	else
+		self.IronTime = self.IronTime - self.ZoomSpeed/25
+	end
+	
+	self.IronTime = math.Clamp(self.IronTime, 0, 1)
+	
 	if self.Owner:KeyDown(IN_ATTACK2) and not self.IsZoomedIn then
-		self.IronTime = self.IronTime + self.ZoomSpeed/25;
-		self.Weapon:SetNetworkedBool("Zoom", true);
-		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed);
+		self.Weapon:SetNetworkedBool("Zoom", true)
+		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed)
 		self.IsZoomedIn = true
 	elseif not self.Owner:KeyDown(IN_ATTACK2) and self.IsZoomedIn then
-		self.IronTime = 0;
-		self.Weapon:SetNetworkedBool("Zoom", false);
+		self.Weapon:SetNetworkedBool("Zoom", false)
 		self.Owner:SetFOV(0, self.ZoomSpeed)
 		self.IsZoomedIn = false
 	end	
