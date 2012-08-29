@@ -12,9 +12,11 @@ if ( CLIENT ) then
 
 	SWEP.DrawAmmo			= true
 	SWEP.DrawCrosshair		= false
-	SWEP.ViewModelFOV		= 82
+	SWEP.ViewModelFOV		= 85
 	SWEP.ViewModelFlip		= true
 	SWEP.CSMuzzleFlashes	= true
+	SWEP.SwayScale 			= 2;
+	SWEP.BobScale 			= 2;
 	
 	local fd1 = {}
 	fd1.font = "csd"
@@ -78,7 +80,6 @@ end
 function SWEP:Reload()
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );
 end
-
 
 
 function SWEP:PrimaryAttack()
@@ -234,7 +235,28 @@ function SWEP:DrawWeaponSelection( x, y, wide, tall, alpha )
 end
 
 function SWEP:DrawHUD()
+	
+	
+	local sw = ScrW()/2;
+	local sh = ScrH()/2;
+	local matrix = {{ },{ },{ }}
+	
+	surface.SetDrawColor(0, 255, 0, 255);
+	
+	for i =
+	matrix[1]["x"] = sw
+	matrix[1]["y"] = sh
+
+	matrix[2]["x"] = sw + 50
+	matrix[2]["y"] = sh
 
 
+	matrix[3]["x"] = sw
+	matrix[3]["y"] = sh + 50
+
+	surface.SetTexture(); 
+    surface.DrawPoly( matrix )
+	
+	
 end
 
