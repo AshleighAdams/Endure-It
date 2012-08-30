@@ -82,6 +82,7 @@ function SWEP:Initialize()
 end
 
 function SWEP:Reload()
+	self.Weapon:SetNetworkedBool("Zoom", false);
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );
 end
 
@@ -99,7 +100,8 @@ function SWEP:PrimaryAttack()
 	
 	if ( self.Owner:IsNPC() ) then return end
 	
-	//self.Owner:ViewPunch( Angle(math.random(-self.Primary.Recoil, -1), math.random(-self.Primary.Recoil, 1), math.random(-1, 1)) )
+	--self.Owner:ViewPunch( Angle(math.random(-self.Primary.Recoil, -1), math.random(-self.Primary.Recoil, 1), math.random(-1, 1)) )
+	self.Owner:ViewPunch( Angle(0.01, 0, 0) )
 	
 	// In singleplayer this function doesn't get called on the client, so we use a networked float
 	// to send the last shoot time. In multiplayer this is predicted clientside so we don't need to 
@@ -164,7 +166,7 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	
 	self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK ) 		// View model animation
 	
-	if self.Supressed then
+	if not self.Supressed then
 		self.Owner:MuzzleFlash()								// Crappy muzzle light
 	end
 	
@@ -178,7 +180,7 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 		local eyeang = self.Owner:EyeAngles()
 		
 		eyeang.p = eyeang.p - self.Primary.Recoil/10;
-		eyeang.y = eyeang.y - self.Primary.Recoil/10;
+		--eyeang.y = eyeang.y - self.Primary.Recoil/10;
 			
 		self.Owner:SetEyeAngles(eyeang);
 	
@@ -187,15 +189,21 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 
 end
 
-function SWEP:Think()	
+function SWEP:Think()
+	if self.IsZoomedIn then
+		self.IronTime = self.IronTime + self.ZoomSpeed/25
+	else
+		self.IronTime = self.IronTime - self.ZoomSpeed/25
+	end
+	
+	self.IronTime = math.Clamp(self.IronTime, 0, 1)
+	
 	if self.Owner:KeyDown(IN_ATTACK2) and not self.IsZoomedIn then
-		self.IronTime = self.IronTime + self.ZoomSpeed/25;
-		self.Weapon:SetNetworkedBool("Zoom", true);
-		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed);
+		self.Weapon:SetNetworkedBool("Zoom", true)
+		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed)
 		self.IsZoomedIn = true
 	elseif not self.Owner:KeyDown(IN_ATTACK2) and self.IsZoomedIn then
-		self.IronTime = 0;
-		self.Weapon:SetNetworkedBool("Zoom", false);
+		self.Weapon:SetNetworkedBool("Zoom", false)
 		self.Owner:SetFOV(0, self.ZoomSpeed)
 		self.IsZoomedIn = false
 	end	
@@ -243,28 +251,42 @@ function SWEP:DrawWeaponSelection( x, y, wide, tall, alpha )
 end
 
 function SWEP:DrawHUD()
-	
-	
-	local sw = ScrW()/2;
-	local sh = ScrH()/2;
-	local matrix = {{ },{ },{ }}
-	
-	surface.SetDrawColor(0, 255, 0, 255);
-	
-	for i =
-	matrix[1]["x"] = sw
-	matrix[1]["y"] = sh
 
-	matrix[2]["x"] = sw + 50
-	matrix[2]["y"] = sh
+	// No crosshair when ironsights is on
+	if ( self.Weapon:GetNetworkedBool( "Ironsights" ) ) then return end
 
+	local x, y
 
-	matrix[3]["x"] = sw
-	matrix[3]["y"] = sh + 50
+	// If we're drawing the local player, draw the crosshair where they're aiming,
+	// instead of in the center of the screen.
+	if ( self.Owner == LocalPlayer() && self.Owner:ShouldDrawLocalPlayer() ) then
 
-	surface.SetTexture(); 
-    surface.DrawPoly( matrix )
+		local tr = util.GetPlayerTrace( self.Owner )
+		tr.mask = ( CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTER|CONTENTS_WINDOW|CONTENTS_DEBRIS|CONTENTS_GRATE|CONTENTS_AUX )
+		local trace = util.TraceLine( tr )
+		
+		local coords = trace.HitPos:ToScreen()
+		x, y = coords.x, coords.y
+
+	else
+		x, y = ScrW() / 2.0, ScrH() / 2.0
+	end
 	
+	local scale = 10 * self.Primary.Cone
 	
+	// Scale the size of the crosshair according to how long ago we fired our weapon
+	local LastShootTime = self.Weapon:GetNetworkedFloat( "LastShootTime", 0 )
+	scale = scale * (2 - math.Clamp( (CurTime() - LastShootTime) * 5, 0.0, 1.0 ))
+	
+	surface.SetDrawColor( 0, 255, 0, 255 )
+	
+	// Draw an awesome crosshair
+	local gap = 40 * scale
+	local length = gap + 20 * scale
+	surface.DrawLine( x - length, y, x - gap, y )
+	surface.DrawLine( x + length, y, x + gap, y )
+	surface.DrawLine( x, y - length, x, y - gap )
+	surface.DrawLine( x, y + length, x, y + gap )
+
 end
 

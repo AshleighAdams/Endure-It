@@ -42,16 +42,16 @@ SWEP.Primary.Recoil			= 1.5
 SWEP.Primary.Damage			= 40
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 0.02
-SWEP.Primary.ClipSize		= 25
-SWEP.Primary.Delay			= 0.07
-SWEP.Primary.DefaultClip	= 50
+SWEP.Primary.ClipSize		= 30
+SWEP.Primary.Delay			= 0.1
+SWEP.Primary.DefaultClip	= 60
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
-SWEP.ZoomScale = 75;
+SWEP.ZoomScale = 30;
 SWEP.ZoomSpeed = 1;
 SWEP.IronSightsPos = Vector (3.6317, -3.6443, 2.7934)
 SWEP.IronSightsAng = Vector (0, 0, 0)
