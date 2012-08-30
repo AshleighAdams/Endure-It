@@ -1,1 +1,2 @@
-Hurp derp
+Inventory
+Global weather (low priority)
