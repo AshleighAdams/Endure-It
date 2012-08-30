@@ -5,6 +5,8 @@ AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 
 
+include("sv_inventory.lua")
+
 // Serverside only stuff goes here
 
 /*---------------------------------------------------------
