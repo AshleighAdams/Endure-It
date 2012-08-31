@@ -132,13 +132,16 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			local lp = LocalPlayer()
 			bul.StartPos = lp:GetShootPos()
 			bul.Direction = lp:GetAimVector()
+			
+			local rand = VectorRand() * cone * 1.25 -- 1unit * 1.25 = 1 inch
 
-			bul.Direction = bul.Direction + 
-				Vector(
-					math.Rand(-1, 1) * cone, 
-					math.Rand(-1, 1) * cone, 
-					math.Rand(-1, 1) * cone
-				)
+			local distance = 300 * 16 * 0.57735026919
+			local ang = 0.577350
+
+			local conevec = Vector(distance + rand.x, distance + rand.y, distance + rand.z):GetNormal()
+			conevec = Vector(ang - conevec.x, ang-conevec.y, ang-conevec.z)
+			
+			bul.Direction = bul.Direction:GetNormal() + conevec
 			bul.Direction:Normalize()
 
 			bul.TraceIgnore = {LocalPlayer()}
