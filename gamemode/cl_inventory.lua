@@ -5,8 +5,7 @@ ExampleItem = {
 	Name = "Example",
 	Info = "An example item",
 	Owner = LocalPlayer(),
-	Actions
-	{
+	Actions = {
 		["Print"] = function(self) print("Hello", "world") end
 	},
 	Slots = 1,
@@ -14,8 +13,8 @@ ExampleItem = {
 	Secondary = false,
 	Draw = function(self, dpanel) /* Draw some fancy stuff... */ end,
 	Drop = function(self) end,
-	PickUp = function(self) end
-	CanPickUp = function(self, pl) end
+	PickUp = function(self) end,
+	CanPickUp = function(self, pl) end,
 	Moved = function(self, old, new) end
 }
 
@@ -28,14 +27,14 @@ ExampleInv = {
 		Items = {},
 		TotalSpace = 10,
 		FreeSpace = 10
-	}
+	},
 	Pockets = {
 		Type = inv.Pockets,
 		Name = "Pockets",
 		Items = {},
 		TotalSpace = 10,
 		FreeSpace = 10
-	}
+	},
 	BackPack = {
 		Type = inv.BackPack,
 		Name = "Some Backpack",
@@ -92,11 +91,11 @@ end
 local slots = 0
 
 for i = 0, 10 do
+	if not (slots > 0) then break end
+	
 	local slot = vgui.Create("DPanel", frame)
 	slot:SetPos(10 + i * SlotSize + 5 * i, 5 + 25 + SlotSize * 3 + 5 * 2 + 5)
 	slot:SetSize(SlotSize, SlotSize)
-	
-	if not slots > 0 then break end
 end
 
 
