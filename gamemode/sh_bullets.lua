@@ -1,5 +1,8 @@
 local bullets = {}
 
+Weather = {}
+Weather.AirDensity = 1.2 -- kg m-3
+Weather.Wind = Vector(207, 0, 0) -- 19kph, kph * 10.96 = inches/s
 
 DefaultBullet = {}
 
@@ -9,6 +12,11 @@ DefaultBullet.Damage = 20
 DefaultBullet.GravityModifier = 1
 DefaultBullet.Name = "Default"
 DefaultBullet.TracerChance = 1
+
+DefaultBullet.Mass = 0.008
+DefaultBullet.DragCoefficient = 0.295 / (DefaultBullet.Mass * 1000)
+
+print("cr", DefaultBullet.DragCoefficient)
 
 DefaultBullet.DecalMats = {}
 DefaultBullet.DecalMats[MAT_ANTLION] = "Impact.Antlion"
@@ -304,7 +312,20 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	local PrePos = bul.Position -- Used to check for a hit
 	bul.LastPos = bul.Position
 	bul.Position = bul.Position + bul.Velocity * t
-	bul.Velocity = bul.Velocity - (GRAVITY * t) -- take gravity away
+	
+	// apply drag
+	local speed = (bul.Velocity - Weather.Wind):Length()
+	local coef = self.DragCoefficient / 1000 -- i don't know...
+	local x = ((math.sqrt(1 + 4 * speed * coef * t) - 1.0) / (2.0 * speed * coef * t))
+	print(x)
+	bul.Velocity = bul.Velocity * x
+	
+	// apply wind
+	bul.Velocity = bul.Velocity + (Weather.Wind * self.DragCoefficient * 25 * t)
+	
+	// apply gravity
+	bul.Velocity = bul.Velocity - (GRAVITY * t)
+	
 	bul.Direction = bul.Velocity:GetNormal()
 	
 	if self.ExtraSimulate then
