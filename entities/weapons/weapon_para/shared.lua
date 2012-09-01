@@ -8,15 +8,15 @@ end
 
 if ( CLIENT ) then
 
-	SWEP.PrintName			= "Para"			
-	SWEP.Author				= "Counter-Strike"
+	SWEP.PrintName			= "M249 Para"			
+	SWEP.Author				= "victormeriqui & C0BRA"
 	SWEP.Slot				= 3
 	SWEP.SlotPos			= 1
 	SWEP.IconLetter			= "z"
 	
 	SWEP.ViewModelFlip		= false
 	
-	killicon.AddFont( "weapon_para", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
+	killicon.AddFont( "mg_para", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
 	
 end
 
@@ -24,7 +24,7 @@ SWEP.UseBullet = StanagBullet_556_Para
 
 SWEP.HoldType			= "ar2"
 SWEP.Base				= "weapon_cs_base"
-SWEP.Category			= "Counter-Strike"
+SWEP.Category			= "Endure-It"
 
 SWEP.Spawnable			= true
 SWEP.AdminSpawnable		= true
@@ -32,7 +32,7 @@ SWEP.AdminSpawnable		= true
 SWEP.ViewModel			= "models/weapons/v_mach_m249para.mdl"
 SWEP.WorldModel			= "models/weapons/w_mach_m249para.mdl"
 
-SWEP.Weight				= 1
+SWEP.Weight				= 12
 SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
@@ -41,7 +41,7 @@ SWEP.Primary.Recoil			= 5
 SWEP.Primary.Damage			= 60
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 0.005
-SWEP.Primary.ClipSize		= 100
+SWEP.Primary.ClipSize		= 201
 SWEP.Primary.Delay			= 0.09
 SWEP.Primary.DefaultClip	= 200
 SWEP.Primary.Automatic		= true
@@ -52,8 +52,14 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
-SWEP.ZoomScale = 30;
-SWEP.ZoomSpeed = 1;
-SWEP.IronSightsPos = Vector (3.6317, -3.6443, 2.7934)
-SWEP.IronSightsAng = Vector (0, 0, 0)
+
+SWEP.ZoomScale = 70;
+SWEP.ZoomSpeed = 0.1;
+SWEP.IronMoveSpeed = 0.02;
+
+SWEP.OverridePos = Vector (-0.7854, 0, -1)
+SWEP.OverrideAng = Vector (1.7101, 0.0599, 0)
+
+SWEP.IronSightsPos = Vector (-3.67583812976301247643274, 0, 1.4278)
+SWEP.IronSightsAng = Vector (-0.0108, -0.1083, 0)
 
