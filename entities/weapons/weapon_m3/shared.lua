@@ -1,26 +1,22 @@
-
-
 if ( SERVER ) then
-
 	AddCSLuaFile( "shared.lua" )
-	
 end
 
 if ( CLIENT ) then
 
-	SWEP.PrintName			= "Pump Shotgun"			
-	SWEP.Author				= "Counter-Strike"
+	SWEP.PrintName			= "Benelli M3"			
+	SWEP.Author				= "victormeriqui & C0BRA"
 	SWEP.Slot				= 2
 	SWEP.SlotPos			= 3
 	SWEP.IconLetter			= "k"
 	
-	killicon.AddFont( "weapon_pumpshotgun", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
+	killicon.AddFont( "shotgun_m3", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
 	
 end
 
 SWEP.HoldType			= "ar2"
 SWEP.Base				= "weapon_cs_base"
-SWEP.Category			= "Counter-Strike"
+SWEP.Category			= "Endure-It"
 
 SWEP.Spawnable			= true
 SWEP.AdminSpawnable		= true
@@ -28,7 +24,7 @@ SWEP.AdminSpawnable		= true
 SWEP.ViewModel			= "models/weapons/v_shot_m3super90.mdl"
 SWEP.WorldModel			= "models/weapons/w_shot_m3super90.mdl"
 
-SWEP.Weight				= 5
+SWEP.Weight				= 8
 SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
@@ -39,7 +35,7 @@ SWEP.Primary.NumShots		= 8
 SWEP.Primary.Cone			= 0.1
 SWEP.Primary.ClipSize		= 8
 SWEP.Primary.Delay			= 0.95
-SWEP.Primary.DefaultClip	= 16
+SWEP.Primary.DefaultClip	= 7
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Ammo			= "buckshot"
 
@@ -48,13 +44,12 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
-SWEP.ZoomScale = 75;
-SWEP.ZoomSpeed = 1;
+SWEP.ZoomScale = 65;
+SWEP.ZoomSpeed = 0.1;
+SWEP.IronMoveSpeed = 0.02;
 
-SWEP.IronSightsPos = Vector (3.6317, -3.6443, 2.7934)
+SWEP.IronSightsPos = Vector (4.1838, -2.1525, 3.0346)
 SWEP.IronSightsAng = Vector (0, 0, 0)
-
-
 
 /*---------------------------------------------------------
 	Reload does nothing
@@ -62,8 +57,6 @@ SWEP.IronSightsAng = Vector (0, 0, 0)
 function SWEP:Reload()
 	
 	//if ( CLIENT ) then return end
-	
-	self:SetIronsights( false )
 	
 	// Already reloading
 	if ( self.Weapon:GetNetworkedBool( "reloading", false ) ) then return end
@@ -79,11 +72,28 @@ function SWEP:Reload()
 
 end
 
-/*---------------------------------------------------------
-   Think does nothing
----------------------------------------------------------*/
-function SWEP:Think()
 
+function SWEP:Think()
+	
+	if self.IsZoomedIn then
+		self.IronTime = self.IronTime + self.IronMoveSpeed
+	else
+		self.IronTime = self.IronTime - self.IronMoveSpeed
+	end
+	
+	self.IronTime = math.Clamp(self.IronTime, 0, 1)
+	
+	if (self.Owner:KeyDown(IN_ATTACK2) && !self.Owner:KeyDown(IN_USE)) and not self.IsZoomedIn then
+		self.SwayScale = 1;
+		self.BobScale = 1;
+		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed)
+		self.IsZoomedIn = true
+	elseif not self.Owner:KeyDown(IN_ATTACK2) and self.IsZoomedIn then
+		self.SwayScale = 2;
+		self.BobScale = 2;
+		self.Owner:SetFOV(0, self.ZoomSpeed)
+		self.IsZoomedIn = false
+	end	
 
 	if ( self.Weapon:GetNetworkedBool( "reloading", false ) ) then
 	

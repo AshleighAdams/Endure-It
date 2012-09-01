@@ -1,26 +1,20 @@
 if ( SERVER ) then
-
 	AddCSLuaFile( "shared.lua" )
-	
 end
 
 if ( CLIENT ) then
 
-	SWEP.PrintName			= "AK47"			
+	SWEP.PrintName			= "M4A1"			
 	SWEP.Author				= "victormeriqui & C0BRA"
 	SWEP.Slot				= 3
 	SWEP.SlotPos			= 1
-	SWEP.IconLetter			= "b"
+	SWEP.IconLetter			= "w"
 	
-	killicon.AddFont( "rifle_ak47", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
+	killicon.AddFont( "rifle_m4", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
 	
 end
 
-SWEP.UseBullet = AKBullet
-
-
-print(SWEP.UseBullet)
-print("ASD")
+SWEP.UseBullet = StanagBullet_556
 
 SWEP.HoldType			= "ar2"
 SWEP.Base				= "weapon_cs_base"
@@ -29,24 +23,26 @@ SWEP.Category			= "Endure-It"
 SWEP.Spawnable			= true
 SWEP.AdminSpawnable		= true
 
-SWEP.ViewModel			= "models/weapons/v_rif_ak47.mdl"
-SWEP.WorldModel			= "models/weapons/w_rif_ak47.mdl"
+SWEP.ViewModel			= "models/weapons/v_rif_m4a1.mdl"
+SWEP.WorldModel			= "models/weapons/w_rif_m4a1.mdl"
 
 SWEP.Weight				= 9
 SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
-SWEP.Primary.Sound			= Sound( "Weapon_AK47.Single" )
-SWEP.Primary.Recoil			= 1.5
-SWEP.Primary.Damage			= 40
+SWEP.Primary.Sound			= Sound( "Weapon_M4A1.Single" )
+SWEP.Primary.Recoil			= 1
+SWEP.Primary.Damage			= 30
 SWEP.Primary.NumShots		= 1
-SWEP.Primary.Cone			= 0.02
-SWEP.Primary.ClipSize		= 31
+SWEP.Primary.Cone			= 4.3
+SWEP.Primary.ClipSize		= 30
 SWEP.Primary.Delay			= 0.1
-SWEP.Primary.DefaultClip	= 30
+SWEP.Primary.DefaultClip	= 60
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 
+SWEP.Secondary.ClipSize		= -1
+SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
@@ -60,9 +56,9 @@ SWEP.ZoomScale = 55;
 SWEP.ZoomSpeed = 0.1;
 SWEP.IronMoveSpeed = 0.02;
 
-SWEP.OverridePos = Vector (0, 0, -2)
-SWEP.OverrideAng = Vector (0, 0, 0);
+SWEP.OverridePos = Vector (1.0621, 0, -2)
+SWEP.OverrideAng = Vector (0.5698, 2.4502, 0)
 
-SWEP.IronSightsPos = Vector (4.3916, -1, 2.5413)
-SWEP.IronSightsAng = Vector (1.7302, -0.705, -1.5378)
+SWEP.IronSightsPos = Vector (3.5167, 0, 1.3197)
+SWEP.IronSightsAng = Vector (2.8766, -0.5125, 3.4012)
 

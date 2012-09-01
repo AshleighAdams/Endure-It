@@ -15,8 +15,8 @@ if ( CLIENT ) then
 	SWEP.ViewModelFOV		= 85
 	SWEP.ViewModelFlip		= true
 	SWEP.CSMuzzleFlashes	= true
-	SWEP.SwayScale 			= 2;
-	SWEP.BobScale 			= 2;
+	SWEP.SwayScale = 2;
+	SWEP.BobScale = 2;
 	
 	local fd1 = {}
 	fd1.font = "csd"
@@ -73,19 +73,16 @@ SWEP.ZoomSpeed = 0.25;
 
 function SWEP:Initialize()	
 	self:SetWeaponHoldType( self.HoldType )
-	self.Weapon:SetNetworkedBool("Zoom", false);
 	self.IronTime = 0;
-	
 	if self.Supressed then
 		self:SendWeaponAnim(ACT_VM_ATTACH_SILENCER)
 	end
 end
 
 function SWEP:Reload()
-	self.Weapon:SetNetworkedBool("Zoom", false);
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );
+	self.Owner:SetFOV(0, 0);
 end
-
 
 function SWEP:PrimaryAttack()
 
@@ -112,7 +109,14 @@ function SWEP:PrimaryAttack()
 	
 end
 
+function SWEP:Special()
+end
+
 function SWEP:SecondaryAttack()
+	if(self.Owner:KeyDown(IN_USE)) then
+		self.IsZoomedIn = false;
+		self:Special();
+	end
 end
 
 function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
@@ -183,8 +187,15 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 		local eyeang = self.Owner:EyeAngles()
 		
 		eyeang.p = eyeang.p - self.Primary.Recoil/10;
-		--eyeang.y = eyeang.y - self.Primary.Recoil/10;
-			
+		
+		//fix me
+		local test = math.random(0, 1);
+		if(test == 1) then
+			eyeang.y = eyeang.y - self.Primary.Recoil/10;
+		else
+			eyeang.y = eyeang.y + self.Primary.Recoil/10;
+		end
+		
 		self.Owner:SetEyeAngles(eyeang);
 	
 	end
@@ -194,51 +205,61 @@ end
 
 function SWEP:Think()
 	if self.IsZoomedIn then
-		self.IronTime = self.IronTime + self.ZoomSpeed/25
+		self.IronTime = self.IronTime + self.IronMoveSpeed
 	else
-		self.IronTime = self.IronTime - self.ZoomSpeed/25
+		self.IronTime = self.IronTime - self.IronMoveSpeed
 	end
 	
 	self.IronTime = math.Clamp(self.IronTime, 0, 1)
 	
-	if self.Owner:KeyDown(IN_ATTACK2) and not self.IsZoomedIn then
-		self.Weapon:SetNetworkedBool("Zoom", true)
+	if (self.Owner:KeyDown(IN_ATTACK2) && !self.Owner:KeyDown(IN_USE)) and not self.IsZoomedIn then
+		self.SwayScale = 1;
+		self.BobScale = 1;
 		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed)
 		self.IsZoomedIn = true
 	elseif not self.Owner:KeyDown(IN_ATTACK2) and self.IsZoomedIn then
-		self.Weapon:SetNetworkedBool("Zoom", false)
+		self.SwayScale = 2;
+		self.BobScale = 2;
 		self.Owner:SetFOV(0, self.ZoomSpeed)
 		self.IsZoomedIn = false
 	end	
 end	
 
 function SWEP:GetViewModelPosition( pos, ang )
-
-	local zoom = self.Weapon:GetNetworkedBool("Zoom");
-	
-	if(zoom) then
 		
-		local grad = Lerp( self.IronTime, 0, 1)
-		local Offset = LerpVector( 1, self.OldPos, self.IronSightsPos )
+	local grad = Lerp( self.IronTime, 0, 1)
+	
+	local IronPos = self.IronSightsPos;
+	local IronAng = self.IronSightsAng;
+	local OverPos = self.OverridePos;
+	local OverAng = self.OverrideAng;
+	
+	if(OverPos || OverAng) then	
 		
-		ang:RotateAroundAxis(ang:Right(), self.IronSightsAng.x)
-		ang:RotateAroundAxis(ang:Up(), self.IronSightsAng.y)
-		ang:RotateAroundAxis(ang:Forward(), self.IronSightsAng.z)
-	
-		local Right = ang:Right()
-		local Up = ang:Up()
-		local Forward = ang:Forward()
-	
-		pos = pos + Offset.x * Right * grad
-		pos = pos + Offset.y * Forward * grad
-		pos = pos + Offset.z * Up * grad
+		ang:RotateAroundAxis(ang:Right(), OverAng.x)
+		ang:RotateAroundAxis(ang:Up(), OverAng.y)
+		ang:RotateAroundAxis(ang:Forward(), OverAng.z)	
+		
+		pos = pos + OverPos.x * ang:Right();
+		pos = pos + OverPos.y * ang:Up();
+		pos = pos + OverPos.z * ang:Forward();
 
-		return pos, ang
-	
-	else
-		self.OldPos = pos;
-		return pos, ang
+		
 	end
+	
+	ang:RotateAroundAxis(ang:Right(), IronAng.x)
+	ang:RotateAroundAxis(ang:Up(), IronAng.y)
+	ang:RotateAroundAxis(ang:Forward(), IronAng.z)
+
+	local Right = ang:Right()
+	local Up = ang:Up()
+	local Forward = ang:Forward()
+	
+	pos = pos + IronPos.x * Right * grad
+	pos = pos + IronPos.y * Forward * grad
+	pos = pos + IronPos.z * Up * grad
+
+	return pos, ang
 
 end
 
@@ -247,9 +268,10 @@ function SWEP:DrawWeaponSelection( x, y, wide, tall, alpha )
 	
 	draw.SimpleText( self.IconLetter, "CSSelectIcons", x + wide/2, y + tall*0.2, Color( 255, 210, 0, 255 ), TEXT_ALIGN_CENTER )
 	
+	--maybe garry was high when he made this
 	// try to fool them into thinking they're playing a Tony Hawks game
-	draw.SimpleText( self.IconLetter, "CSSelectIcons", x + wide/2 + math.Rand(-4, 4), y + tall*0.2+ math.Rand(-14, 14), Color( 255, 210, 0, math.Rand(10, 120) ), TEXT_ALIGN_CENTER )
-	draw.SimpleText( self.IconLetter, "CSSelectIcons", x + wide/2 + math.Rand(-4, 4), y + tall*0.2+ math.Rand(-9, 9), Color( 255, 210, 0, math.Rand(10, 120) ), TEXT_ALIGN_CENTER )
+	//draw.SimpleText( self.IconLetter, "CSSelectIcons", x + wide/2 + math.Rand(-4, 4), y + tall*0.2+ math.Rand(-14, 14), Color( 255, 210, 0, math.Rand(10, 120) ), TEXT_ALIGN_CENTER )
+	//draw.SimpleText( self.IconLetter, "CSSelectIcons", x + wide/2 + math.Rand(-4, 4), y + tall*0.2+ math.Rand(-9, 9), Color( 255, 210, 0, math.Rand(10, 120) ), TEXT_ALIGN_CENTER )
 	
 end
 
