@@ -4,7 +4,7 @@ Weather = {}
 Weather.AirDensity = 1.2 -- kg m-3
 Weather.Wind = Vector(207, 0, 0) -- 19kph, kph * 10.96 = inches/s
 
-DefaultBullet = {}
+DefaultBullet = DefaultBullet or {}
 
 -- Bullet shit
 DefaultBullet.Velocity = 1500 * 12 -- 2000 feet per second
@@ -321,7 +321,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	bul.Velocity = bul.Velocity * x
 	
 	// apply wind
-	bul.Velocity = bul.Velocity + (Weather.Wind * self.DragCoefficient * 25 * t)
+	bul.Velocity = bul.Velocity + (Weather.Wind * self.DragCoefficient * t)
 	
 	// apply gravity
 	bul.Velocity = bul.Velocity - (GRAVITY * t)
@@ -352,12 +352,20 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 		
 		bul.RandSeed = bul.RandSeed + 1
 		math.randomseed(bul.RandSeed)
+		
+		
 		math.randomseed(math.Rand(-99999, 99999))
 		
+		local rand1, rand2, rand3 = math.Rand(-1, 1), math.Rand(-1, 1), math.Rand(-1, 1)
+		
+		rand1 = rand1 * rand1
+		rand2 = rand2 * rand2
+		rand3 = rand3 * rand3
+		
 		local randomspread = Vector(
-			math.Rand(-1, 1) * 0.1,
-			math.Rand(-1, 1) * 0.1,
-			math.Rand(-1, 1) * 0.1
+			rand1 * 0.1,
+			rand2 * 0.1,
+			rand3 * 0.1
 		)
 		
 		local norm = res.HitNormal

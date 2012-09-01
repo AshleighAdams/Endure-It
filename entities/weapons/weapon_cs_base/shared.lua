@@ -158,26 +158,28 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			
 			if self.UseBullet then
 				bul.Bullet = self.UseBullet
-				print("using ", bul.Bullet.Name)
 			elseif numbul > 1 then
 				bul.Bullet = BuckShot
 			elseif dmg > 70 then
 				bul.Bullet = SniperBullet
 			end
-			print("SHOOTING")
+			
 			ShootBullet(bul, function(bullet)
-				bullet.Velocity = bullet.Velocity + lp:GetVelocity()
+				bullet.Velocity = bullet.Velocity + lp:GetVelocity() + lp:GetAimVector() * math.random(-100, 100)
 			end)
 		end
 	end
 	
-	self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK ) 		// View model animation
-	
+	if self.DontPrimaryAttackAnim == nil then
+		self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK ) 		// View model animation
+	end
 	if not self.Supressed then
 		self.Owner:MuzzleFlash()								// Crappy muzzle light
 	end
 	
-	self.Owner:SetAnimation( PLAYER_ATTACK1 )				// 3rd Person Animation
+	if self.DontPrimaryAttackAnim == nil then
+		self.Owner:SetAnimation( PLAYER_ATTACK1 )				// 3rd Person Animation
+	end
 	
 	if ( self.Owner:IsNPC() ) then return end
 	
@@ -297,7 +299,7 @@ function SWEP:DrawHUD()
 		x, y = ScrW() / 2.0, ScrH() / 2.0
 	end
 	
-	local scale = 10 * self.Primary.Cone
+	local scale = 0.1 --* self.Primary.Cone
 	
 	// Scale the size of the crosshair according to how long ago we fired our weapon
 	local LastShootTime = self.Weapon:GetNetworkedFloat( "LastShootTime", 0 )

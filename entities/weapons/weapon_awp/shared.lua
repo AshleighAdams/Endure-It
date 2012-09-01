@@ -28,12 +28,13 @@ SWEP.WorldModel			= "models/weapons/w_snip_awp.mdl"
 SWEP.Weight				= 9
 SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
+SWEP.DontPrimaryAttackAnim = true
 
 SWEP.Primary.Sound			= Sound( "Weapon_Awp.Single" )
 SWEP.Primary.Recoil			= 2.5
 SWEP.Primary.Damage			= 95
 SWEP.Primary.NumShots		= 1
-SWEP.Primary.Cone			= 0.001
+SWEP.Primary.Cone			= 0
 SWEP.Primary.ClipSize		= 11
 SWEP.Primary.Delay			= 1.2
 SWEP.Primary.DefaultClip	= 10
@@ -83,7 +84,7 @@ function SWEP:PrimaryAttack()
 	if ( (SinglePlayer() && SERVER) || CLIENT ) then
 		self.Weapon:SetNetworkedFloat( "LastShootTime", CurTime() )
 	end
-	
+	/*
 	self.Owner:SetFOV(0, 0);	
 	self:SetNetworkedBool("Reloading", true);
 	local time = self.Owner:GetViewModel():SequenceDuration();
@@ -91,7 +92,7 @@ function SWEP:PrimaryAttack()
 		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed);	
 		self:SetNetworkedBool("Reloading", false); 
 	end);
-	
+	*/
 end
 
 
@@ -157,13 +158,16 @@ function SWEP:DrawHUD()
 	Cam.angles = LocalPlayer():EyeAngles();
     Cam.origin = LocalPlayer():GetShootPos();
     
-	Cam.x = ScrW()/2 - 250;
-    Cam.y = ScrH()/2 - 200;
-    Cam.w = 500;
-    Cam.h = 400;
+	local sizex = 800
+	local sizey = 800
+	
+	Cam.x = ScrW()/2 - sizex / 2;
+    Cam.y = ScrH()/2 - sizey / 2;
+    Cam.w = sizex;
+    Cam.h = sizey;
 	
 	Cam.drawviewmodel = false;
-	Cam.fov = 5;
+	Cam.fov = 3;
 	
 	if(self.IsZoomedIn && self.IronTime == 1 && !self:GetNetworkedBool("Reloading")) then
 				
@@ -176,11 +180,11 @@ function SWEP:DrawHUD()
 		render.SetStencilFailOperation(STENCILOPERATION_INCR);
 		render.SetStencilPassOperation(STENCILOPERATION_KEEP); 
 
-		DrawCircle(ScrW()/2, ScrH()/2, 300, 0.1, Color(255,255,255,255), 50);
+		DrawCircle(ScrW()/2, ScrH()/2, 300, 0.1, Color(255,255,255,255), 0);
 		
 		render.SetStencilPassOperation( STENCILOPERATION_DECR);
 
-		DrawCircle(ScrW()/2, ScrH()/2, 200, 0.1, Color(255,255,255,255), 40);
+		DrawCircle(ScrW()/2, ScrH()/2, 200, 0.1, Color(255,255,255,255), 0);
 		
 		render.SetStencilReferenceValue(1);
 		render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_EQUAL);
