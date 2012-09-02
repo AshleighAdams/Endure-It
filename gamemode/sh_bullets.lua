@@ -169,7 +169,7 @@ DefaultBullet.ReceiveHit = function(self, len, cl, tbl)
 		local mat = net.ReadUInt(32)
 				
 		
-		if ent and ValidEntity(ent) then
+		if ent and ValidEntity(ent) and not ent:IsVehicle() then
 			local dmginfo = DamageInfo()
 			dmginfo:SetDamage( (vel:Length() / self.Velocity) * self.Damage )
 			dmginfo:SetDamageType(DMG_BULLET) --Bullet damage
@@ -240,7 +240,7 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 		
 		debugoverlay.Line(bul.Position, bul.Position + bul.Direction * 1000, 5, Color(0, 0, 255))
 		
-		if bul.Bullet.TracerChance != nil then
+		if bul.Bullet.TracerChance != nil and bul.Bullet.TracerChance != 0 then
 			math.randomseed(seed)
 			bul.IsTracer = math.random(1, bul.Bullet.TracerChance) == 1
 		end
@@ -250,7 +250,11 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 end
 
 function RegisterBullet(bull)
-	print("Registering bullet ", bull.Name)
+	local col = Color(255, 127, 0, 255)
+	if SERVER then
+		col = Color(100, 200, 255)
+	end
+	MsgC(col, "Registering bullet " .. bull.Name .. "\n")
 	
 	bull.Simulate = bull.Simulate or DefaultBullet.Simulate
 	bull.ReceiveShoot = bull.ReceiveShoot or DefaultBullet.ReceiveShoot
@@ -294,7 +298,7 @@ end
 
 RegisterBullet(DefaultBullet)
 
-local path = GM.Folder .. "/gamemode/bullets/*.lua", "gamemodes/"
+local path = (GM or GAMEMODE).Folder .. "/gamemode/bullets/*.lua", "gamemodes/"
 local files = file.Find(path, "MOD") or {}
 
 print(path)
@@ -302,7 +306,7 @@ print("Files:")
 PrintTable(files)
 
 for k, v in pairs(files) do
-	include("bullets/" .. v)
+	include((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v)
 	if SERVER then AddCSLuaFile("bullets/" .. v) end
 end
 
