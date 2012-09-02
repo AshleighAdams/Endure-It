@@ -16,7 +16,9 @@ include("sv_inventory.lua")
 function GM:PlayerLoadout( pl )
 
 	pl:GiveAmmo( 255, "Pistol", true )
+	pl:GiveAmmo( 255, "SMG1", true )
 	
 	pl:Give( "weapon_deagle" )
+	pl:Give( "weapon_awp" )
 	
 end

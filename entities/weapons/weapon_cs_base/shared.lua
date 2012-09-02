@@ -77,6 +77,8 @@ function SWEP:Initialize()
 	if self.Supressed then
 		self:SendWeaponAnim(ACT_VM_ATTACH_SILENCER)
 	end
+	
+	self.Zero = { ClicksY = 0, ClicksX = 0 }
 end
 
 function SWEP:Reload()
@@ -317,3 +319,38 @@ function SWEP:DrawHUD()
 
 end
 
+if CLIENT then
+
+	local function ZeroUp()
+		if not LocalPlayer():GetActiveWeapon().Zero then
+			LocalPlayer():GetActiveWeapon().Zero = { ClicksY = 0, ClicksX = 0 }
+		end
+		LocalPlayer():GetActiveWeapon().Zero.ClicksY = LocalPlayer():GetActiveWeapon().Zero.ClicksY + 1
+	end
+	
+	local function ZeroDown()
+		if not LocalPlayer():GetActiveWeapon().Zero then
+			LocalPlayer():GetActiveWeapon().Zero = { ClicksY = 0, ClicksX = 0 }
+		end
+		LocalPlayer():GetActiveWeapon().Zero.ClicksY = LocalPlayer():GetActiveWeapon().Zero.ClicksY - 1
+	end
+	
+	local function ZeroLeft()
+		if not LocalPlayer():GetActiveWeapon().Zero then
+			LocalPlayer():GetActiveWeapon().Zero = { ClicksY = 0, ClicksX = 0 }
+		end
+		LocalPlayer():GetActiveWeapon().Zero.ClicksX = LocalPlayer():GetActiveWeapon().Zero.ClicksX - 1
+	end
+	
+	local function ZeroRight()
+		if not LocalPlayer():GetActiveWeapon().Zero then
+			LocalPlayer():GetActiveWeapon().Zero = { ClicksY = 0, ClicksX = 0 }
+		end
+		LocalPlayer():GetActiveWeapon().Zero.ClicksX = LocalPlayer():GetActiveWeapon().Zero.ClicksX + 1
+	end
+	
+	concommand.Add("zero_up", ZeroUp)
+	concommand.Add("zero_down", ZeroDown)
+	concommand.Add("zero_left", ZeroLeft)
+	concommand.Add("zero_right", ZeroRight)
+end

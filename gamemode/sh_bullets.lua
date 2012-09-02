@@ -35,6 +35,11 @@ if CLIENT then
 	
 	DefaultBullet.DrawTracers = function()
 		for k,v in pairs(bullets) do
+			if v.Bullet.DrawTracer != nil then
+				v.Bullet:DrawTracer(v)
+				continue
+			end
+			
 			if not v.StartDraw then
 				v.StartDraw = RealTime() + 0.05
 				if v.IsTracer then
@@ -321,7 +326,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	bul.Velocity = bul.Velocity * x
 	
 	// apply wind
-	bul.Velocity = bul.Velocity + (Weather.Wind * self.DragCoefficient * t)
+	bul.Velocity = bul.Velocity + (Weather.Wind * self.DragCoefficient * 10 * t)
 	
 	// apply gravity
 	bul.Velocity = bul.Velocity - (GRAVITY * t)
@@ -424,7 +429,7 @@ function ShootBullet(bul, modifyfunc) -- Ohhh, nooo, its client side...... I don
 	
 	debugoverlay.Line(bul.Position, bul.Position + bul.Velocity:GetNormal() * 50, 5, Color(255, 0, 0))
 		
-	if bul.Bullet.TracerChance != nil then
+	if bul.Bullet.TracerChance != nil and bul.Bullet.TracerChance != 0 then
 		math.randomseed(bul.RandSeed)
 		bul.IsTracer = math.random(1, bul.Bullet.TracerChance) == 1
 	end
