@@ -296,27 +296,8 @@ function RegisterBullet(bull)
 	print("Registered bullet ", bull.Name)
 end
 
-RegisterBullet(DefaultBullet)
-
-local path = (GM or GAMEMODE).Folder .. "/gamemode/bullets/*.lua", "gamemodes/"
-local files = file.Find(path, "MOD") or {}
-
-print(path)
-print("Files:")
-PrintTable(files)
-
-for k, v in pairs(files) do
-	include((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v)
-	if SERVER then AddCSLuaFile("bullets/" .. v) end
-end
-
-if SERVER then
-	AddCSLuaFile("sh_bullets.lua")	
-	return
-end
-
--- return true to mark bullet as done
 local GRAVITY = Vector(0, 0, 600)
+-- return true to mark bullet as done
 DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	local PrePos = bul.Position -- Used to check for a hit
 	bul.LastPos = bul.Position
@@ -409,7 +390,24 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	end
 end
 
+RegisterBullet(DefaultBullet)
 
+local path = (GM or GAMEMODE).Folder .. "/gamemode/bullets/*.lua", "gamemodes/"
+local files = file.Find(path, "MOD") or {}
+
+print(path)
+print("Files:")
+PrintTable(files)
+
+for k, v in pairs(files) do
+	include((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v)
+	if SERVER then AddCSLuaFile("bullets/" .. v) end
+end
+
+if SERVER then
+	AddCSLuaFile("sh_bullets.lua")	
+	return
+end
 
 function ShootBullet(bul, modifyfunc) -- Ohhh, nooo, its client side...... I don't give a shit
 	bul.Bullet = bul.Bullet or DefaultBullet

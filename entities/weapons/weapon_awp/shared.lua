@@ -35,7 +35,7 @@ SWEP.AutoSwitchFrom		= false
 SWEP.DontPrimaryAttackAnim = true
 
 SWEP.Primary.Sound			= Sound( "Weapon_Awp.Single" )
-SWEP.Primary.Recoil			= 0.5
+SWEP.Primary.Recoil			= 1
 SWEP.Primary.Damage			= 95
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 1.5
@@ -138,14 +138,6 @@ function SWEP:Think()
 	end	
 end	
 
-
-function SWEP:AdjustMouseSensitivity()
-	if self:SetNWBool("zoomed", false) or self.IsZoomedIn then
-		return 0.001
-	end
-	return 1
-end
-
 function SWEP:Reload()
 	
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );
@@ -195,9 +187,11 @@ if CLIENT then
 	})
 	_G.FUCKU = SWEP.mat
 	*/
+	--$selfillum
 	Material("models/weapons/v_models/snip_awp/v_awp_scope"):SetTexture("$basetexture", SWEP.ScopeRT)
 	Material("models/weapons/v_models/snip_awp/v_awp_scope"):SetUndefined("$envmap")
 	Material("models/weapons/v_models/snip_awp/v_awp_scope"):SetUndefined("$envmapmask")
+	Material("models/weapons/v_models/snip_awp/v_awp_scope"):SetInt("$fullbright", 1)
 	Material("models/weapons/v_models/snip_awp/v_awp_scope"):SetShader("UnlitGeneric")
 	
 	--Material("models/weapons/v_models/snip_awp/v_awp_scope"):SetTexture("$basetexture", Material"models/debug/debugwhite":GetTexture("$basetexture"))
@@ -247,6 +241,7 @@ function SWEP:DrawHUD()
     Cam.h = 1024;
 	
 	Cam.drawviewmodel = false;
+	Cam.zfar = 2000 * 16
 	
 	Cam.fov = 5;
 	
@@ -355,7 +350,7 @@ function SWEP:DrawHUD()
 end
 
 function SWEP:AdjustMouseSensitivity()
-	if self.IsZoomedIn then
+	if self.IsZoomedIn and self.IronTime == 1 then
 		return 0.1
 	end
 	return 1

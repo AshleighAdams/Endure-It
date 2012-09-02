@@ -13,3 +13,4 @@ SniperBullet.Mass = 0.004
 SniperBullet.DragCoefficient = 0.25 / (SniperBullet.Mass * 1000)
 
 RegisterBullet(SniperBullet)
+RegisterBullet(SniperBullet)
