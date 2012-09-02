@@ -22,7 +22,7 @@ SWEP.Category			= "Endure-It"
 SWEP.Spawnable			= true
 SWEP.AdminSpawnable		= true
 
-SWEP.ViewModelFlip		= false
+SWEP.ViewModelFlip		= true
 
 SWEP.ViewModel			= "models/weapons/v_snip_awp.mdl"
 SWEP.WorldModel			= "models/weapons/w_snip_awp.mdl"
@@ -102,7 +102,9 @@ end
 
 
 function SWEP:Think()
-
+	if self.UseBullet != SniperBullet then
+		self.UseBullet = SniperBullet
+	end
 	if self.NeedsReload and not self.Owner:KeyDown(IN_ATTACK) then
 		self.NeedsReload = false
 		self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
@@ -212,17 +214,23 @@ OffsetClicksY[7] = Angle(0.32, 0, 0)
 OffsetClicksY[8] = Angle(0.4, 0, 0)
 OffsetClicksY[9] = Angle(0.49, 0, 0)
 OffsetClicksY[10] = Angle(0.59, 0, 0)
+OffsetClicksY[11] = Angle(0.74, 0, 0)
+OffsetClicksY[12] = Angle(0.91, 0, 0)
+OffsetClicksY[13] = Angle(1.1, 0, 0)
+OffsetClicksY[14] = Angle(1.324, 0, 0)
 
 function SWEP:DrawHUD()
 	local Cam = {}
 	
-	self.Zero.ClicksY = math.Clamp(self.Zero.ClicksY, 0, 10)
+	self.Zero.ClicksY = math.Clamp(self.Zero.ClicksY, 0, 14)
 	
 	self.LastClicksY = self.LastClicksY or 0
 	if self.LastClicksY != self.Zero.ClicksY then
 		self.LastClicksY = self.Zero.ClicksY
 		chat.AddText("Zeroing at ", Color(255, 127, 0), tostring(self.Zero.ClicksY * 100), " meters")
 	end
+	
+	if self.IronTime < 0.1 then return end
 	
 	self.Zero.ClicksY = self.Zero.ClicksY or 0
 	self.Zero.ClicksX = self.Zero.ClicksX or 0
@@ -263,16 +271,25 @@ function SWEP:DrawHUD()
 		surface.DrawLine(cx, 0, cx, h)
 		surface.DrawLine(0, cy, w, cy)
 		
-		for i = 0, 10 do
+		
+		for i = 1, 10 do
+			local mildot_size = 12
 			local spacing = (1/Cam.fov * 170) * i --57 * i
+			local spacing_half = spacing - (1/Cam.fov * 170) * 0.5
 			
-			surface.DrawLine(cx - 6, cy + spacing, cx + 6, cy + spacing) // down
-			surface.DrawLine(cx - 6, cy - spacing, cx + 6, cy - spacing) // up
+			surface.DrawLine(cx - mildot_size, cy + spacing, cx + mildot_size, cy + spacing) // down
+			surface.DrawLine(cx - mildot_size / 2, cy + spacing_half, cx + mildot_size / 2, cy + spacing_half) // down half
+			surface.DrawLine(cx - mildot_size, cy - spacing, cx + mildot_size, cy - spacing) // up
+			surface.DrawLine(cx - mildot_size / 2, cy - spacing_half, cx + mildot_size / 2, cy - spacing_half) // up half
 			
 			spacing = spacing *  (w / h)
+			spacing_half = spacing_half * (w / h)
+			mildot_size = mildot_size * (h / w)
 			
-			surface.DrawLine(cx - spacing, cy + 6, cx - spacing, cy - 6) // left
-			surface.DrawLine(cx + spacing, cy + 6, cx + spacing, cy - 6) // right
+			surface.DrawLine(cx - spacing, cy + mildot_size, cx - spacing, cy - mildot_size) // left
+			surface.DrawLine(cx - spacing_half, cy + mildot_size / 2, cx - spacing_half, cy - mildot_size / 2) // left half
+			surface.DrawLine(cx + spacing, cy + mildot_size, cx + spacing, cy - mildot_size) // right
+			surface.DrawLine(cx + spacing_half, cy + mildot_size / 2, cx + spacing_half, cy - mildot_size / 2) // right half
 		end
 		
 		--surface.DrawLine(512*1.875, 0, 512 * 1.875, 1024*2)
