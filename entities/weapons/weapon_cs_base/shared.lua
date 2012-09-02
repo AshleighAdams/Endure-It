@@ -57,7 +57,7 @@ SWEP.Primary.ClipSize		= -1
 SWEP.Primary.DefaultClip	= -1
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Ammo			= "none"
-SWEP.UseBullet = DefaultBullet;
+SWEP.UseBullet = DefaultBullet
 
 SWEP.Secondary.ClipSize		= -1
 SWEP.Secondary.DefaultClip	= -1
@@ -133,6 +133,7 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	cone = cone * 0.5
 	
 	if CLIENT and IsFirstTimePredicted() then
+		print("ASD")
 		for i = 1, numbul do
 			local bul = {}
 			local lp = LocalPlayer()
@@ -190,17 +191,10 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	
 		local eyeang = self.Owner:EyeAngles()
 		
-		eyeang.p = eyeang.p - self.Primary.Recoil/10;
+		eyeang.p = eyeang.p - self.Primary.Recoil/10
+		eyeang.y = eyeang.y + (self.Primary.Recoil/10) * math.Rand(-1, 1)
 		
-		//fix me
-		local test = math.random(0, 1);
-		if(test == 1) then
-			eyeang.y = eyeang.y - self.Primary.Recoil/10;
-		else
-			eyeang.y = eyeang.y + self.Primary.Recoil/10;
-		end
-		
-		self.Owner:SetEyeAngles(eyeang);
+		self.Owner:SetEyeAngles(eyeang)
 	
 	end
 	//wtf is this shitl

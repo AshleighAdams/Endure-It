@@ -14,7 +14,6 @@ SniperBullet.DragCoefficient = 0.25 / (SniperBullet.Mass * 1000)
 
 RegisterBullet(SniperBullet)
 
-
 StanagBullet_556_Sniper = {}
 
 -- Bullet shit
@@ -28,3 +27,5 @@ StanagBullet_556_Sniper.Mass = 0.0035
 StanagBullet_556_Sniper.DragCoefficient = 0.285 / (StanagBullet_556_Sniper.Mass * 1000)
 
 RegisterBullet(StanagBullet_556_Sniper)
+
+
