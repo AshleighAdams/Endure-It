@@ -22,6 +22,7 @@ StanagBullet_556_Sniper.Damage = 25
 StanagBullet_556_Sniper.GravityModifier = 1
 StanagBullet_556_Sniper.Name = "StanagBullet_556_Snipper"
 StanagBullet_556_Sniper.TracerChance = 0
+StanagBullet_556_Sniper.DrawTracer = function(self, bullet) end
 
 StanagBullet_556_Sniper.Mass = 0.0035
 StanagBullet_556_Sniper.DragCoefficient = 0.285 / (StanagBullet_556_Sniper.Mass * 1000)

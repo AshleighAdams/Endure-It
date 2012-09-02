@@ -243,7 +243,7 @@ function SWEP:DrawHUD()
 	Cam.drawviewmodel = false;
 	Cam.zfar = 2000 * 16
 	
-	Cam.fov = 1;
+	Cam.fov = 5;
 	Cam.zfar = 2000 * 16;
 
 	if self.IronTime == 1 then
@@ -269,7 +269,7 @@ function SWEP:DrawHUD()
 		
 		
 		for i = 1, 10 do
-			local mildot_size = 12
+			local mildot_size = 6
 			local spacing = (1/Cam.fov * 170) * i --57 * i
 			local spacing_half = spacing - (1/Cam.fov * 170) * 0.5
 			
