@@ -203,10 +203,10 @@ end
 
 local OffsetClicksY = {}
 OffsetClicksY[1] = Angle(0.02, 0, 0)
-OffsetClicksY[2] = Angle(0.05, 0, 0)
-OffsetClicksY[3] = Angle(0.09, 0, 0)
-OffsetClicksY[4] = Angle(0.13, 0, 0)
-OffsetClicksY[5] = Angle(0.18, 0, 0)
+OffsetClicksY[2] = Angle(0.035, 0, 0)
+OffsetClicksY[3] = Angle(0.085, 0, 0)
+OffsetClicksY[4] = Angle(0.125, 0, 0)
+OffsetClicksY[5] = Angle(0.15, 0, 0)
 OffsetClicksY[6] = Angle(0.25, 0, 0)
 OffsetClicksY[7] = Angle(0.32, 0, 0)
 OffsetClicksY[8] = Angle(0.4, 0, 0)
@@ -240,8 +240,9 @@ function SWEP:DrawHUD()
 	
 	Cam.drawviewmodel = false;
 	
-	Cam.fov = 5;
-	
+	Cam.fov = 1;
+	Cam.zfar = 2000 * 16;
+
 	if self.IronTime == 1 then
 		self.ViewModelFlip = false
 	else
