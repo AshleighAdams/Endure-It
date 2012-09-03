@@ -1,6 +1,10 @@
 *.exe
 *.pdb
 *.obj
+*.sln
+*.suo
+*Input.cache
+*.exe.manifest
 */bin/Debug*
 */bin/Release*
 
