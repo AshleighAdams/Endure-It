@@ -8,3 +8,6 @@
 */bin/Debug*
 */bin/Release*
 */x86/*
+/content/maps/ei_zero.lin
+/content/maps/ei_zero.log
+/content/maps/ei_zero.vmx
