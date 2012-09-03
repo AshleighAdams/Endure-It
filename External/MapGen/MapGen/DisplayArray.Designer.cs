@@ -28,31 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pbMain = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pbMain)).BeginInit();
-            this.SuspendLayout();
-            // 
-            // pbMain
-            // 
-            this.pbMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pbMain.Location = new System.Drawing.Point(0, 0);
-            this.pbMain.Name = "pbMain";
-            this.pbMain.Size = new System.Drawing.Size(349, 298);
-            this.pbMain.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pbMain.TabIndex = 0;
-            this.pbMain.TabStop = false;
-            // 
-            // DisplayArray
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(349, 298);
-            this.Controls.Add(this.pbMain);
-            this.Name = "DisplayArray";
-            this.Text = "DisplayArray";
-            this.Load += new System.EventHandler(this.DisplayArray_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pbMain)).EndInit();
-            this.ResumeLayout(false);
+			this.pbMain = new System.Windows.Forms.PictureBox();
+			((System.ComponentModel.ISupportInitialize)(this.pbMain)).BeginInit();
+			this.SuspendLayout();
+			// 
+			// pbMain
+			// 
+			this.pbMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pbMain.Location = new System.Drawing.Point(0, 0);
+			this.pbMain.Name = "pbMain";
+			this.pbMain.Size = new System.Drawing.Size(1008, 1008);
+			this.pbMain.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pbMain.TabIndex = 0;
+			this.pbMain.TabStop = false;
+			// 
+			// DisplayArray
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.ClientSize = new System.Drawing.Size(1008, 1008);
+			this.Controls.Add(this.pbMain);
+			this.Name = "DisplayArray";
+			this.Text = "DisplayArray";
+			this.Load += new System.EventHandler(this.DisplayArray_Load);
+			((System.ComponentModel.ISupportInitialize)(this.pbMain)).EndInit();
+			this.ResumeLayout(false);
 
         }
 
