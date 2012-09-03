@@ -2,7 +2,7 @@
 {
 	"base"		"base"
 	"title"		"Endure It"
-	"maps"		"^gm_"
+	"maps"		"^ei_"
 	"menusystem"	"1"
-	"workshopid"	"15895"
+	"workshopid"	"n/a"
 }
