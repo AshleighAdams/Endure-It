@@ -199,19 +199,19 @@ end
 
 local OffsetClicksY = {}
 OffsetClicksY[1] = Angle(0.02, 0, 0)
-OffsetClicksY[2] = Angle(0.035, 0, 0)
-OffsetClicksY[3] = Angle(0.085, 0, 0)
-OffsetClicksY[4] = Angle(0.125, 0, 0)
-OffsetClicksY[5] = Angle(0.15, 0, 0)
-OffsetClicksY[6] = Angle(0.25, 0, 0)
-OffsetClicksY[7] = Angle(0.32, 0, 0)
-OffsetClicksY[8] = Angle(0.4, 0, 0)
-OffsetClicksY[9] = Angle(0.49, 0, 0)
-OffsetClicksY[10] = Angle(0.59, 0, 0)
-OffsetClicksY[11] = Angle(0.74, 0, 0)
-OffsetClicksY[12] = Angle(0.91, 0, 0)
-OffsetClicksY[13] = Angle(1.1, 0, 0)
-OffsetClicksY[14] = Angle(1.324, 0, 0)
+OffsetClicksY[2] = Angle(0.09, 0, 0)
+OffsetClicksY[3] = Angle(0.16, 0, 0)
+OffsetClicksY[4] = Angle(0.245, 0, 0)
+OffsetClicksY[5] = Angle(0.335, 0, 0)
+OffsetClicksY[6] = Angle(0.44, 0, 0)
+OffsetClicksY[7] = Angle(0.56, 0, 0)
+OffsetClicksY[8] = Angle(0.7, 0, 0)
+OffsetClicksY[9] = Angle(0.88, 0, 0)
+OffsetClicksY[10] = Angle(1.07, 0, 0)
+OffsetClicksY[11] = Angle(1.35, 0, 0)
+OffsetClicksY[12] = Angle(1.67, 0, 0)
+OffsetClicksY[13] = Angle(2.02, 0, 0)
+OffsetClicksY[14] = Angle(2.47, 0, 0)
 
 function SWEP:DrawHUD()
 	local Cam = {}
@@ -243,7 +243,7 @@ function SWEP:DrawHUD()
 	Cam.drawviewmodel = false;
 	Cam.zfar = 2000 * 16
 	
-	Cam.fov = 1;
+	Cam.fov = 5;
 	Cam.zfar = 2000 * 16;
 
 	if self.IronTime == 1 then
@@ -269,7 +269,7 @@ function SWEP:DrawHUD()
 		
 		
 		for i = 1, 10 do
-			local mildot_size = 12
+			local mildot_size = 6
 			local spacing = (1/Cam.fov * 170) * i --57 * i
 			local spacing_half = spacing - (1/Cam.fov * 170) * 0.5
 			

@@ -27,7 +27,7 @@ SWEP.ViewModelFlip		= true
 SWEP.ViewModel			= "models/weapons/v_snip_scout.mdl"
 SWEP.WorldModel			= "models/weapons/w_snip_scout.mdl"
 
-SWEP.UseBullet = StanagBullet_556
+SWEP.UseBullet = StanagBullet_556_Sniper
 
 SWEP.Weight				= 9
 SWEP.AutoSwitchTo		= false
@@ -35,10 +35,10 @@ SWEP.AutoSwitchFrom		= false
 SWEP.DontPrimaryAttackAnim = true
 
 SWEP.Primary.Sound			= Sound( "Weapon_Scout.Single" )
-SWEP.Primary.Recoil			= 0
+SWEP.Primary.Recoil			= 1
 SWEP.Primary.Damage			= 95
 SWEP.Primary.NumShots		= 1
-SWEP.Primary.Cone			= 0
+SWEP.Primary.Cone			= 4
 SWEP.Primary.ClipSize		= 11
 SWEP.Primary.Delay			= 1.2
 SWEP.Primary.DefaultClip	= 10
@@ -50,11 +50,11 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
-SWEP.ZoomScale = 15;
+SWEP.ZoomScale = 30;
 SWEP.ZoomSpeed = 0.4;
 SWEP.IronMoveSpeed = 0.02;
 
-SWEP.IronSightsPos = Vector (5.017, -4.9258, 2.5139)
+SWEP.IronSightsPos = Vector (5.017, -8.9258, 2.5139)
 SWEP.IronSightsAng = Vector (0, 0, 0)
 
 function SWEP:PrimaryAttack()
@@ -155,19 +155,17 @@ end
 local OffsetClicksY = {}
 OffsetClicksY[1] = Angle(0.02, 0, 0)
 OffsetClicksY[2] = Angle(0.05, 0, 0)
-OffsetClicksY[3] = Angle(0.09, 0, 0)
-OffsetClicksY[4] = Angle(0.13, 0, 0)
-OffsetClicksY[5] = Angle(0.18, 0, 0)
-OffsetClicksY[6] = Angle(0.25, 0, 0)
-OffsetClicksY[7] = Angle(0.32, 0, 0)
-OffsetClicksY[8] = Angle(0.4, 0, 0)
-OffsetClicksY[9] = Angle(0.49, 0, 0)
-OffsetClicksY[10] = Angle(0.59, 0, 0)
+OffsetClicksY[3] = Angle(0.1, 0, 0)
+OffsetClicksY[4] = Angle(0.14, 0, 0)
+OffsetClicksY[5] = Angle(0.2, 0, 0)
+OffsetClicksY[6] = Angle(0.28, 0, 0)
+OffsetClicksY[7] = Angle(0.38, 0, 0)
+OffsetClicksY[8] = Angle(0.5, 0, 0)
 
 function SWEP:DrawHUD()
 	local Cam = {}
 	
-	self.Zero.ClicksY = math.Clamp(self.Zero.ClicksY, 0, 10)
+	self.Zero.ClicksY = math.Clamp(self.Zero.ClicksY, 0, 8)
 	
 	self.LastClicksY = self.LastClicksY or 0
 	if self.LastClicksY != self.Zero.ClicksY then
@@ -178,7 +176,7 @@ function SWEP:DrawHUD()
 	self.Zero.ClicksY = self.Zero.ClicksY or 0
 	self.Zero.ClicksX = self.Zero.ClicksX or 0
 	
-	Cam.angles = LocalPlayer():EyeAngles() + (OffsetClicksY[self.Zero.ClicksY] or Angle(0,0,0)) + Angle(0, self.Zero.ClicksX/300 * -1, 0)
+	Cam.angles = LocalPlayer():EyeAngles() + (OffsetClicksY[self.Zero.ClicksY] or Angle(0,0,0)) + Angle(0, self.Zero.ClicksX/100 * -1, 0)
     Cam.origin = LocalPlayer():GetShootPos()
     
 	local sizex = 800
@@ -190,8 +188,9 @@ function SWEP:DrawHUD()
     Cam.h = 1024;
 	
 	Cam.drawviewmodel = false;
+	Cam.zfar = 2000 * 16
 	
-	Cam.fov = 5;
+	Cam.fov = 6;
 	
 	if self.IronTime == 1 then
 		self.ViewModelFlip = false
@@ -216,14 +215,16 @@ function SWEP:DrawHUD()
 		
 		for i = 0, 10 do
 			local spacing = (1/Cam.fov * 170) * i --57 * i
+			local mildot_size = 6
 			
-			surface.DrawLine(cx - 6, cy + spacing, cx + 6, cy + spacing) // down
-			surface.DrawLine(cx - 6, cy - spacing, cx + 6, cy - spacing) // up
+			surface.DrawLine(cx - mildot_size, cy + spacing, cx + mildot_size, cy + spacing) // down
+			surface.DrawLine(cx - mildot_size, cy - spacing, cx + mildot_size, cy - spacing) // up
 			
 			spacing = spacing *  (w / h)
+			mildot_size = mildot_size * (h / w)
 			
-			surface.DrawLine(cx - spacing, cy + 6, cx - spacing, cy - 6) // left
-			surface.DrawLine(cx + spacing, cy + 6, cx + spacing, cy - 6) // right
+			surface.DrawLine(cx - spacing, cy + mildot_size, cx - spacing, cy - mildot_size) // left
+			surface.DrawLine(cx + spacing, cy + mildot_size, cx + spacing, cy - mildot_size) // right
 		end
 		
 		--surface.DrawLine(512*1.875, 0, 512 * 1.875, 1024*2)
