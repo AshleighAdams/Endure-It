@@ -1,58 +1,4 @@
-inv = inv or {}
 
-ExampleItem = {
-	ParentTable = SomeTable,
-	Name = "Example",
-	Info = "An example item",
-	Owner = LocalPlayer(),
-	Actions = {
-		["Print"] = function(self) print("Hello", "world") end
-	},
-	Slots = 1,
-	Primary = false,
-	Secondary = false,
-	Draw = function(self, dpanel) /* Draw some fancy stuff... */ end,
-	Drop = function(self) end,
-	PickUp = function(self) end,
-	CanPickUp = function(self, pl) end,
-	Moved = function(self, old, new) end
-}
-
-ExampleInv = {
-	Primary = Item,
-	Secondary = Item,
-	ToolBelt = {
-		Type = inv.ToolBelt,
-		Name = "Tool Belt",
-		Items = {},
-		TotalSpace = 10,
-		FreeSpace = 10
-	},
-	Pockets = {
-		Type = inv.Pockets,
-		Name = "Pockets",
-		Items = {},
-		TotalSpace = 10,
-		FreeSpace = 10
-	},
-	BackPack = {
-		Type = inv.BackPack,
-		Name = "Some Backpack",
-		Items = {},
-		TotalSpace = 24,
-		FreeSpace = 24
-	}
-}
-
-inv.ToolBelt = 1
-inv.Pockets = 2
-inv.BackPack = 3
-
-inv.GetInventory = function(pl)
-	if pl == nil then pl = LocalPlayer() end
-	
-	
-end
 
 // GUI Codens below
 if frame then frame:Remove() end
@@ -88,14 +34,13 @@ for i = 0, 10 do -- Only 1 slot size items can go here...
 end
 
 -- Generic Inventory
-local slots = 0
+local slots = 10
 
-for i = 0, 10 do
-	if not (slots > 0) then break end
-	
+while slots > 0 do
 	local slot = vgui.Create("DPanel", frame)
 	slot:SetPos(10 + i * SlotSize + 5 * i, 5 + 25 + SlotSize * 3 + 5 * 2 + 5)
 	slot:SetSize(SlotSize, SlotSize)
+	slots--
 end
 
 

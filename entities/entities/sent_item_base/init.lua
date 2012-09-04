@@ -36,4 +36,15 @@ function ENT:Think()
 	
 end
 
+function ENT:RestoreState(state)
+end
 
+function ENT:GetState()
+	return {}
+end
+
+function ENT:Drop(pl)
+end
+
+function ENT:PickUp(pl)
+end
