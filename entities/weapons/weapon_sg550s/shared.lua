@@ -27,7 +27,7 @@ SWEP.ViewModelFlip		= true
 SWEP.ViewModel			= "models/weapons/v_snip_sg550.mdl"
 SWEP.WorldModel			= "models/weapons/w_snip_sg550.mdl"
 
-SWEP.UseBullet = StanagBullet_556
+SWEP.UseBullet = StanagBullet_556_Sniper
 
 SWEP.Weight				= 12
 SWEP.AutoSwitchTo		= false
@@ -49,11 +49,11 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
-SWEP.ZoomScale = 15;
+SWEP.ZoomScale = 30;
 SWEP.ZoomSpeed = 0.4;
 SWEP.IronMoveSpeed = 0.02;
 
-SWEP.IronSightsPos = Vector (5.6005, 0, 1.8803)
+SWEP.IronSightsPos = Vector (5.6005, -5, 1.8803)
 SWEP.IronSightsAng = Vector (0, 0, 0)
 
 
@@ -126,34 +126,14 @@ if CLIENT then
 	
 end
 
-
-local OffsetClicksY = {}
-OffsetClicksY[1] = Angle(0.02, 0, 0)
-OffsetClicksY[2] = Angle(0.05, 0, 0)
-OffsetClicksY[3] = Angle(0.09, 0, 0)
-OffsetClicksY[4] = Angle(0.13, 0, 0)
-OffsetClicksY[5] = Angle(0.18, 0, 0)
-OffsetClicksY[6] = Angle(0.25, 0, 0)
-OffsetClicksY[7] = Angle(0.32, 0, 0)
-OffsetClicksY[8] = Angle(0.4, 0, 0)
-OffsetClicksY[9] = Angle(0.49, 0, 0)
-OffsetClicksY[10] = Angle(0.59, 0, 0)
-
 function SWEP:DrawHUD()
 	local Cam = {}
 	
-	self.Zero.ClicksY = math.Clamp(self.Zero.ClicksY, 0, 10)
-	
-	self.LastClicksY = self.LastClicksY or 0
-	if self.LastClicksY != self.Zero.ClicksY then
-		self.LastClicksY = self.Zero.ClicksY
-		chat.AddText("Zeroing at ", Color(255, 127, 0), tostring(self.Zero.ClicksY * 100), " meters")
-	end
 	
 	self.Zero.ClicksY = self.Zero.ClicksY or 0
 	self.Zero.ClicksX = self.Zero.ClicksX or 0
 	
-	Cam.angles = LocalPlayer():EyeAngles() + (OffsetClicksY[self.Zero.ClicksY] or Angle(0,0,0)) + Angle(0, self.Zero.ClicksX/300 * -1, 0)
+	Cam.angles = LocalPlayer():EyeAngles() +  Angle(self.Zero.ClicksY/100 * -1, 0, 0) + Angle(0, self.Zero.ClicksX/100 * -1, 0)
     Cam.origin = LocalPlayer():GetShootPos()
     
 	local sizex = 800
@@ -189,17 +169,36 @@ function SWEP:DrawHUD()
 		surface.DrawLine(cx, 0, cx, h)
 		surface.DrawLine(0, cy, w, cy)
 		
-		for i = 0, 10 do
-			local spacing = (1/Cam.fov * 170) * i --57 * i
-			
-			surface.DrawLine(cx - 6, cy + spacing, cx + 6, cy + spacing) // down
-			surface.DrawLine(cx - 6, cy - spacing, cx + 6, cy - spacing) // up
-			
-			spacing = spacing *  (w / h)
-			
-			surface.DrawLine(cx - spacing, cy + 6, cx - spacing, cy - 6) // left
-			surface.DrawLine(cx + spacing, cy + 6, cx + spacing, cy - 6) // right
-		end
+		local factor = (1/Cam.fov * 170)
+		
+		local width = 110
+		local height = 7
+		surface.DrawLine(cx - width, cy + height, cx + width, cy + height)
+		
+		width = 55
+		height = 23
+		surface.DrawLine(cx - width, cy + height, cx + width, cy + height)
+		
+		width = 38
+		height = 38
+		surface.DrawLine(cx - width, cy + height, cx + width, cy + height)
+		
+		width = 27
+		height = 56
+		surface.DrawLine(cx - width, cy + height, cx + width, cy + height)
+		
+		width = 22
+		height = 82
+		surface.DrawLine(cx - width, cy + height, cx + width, cy + height)
+		
+		width = 18
+		height = 113
+		surface.DrawLine(cx - width, cy + height, cx + width, cy + height)
+		
+		width = 16
+		height = 150
+		surface.DrawLine(cx - width, cy + height, cx + width, cy + height)
+		
 		
 		--surface.DrawLine(512*1.875, 0, 512 * 1.875, 1024*2)
 		
@@ -214,7 +213,7 @@ end
 
 function SWEP:AdjustMouseSensitivity()
 	if self.IsZoomedIn and self.IronTime == 1 then
-		return 0.1
+		return 0.075
 	end
 	return 1
 end
