@@ -34,12 +34,12 @@ SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
 SWEP.Primary.Sound			= Sound( "Weapon_Sg550.Single" )
-SWEP.Primary.Recoil			= 0
+SWEP.Primary.Recoil			= 2
 SWEP.Primary.Damage			= 95
 SWEP.Primary.NumShots		= 1
-SWEP.Primary.Cone			= 0
+SWEP.Primary.Cone			= 5
 SWEP.Primary.ClipSize		= 21
-SWEP.Primary.Delay			= 1.2
+SWEP.Primary.Delay			= 0.1
 SWEP.Primary.DefaultClip	= 20
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Ammo			= "smg1"
