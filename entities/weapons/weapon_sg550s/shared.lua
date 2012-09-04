@@ -105,14 +105,26 @@ end
 function SWEP:Reload()
 	
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );	
-	
 	self.Owner:SetFOV(0, 0);
 	
+	if CLIENT and not (self.IronTime <= 0) then
+		// Yes, I know... timer.Simple can't be called recursivly
+		for i = self.IronTime, 0, -0.01 do
+			local ii = i
+			timer.Simple(1 - ii, function() self.IronTime = ii end)
+		end
+		
+	end
+	--slowlyputback()
+	
+	--self.IronTime = 0
+	
+	/*
 	local time = self.Owner:GetViewModel():SequenceDuration();
 	timer.Simple(time, function() 
 		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed);
 	end);
-	
+	*/
 	
 end
 
