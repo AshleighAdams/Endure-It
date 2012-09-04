@@ -401,7 +401,7 @@ PrintTable(files)
 
 for k, v in pairs(files) do
 	include((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v)
-	if SERVER then AddCSLuaFile("bullets/" .. v) end
+	if SERVER then AddCSLuaFile((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v) end
 end
 
 if SERVER then
