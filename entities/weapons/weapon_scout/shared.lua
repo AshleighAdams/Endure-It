@@ -154,13 +154,13 @@ end
 
 local OffsetClicksY = {}
 OffsetClicksY[1] = Angle(0.02, 0, 0)
-OffsetClicksY[2] = Angle(0.05, 0, 0)
-OffsetClicksY[3] = Angle(0.1, 0, 0)
-OffsetClicksY[4] = Angle(0.14, 0, 0)
-OffsetClicksY[5] = Angle(0.2, 0, 0)
-OffsetClicksY[6] = Angle(0.28, 0, 0)
-OffsetClicksY[7] = Angle(0.38, 0, 0)
-OffsetClicksY[8] = Angle(0.5, 0, 0)
+OffsetClicksY[2] = Angle(0.08, 0, 0)
+OffsetClicksY[3] = Angle(0.18, 0, 0)
+OffsetClicksY[4] = Angle(0.26, 0, 0)
+OffsetClicksY[5] = Angle(0.38, 0, 0)
+OffsetClicksY[6] = Angle(0.515, 0, 0)
+OffsetClicksY[7] = Angle(0.7, 0, 0)
+OffsetClicksY[8] = Angle(0.9, 0, 0)
 
 function SWEP:DrawHUD()
 	local Cam = {}
