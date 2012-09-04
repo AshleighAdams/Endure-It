@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\wystan\AK47\Magazine"
+	"$bumpmap" 	"models\wystan\AK47\Magazine_Normal"
+	"$halflambert" 	"1"
+ 	"$phong" "1"
+	"$phongexponent" "32"
+	"$phongboost" "1"
+	"$phongfresnelranges"	"[1 6 12]"
+	"$phongalbedotint" "1"
+	"$no_cull" "1"
+}
+

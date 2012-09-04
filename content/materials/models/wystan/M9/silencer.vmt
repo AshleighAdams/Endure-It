@@ -1,0 +1,8 @@
+VertexLitGeneric
+{
+	"$baseTexture" "models\wystan\M9\silencer"
+	"$bumpmap"     "models\wystan\M9\Silencer_normal"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" "1"
+
+}
