@@ -348,3 +348,8 @@ if CLIENT then
 	concommand.Add("zero_left", ZeroLeft)
 	concommand.Add("zero_right", ZeroRight)
 end
+
+function SWEP:AdjustMouseSensitivity()
+	local fov = self.Owner:GetFOV()
+	return (fov / 90)
+end

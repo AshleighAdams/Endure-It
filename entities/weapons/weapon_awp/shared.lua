@@ -352,7 +352,8 @@ end
 
 function SWEP:AdjustMouseSensitivity()
 	if self.IsZoomedIn and self.IronTime == 1 then
-		return 0.1
+		local fov = 5
+		return (fov / 90)
 	end
 	return 1
 end
