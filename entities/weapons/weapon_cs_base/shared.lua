@@ -133,32 +133,32 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	cone = cone * 0.5
 	
 	if CLIENT and IsFirstTimePredicted() then
-		print("ASD")
 		for i = 1, numbul do
 			local bul = {}
 			local lp = LocalPlayer()
 			bul.StartPos = lp:GetShootPos()
 			bul.Direction = lp:GetAimVector()
 			
-			local rand = VectorRand() * cone * 1.25 -- 1unit * 1.25 = 1 inch
+			local rand = VectorRand() * cone * 0.5 * 1.25 -- 1unit * 1.25 = 1 inch
 
-			local distance = 300 * 16 * 0.57735026919
-			local ang = 0.577350
-
-			local conevec = Vector(distance + rand.x, distance + rand.y, distance + rand.z):GetNormal()
-			conevec = Vector(ang - conevec.x, ang-conevec.y, ang-conevec.z)
+			local distance = 300 * 16
 			
-			bul.Direction = bul.Direction:GetNormal() + conevec
-			bul.Direction:Normalize()
+			local spread = Vector(cone * 0.5 * 1.25, distance, 0):GetNormal():Angle() - Angle(0, 90, 0)
+			local ang = math.abs(spread.y)
+			
+			spread = Angle(math.Rand(-ang, ang), math.Rand(-ang, ang), math.Rand(-ang, ang))
+			
+			print(spread)
+			
+			//bul.Direction = bul.Direction:GetNormal() //+ conevec
+			bul.Direction = (bul.Direction:Angle() + spread):Forward()
 
 			bul.TraceIgnore = {LocalPlayer()}
 			bul.TraceMask = MASK_SHOT
 			bul.RandSeed = math.Rand(-100000, 100000)
 			
 			bul.Bullet = DefaultBullet
-			
-			print("abc", self.UseBullet)
-			
+						
 			if self.UseBullet then
 				bul.Bullet = self.UseBullet
 			elseif numbul > 1 then
