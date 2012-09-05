@@ -34,13 +34,15 @@ for i = 0, 10 do -- Only 1 slot size items can go here...
 end
 
 -- Generic Inventory
-local slots = 10
+local slots = 11
+local i = 0
 
 while slots > 0 do
 	local slot = vgui.Create("DPanel", frame)
 	slot:SetPos(10 + i * SlotSize + 5 * i, 5 + 25 + SlotSize * 3 + 5 * 2 + 5)
 	slot:SetSize(SlotSize, SlotSize)
 	slots = slots - 1
+	i = i + 1
 end
 
 
