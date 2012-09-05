@@ -81,9 +81,35 @@ function SWEP:Initialize()
 	self.Zero = { ClicksY = 0, ClicksX = 0 }
 end
 
+function SWEP:CanTakeMagazine(mag)
+	return true
+end
+
+function SWEP:SetMagazine(mag)
+	if not self:CanTakeMagazine(mag) then return end
+	self.Magazine = mag
+	self:SetClip1(0)
+	self:Reload()
+end
+
+function SWEP:GetMagazine()
+	return self.Magazine
+end
+
 function SWEP:Reload()
-	self.Weapon:DefaultReload( ACT_VM_RELOAD );
-	self.Owner:SetFOV(0, 0);
+	self:SetClip1(0)
+	if not self.Magazine then
+		return
+	end
+	
+	self.Weapon:DefaultReload( ACT_VM_RELOAD )
+	self.ZoomedIn = false
+	self.IronTime = 0
+	self.Owner:SetFOV(0, 0)
+	
+	timer.Simple(self.Owner:GetViewModel():SequenceDuration(), function()
+		self:SetClip1(self.Magazine.Rounds)
+	end)
 end
 
 function SWEP:PrimaryAttack()

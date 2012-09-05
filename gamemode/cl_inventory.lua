@@ -1,4 +1,4 @@
-
+include("sh_inventory.lua")
 
 // GUI Codens below
 if frame then frame:Remove() end
@@ -68,3 +68,8 @@ end
 
 frame:SetSize(500 + 10, 5 + 25 + (SlotSize + 5) * (4 + row) + 5 + 5)
 
+net.Receive("inv_change", function()
+	
+	LocalPlayer():SetInventory(net.ReadTable())
+	
+end)
