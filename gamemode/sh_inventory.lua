@@ -39,19 +39,84 @@ if SERVER then
 	
 	util.AddNetworkString("inventory_change")
 	
+	
 	_R.Player.InventoryChange = function(self)
 		net.Start("inventory_change")
 			net.WriteEntity(self)
 			net.WriteTable(self:GetInventory())
 		net.Send(self)
 	end
+	
+	_R.Player.CanHold = function(self, v)
+		local slots = 11
+		for k,v in pairs((self:GetInventory().Generic or {})) do
+			slots = slots - v:GetSize()
+		end
+		
+		return slots >= v:GetSize()
+	end
+	
+	_R.Player.InvPickup = function(self, itm)
+		if not self:CanHold(itm) then return end
+		self:GetInventory().Generic = self:GetInventory().Generic or {}
+		table.insert(self:GetInventory().Generic, itm)
+		itm:PickUp(self)
+		
+		self:InventoryChange()
+	end
+	
+	net.Receive("inventory_drop", function(len, pl)
+		local ent = net.ReadEntity()
+		print(ent)
+		if ent.Owner != pl then return end
+		
+		pl:InvDrop(ent)
+	end)
 else
 	net.Receive("inventory_change", function(len)
 		net.ReadEntity():InventoryChange(net.ReadTable())
 	end)
 end
 
+if SERVER then
+	util.AddNetworkString("inventory_drop")
+	
+end
 
+_R.Player.InvDrop = function(self, itm)
+	if SERVER then
+		for k,v in pairs((self:GetInventory().Generic or {})) do
+			if v == itm then
+				table.remove(self:GetInventory().Generic, k)
+			end
+		end
+		
+		for k,v in pairs((self:GetInventory().Generic or {})) do
+			if v == itm then
+				table.remove(self:GetInventory().Generic, k)
+			end
+		end
+		
+		for k,v in pairs((self:GetInventory().ToolBelt or {})) do
+			if v == itm then
+				table.remove(self:GetInventory().ToolBelt, k)
+			end
+		end
+		
+		for k,v in pairs((self:GetInventory().BackPack or {})) do
+			if v == itm then
+				table.remove(self:GetInventory().BackPack, k)
+			end
+		end
+				
+		itm:Drop(self)
+		self:InventoryChange()
+	else
+		net.Start("inventory_drop")
+			net.WriteEntity(itm)
+		net.SendToServer()
+	end
+end
 
 _R.Player.SetInventory = function(self, inv)
 	self.Inventory = inv

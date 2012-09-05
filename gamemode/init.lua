@@ -14,11 +14,8 @@ include("sv_inventory.lua")
    Desc: Give the player the default spawning weapons/ammo
 ---------------------------------------------------------*/
 function GM:PlayerLoadout( pl )
-
-	pl:GiveAmmo( 255, "Pistol", true )
-	pl:GiveAmmo( 255, "SMG1", true )
-	
 	pl:Give( "weapon_deagle" )
-	pl:Give( "weapon_awp" )
+	pl:Give( "weapon_m4a1" )
+	
 	
 end

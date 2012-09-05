@@ -1,7 +1,11 @@
 include("sh_inventory.lua")
+--local frame
 
 concommand.Add("+menu", function()
-	if frame then frame:Remove() end
+	if frame then
+		frame:Remove()
+		frame = nil
+	end
 
 	local SlotSize = 40
 
@@ -103,6 +107,7 @@ _R.Player.InventoryChange = function(self, tbl)
 	
 	if frame then
 		frame:Remove()
+		frame = nil
 		RunConsoleCommand("+menu")
 		RunConsoleCommand("-menu")
 	end

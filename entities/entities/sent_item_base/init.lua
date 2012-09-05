@@ -22,6 +22,8 @@ function ENT:Initialize()
 	ent:SetSolid(SOLID_VPHYSICS)
 	ent:SetMoveType(MOVETYPE_VPHYSICS) 
 	ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
+	ent:SetUseType(SIMPLE_USE)
+	ent:SetAngle(Angle(0, math.random(0, 360), 0))
 	local phys = ent:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
@@ -53,21 +55,15 @@ end
 function ENT:Drop(pl)
 	self.Owner = nil
 	self:SetPos(pl:GetPos() + Vector(0, 0, 10))
+	self:SetAngles(Angle(0, math.random(0, 360), 0))
 	self:SetSolid(SOLID_VPHYSICS)
-	self:SetNoDraw(true)
-end
-
-function ENT:CanPlayerHold(pl)
-	local slots = 11
-	for k,v in pairs((pl:GetInventory().Generic or {})) do
-		slots = slots - v:GetSize()
-	end
-	
-	return slots >= self:GetSize()
+	self:SetNoDraw(false)
+	self:GetPhysicsObject():Wake()
 end
 
 function ENT:PickUp(pl)
 	self.Owner = pl
+	--self:SetNWEntity("Owner", self.Owner)
 	self:SetSolid(SOLID_NONE)
 	self:SetNoDraw(true)
 end
@@ -75,11 +71,8 @@ end
 function ENT:Use(act, call)
 	if not act:IsPlayer() then return end
 	if self.Owner then return end
-	if not self:CanPlayerHold(act) then return end
-	act:GetInventory().Generic = act:GetInventory().Generic or {}
-	self:PickUp(act)
-	table.insert(act:GetInventory().Generic, self)
-	act:InventoryChange()
+	--self:SetNWEntity("Owner", self.Owner)
+	act:InvPickup(self)
 end
 
 util.AddNetworkString("item_state_update")
