@@ -52,6 +52,9 @@ function ENT:GetState()
 	return {}
 end
 
+function ENT:OnDrop(pl)
+end
+
 function ENT:Drop(pl)
 	self.Owner = nil
 	self:SetPos(pl:GetPos() + Vector(0, 0, 10))
@@ -59,6 +62,7 @@ function ENT:Drop(pl)
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetNoDraw(false)
 	self:GetPhysicsObject():Wake()
+	self:OnDrop(pl)
 end
 
 function ENT:PickUp(pl)

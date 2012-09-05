@@ -89,23 +89,28 @@ function SWEP:SetMagazine(mag)
 	if mag == nil then
 		self.Magazine = nil
 		self:SetClip1(0)
+		return
 	end
 	
-	if not self:CanTakeMagazine(mag) then return end
-	if mag.Inside != nil and ValidEntity(mag.Inside) then return end -- so they can't put the mag in 2 guns
+	if not self:CanTakeMagazine(mag) then return false end
+	if mag.Inside != nil and ValidEntity(mag.Inside) then return false end -- so they can't put the mag in 2 guns
 	
 	self.Magazine = mag
 	self:SetClip1(0)
-	self:Reload()
+	self:Reload(1)
+	
+	return true
 end
 
 function SWEP:GetMagazine()
 	return self.Magazine
 end
 
-function SWEP:Reload()
-	self:SetClip1(0)
-	if not self.Magazine then
+function SWEP:Reload(invoker)
+	if invoker == nil then
+		return
+	end
+	if not self.Magazine or self.Magazine.Rounds == 0 then
 		return
 	end
 	

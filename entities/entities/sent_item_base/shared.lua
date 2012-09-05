@@ -8,6 +8,12 @@ ENT.Category		= "Endure It"
 ENT.Spawnable			= false
 ENT.AdminSpawnable		= true
 
+ENT.PreferedSlot = "ToolBelt"
+
+function ENT:GetPrintName()
+	return self.PrintName
+end
+
 function ENT:GetSize() -- amount of slots taken
 	return 1
 end

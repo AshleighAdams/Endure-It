@@ -11,7 +11,7 @@ end
 function ENT:SetupPanel(pan)
 	local btn = vgui.Create("DButton", pan)
 	btn:SetPos(0, 0)
-	btn:SetText(self.PrintName)
+	btn:SetText(self:GetPrintName())
 	btn:SetSize(pan:GetWide(), pan:GetTall())
 	btn.DoClick = function()
 		local Choice = DermaMenu()
@@ -20,6 +20,15 @@ function ENT:SetupPanel(pan)
 		Choice:AddOption("Drop", function()
 			LocalPlayer():InvDrop(self)
 		end)
+		
+		for k,vv in pairs(self:GetActions()) do
+			local v = vv
+			Choice:AddOption(v.Name, function()
+				self:InvokeAction(v.ID)
+			end)
+		end
+		
+		--InvokeAction(id, gun)
 	end
 end
 

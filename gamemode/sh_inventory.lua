@@ -49,17 +49,33 @@ if SERVER then
 	
 	_R.Player.CanHold = function(self, v)
 		local slots = 11
+		local slotpos = v.PreferedSlot
+				
+		for k,v in pairs((self:GetInventory()[slotpos] or {})) do
+			slots = slots - v:GetSize()
+		end
+		
+		if slots >= v:GetSize() then
+			return slotpos
+		end
+		
+		slots = 11
 		for k,v in pairs((self:GetInventory().Generic or {})) do
 			slots = slots - v:GetSize()
 		end
 		
-		return slots >= v:GetSize()
+		if slots >= v:GetSize() then
+			return "Generic"
+		end
+		
+		return nil
 	end
 	
 	_R.Player.InvPickup = function(self, itm)
-		if not self:CanHold(itm) then return end
-		self:GetInventory().Generic = self:GetInventory().Generic or {}
-		table.insert(self:GetInventory().Generic, itm)
+		local canhold = self:CanHold(itm)
+		if canhold == nil then return end
+		self:GetInventory()[canhold] = self:GetInventory()[canhold] or {}
+		table.insert(self:GetInventory()[canhold], itm)
 		itm:PickUp(self)
 		
 		self:InventoryChange()

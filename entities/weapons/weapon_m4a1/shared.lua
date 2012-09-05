@@ -14,8 +14,6 @@ if ( CLIENT ) then
 	
 end
 
-SWEP.UseBullet = StanagBullet_556
-
 SWEP.HoldType			= "ar2"
 SWEP.Base				= "weapon_cs_base"
 SWEP.Category			= "Endure-It"
@@ -35,9 +33,9 @@ SWEP.Primary.Recoil			= 1
 SWEP.Primary.Damage			= 30
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 4.3
-SWEP.Primary.ClipSize		= 30
+SWEP.Primary.ClipSize		= -1
 SWEP.Primary.Delay			= 0.1
-SWEP.Primary.DefaultClip	= 60
+SWEP.Primary.DefaultClip	= 0
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 

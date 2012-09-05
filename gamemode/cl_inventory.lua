@@ -1,21 +1,20 @@
 include("sh_inventory.lua")
---local frame
+local Frame = nil
 
-concommand.Add("+menu", function()
+function RemakeFrame()
 	if frame then
 		frame:Remove()
 		frame = nil
 	end
-
+	
 	local SlotSize = 40
 
 	frame = vgui.Create("DFrame")
 	frame:SetTitle("Inventory")
 	frame:SetSize(500 + 10, 600 + 10)
-	frame:Center()
-	frame:SetVisible(true)
-	frame:MakePopup()
-
+	frame:SetVisible(false)
+	frame:SetDeleteOnClose(false)
+	
 	local primary = vgui.Create("DPanel", frame)
 	primary:SetPos(10, 5 + 25)
 	primary:SetSize(SlotSize * 6, SlotSize * 2)
@@ -94,6 +93,13 @@ concommand.Add("+menu", function()
 	end
 
 	frame:SetSize(500 + 10, 5 + 25 + (SlotSize + 5) * (4 + row) + 5 + 5)
+end
+
+concommand.Add("+menu", function()
+	RemakeFrame()
+	frame:SetVisible(true)
+	frame:MakePopup()
+	frame:Center()
 end)
 
 local no_rec = false
@@ -104,12 +110,6 @@ _R.Player.InventoryChange = function(self, tbl)
 		self:SetInventory(tbl)
 	no_rec = false
 	
-	
-	if frame then
-		frame:Remove()
-		frame = nil
-		RunConsoleCommand("+menu")
-		RunConsoleCommand("-menu")
-	end
+	RemakeFrame()
 end
 
