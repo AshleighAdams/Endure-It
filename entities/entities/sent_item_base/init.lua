@@ -39,6 +39,13 @@ end
 function ENT:RestoreState(state)
 end
 
+function ENT:SendState()
+	net.Start(item_state_update)
+		net.WriteEntity(self)
+		net.WriteTable(self:GetState())
+	net.Broadcast()
+end
+
 function ENT:GetState()
 	return {}
 end
@@ -56,3 +63,4 @@ function ENT:PickUp(pl)
 	self:SetNoDraw(true)
 end
 
+util.AddNetworkString("item_state_update")

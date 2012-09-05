@@ -7,6 +7,8 @@ ENT.Category		= "Endure It"
 
 ENT.Spawnable			= false
 ENT.AdminSpawnable		= true
+ENT.Rounds = 30
+ENT.Bullet = Stanag_556
 
 function ENT:InvokeAction(id, gun)
 	if id == "pip" then
@@ -17,7 +19,7 @@ function ENT:InvokeAction(id, gun)
 				net.WriteEntity(gun)
 			net.SendToServer()
 		end
-		if gun.SetMagazine != nil
+		if gun.SetMagazine != nil then
 			if self.Inside and ValidEntity(self.Inside) then
 				self.Inside:SetMagazine(nil)
 			end

@@ -36,9 +36,10 @@ end
 
 function ENT:RestoreState(state)
 	self.Rounds = state.Rounds
-	self:SetNWInt("Rounds", self.Rounds)
+	self:SendState()
 end
 
 function ENT:GetState()
 	return {Rounds = self.Rounds}
 end
+

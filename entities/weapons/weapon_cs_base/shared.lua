@@ -158,7 +158,8 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
-
+	if self.Magazine == nil or self.Magazine.Rounds == nil or self.Magazine.Rounds == 0 then return end
+	
 	numbul 	= numbul 	or 1
 	
 	if numbul > 1 then

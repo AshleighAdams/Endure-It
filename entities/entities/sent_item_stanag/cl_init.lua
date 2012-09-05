@@ -8,3 +8,6 @@ function ENT:Draw()
 	
 end
 
+function ENT:UpdateState(state) -- called on the client
+	self.Rounds = state.Rounds
+end
