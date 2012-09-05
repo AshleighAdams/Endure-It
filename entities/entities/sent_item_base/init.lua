@@ -75,6 +75,9 @@ end
 function ENT:Use(act, call)
 	if not act:IsPlayer() then return end
 	if self.Owner then return end
+	local e = act:GetEyeTrace().HitEntity
+	if not e or not ValidEntity(e) then return end
+	if e != self then return end
 	--self:SetNWEntity("Owner", self.Owner)
 	act:InvPickup(self)
 end
