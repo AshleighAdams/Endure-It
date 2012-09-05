@@ -40,7 +40,7 @@ while slots > 0 do
 	local slot = vgui.Create("DPanel", frame)
 	slot:SetPos(10 + i * SlotSize + 5 * i, 5 + 25 + SlotSize * 3 + 5 * 2 + 5)
 	slot:SetSize(SlotSize, SlotSize)
-	slots--
+	slots = slots - 1
 end
 
 

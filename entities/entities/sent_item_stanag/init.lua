@@ -1,7 +1,7 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
-include('shared.lua')
 
+include('shared.lua')
 
 function ENT:SpawnFunction(ply, tr)
 	if (!tr.Hit) then 
@@ -14,10 +14,9 @@ function ENT:SpawnFunction(ply, tr)
 	return ent
 end
 
-
 function ENT:Initialize()
 	local ent = self.Entity
-	ent:SetModel("models/Combine_turrets/ground_turret.mdl")
+	ent:SetModel("models/wystan/stanag_magazine.mdl")
 	ent:PhysicsInit(SOLID_VPHYSICS)
 	ent:SetSolid(SOLID_VPHYSICS)
 	ent:SetMoveType(MOVETYPE_VPHYSICS) 
@@ -33,7 +32,6 @@ function ENT:OnTakeDamage(dmginfo)
 end
 
 function ENT:Think()
-	
 end
 
 function ENT:RestoreState(state)
@@ -42,17 +40,3 @@ end
 function ENT:GetState()
 	return {}
 end
-
-function ENT:Drop(pl)
-	self.Owner = nil
-	self:SetPos(pl:GetPos() + Vector(0, 0, 10))
-	self:SetSolid(SOLID_VPHYSICS)
-	self:SetNoDraw(true)
-end
-
-function ENT:PickUp(pl)
-	self.Owner = pl
-	self:SetSolid(SOLID_NONE)
-	self:SetNoDraw(true)
-end
-
