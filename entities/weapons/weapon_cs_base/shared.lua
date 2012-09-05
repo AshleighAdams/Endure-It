@@ -88,6 +88,8 @@ function SWEP:Deploy()
 			self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE)
 		end
 	end
+	self:SetNextPrimaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
+	self:SetNextSecondaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
 end
 
 function SWEP:CanTakeMagazine(mag)
