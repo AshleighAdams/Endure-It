@@ -86,7 +86,14 @@ function SWEP:CanTakeMagazine(mag)
 end
 
 function SWEP:SetMagazine(mag)
+	if mag == nil then
+		self.Magazine = nil
+		self:SetClip1(0)
+	end
+	
 	if not self:CanTakeMagazine(mag) then return end
+	if mag.Inside != nil and ValidEntity(mag.Inside) then return end -- so they can't put the mag in 2 guns
+	
 	self.Magazine = mag
 	self:SetClip1(0)
 	self:Reload()
@@ -102,7 +109,10 @@ function SWEP:Reload()
 		return
 	end
 	
-	self.Weapon:DefaultReload( ACT_VM_RELOAD )
+	--self.Weapon:DefaultReload( ACT_VM_RELOAD )
+	self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
+	self.Owner:SetAnimation(PLAYER_RELOAD)
+	
 	self.ZoomedIn = false
 	self.IronTime = 0
 	self.Owner:SetFOV(0, 0)
@@ -197,6 +207,10 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 				bullet.Velocity = bullet.Velocity + lp:GetVelocity() + lp:GetAimVector() * math.random(-100, 100)
 			end)
 		end
+	end
+	
+	if (CLIENT and IsFirstTimePredicted()) or SERVER then
+		self.Magazine.Rounds = self.Magazine.Rounds - 1
 	end
 	
 	if self.DontPrimaryAttackAnim == nil then

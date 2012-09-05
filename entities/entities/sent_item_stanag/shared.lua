@@ -9,19 +9,20 @@ ENT.Spawnable			= false
 ENT.AdminSpawnable		= true
 
 function ENT:InvokeAction(id, gun)
-	if id == "pip" and CLIENT then
-		net.Start("action_item_stanag_1")
-			net.WriteEntity(self)
-			net.WriteEntity(LocalPlayer():GetActiveWeapon())
-		net.SendToServer()
-		LocalPlayer():GetActiveWeapon():SetMagazine(self)
-	elseif id == "pip" and SERVER then
-		if gun.TakesMags != nil
+	if id == "pip" then
+		if CLIENT then
+			local gun = LocalPlayer():GetActiveWeapon()
+			net.Start("action_item_stanag_1")
+				net.WriteEntity(self)
+				net.WriteEntity(gun)
+			net.SendToServer()
+		end
+		if gun.SetMagazine != nil
+			if self.Inside and ValidEntity(self.Inside) then
+				self.Inside:SetMagazine(nil)
+			end
 			gun:SetMagazine(self)
 		end
-		/*
-			TODO: !!!
-		*/
 	end
 end
 
