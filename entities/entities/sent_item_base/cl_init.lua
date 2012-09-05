@@ -8,6 +8,13 @@ function ENT:Draw()
 	
 end
 
+function ENT:SetupPanel(pan)
+	local lbl = vgui.Create("DLabel", pan)
+	lbl:SetPos(0, 0)
+	lbl:SetText(self.PrintName)
+	lbl:SizeToContents()
+end
+
 function ENT:UpdateState(state)
 end
 

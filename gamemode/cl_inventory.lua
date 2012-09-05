@@ -29,6 +29,11 @@ concommand.Add("+menu", function()
 		local slot = vgui.Create("DPanel", frame)
 		slot:SetPos(10 + i * SlotSize + 5 * i, 5 + 25 + SlotSize * 2 + 5 * 1)
 		slot:SetSize(SlotSize, SlotSize)
+		
+		local itm = (LocalPlayer():GetInventory().ToolBelt or {})[i + 1]
+		if itm != nil then
+			itm:SetupPanel(slot)
+		end
 	end
 
 	-- Generic Inventory
@@ -39,7 +44,16 @@ concommand.Add("+menu", function()
 		local slot = vgui.Create("DPanel", frame)
 		slot:SetPos(10 + i * SlotSize + 5 * i, 5 + 25 + SlotSize * 3 + 5 * 2 + 5)
 		slot:SetSize(SlotSize, SlotSize)
-		slots = slots - 1
+		
+		local itm = (LocalPlayer():GetInventory().Generic or {})[i + 1]
+		if itm != nil then
+			itm:SetupPanel(slot)
+			slots = slots - itm:GetSize()
+		else
+			slots = slots - 1
+		end
+		
+		
 		i = i + 1
 	end
 
@@ -57,7 +71,18 @@ concommand.Add("+menu", function()
 			slot:SetPos(10 + col * SlotSize + 5 * col, 5 + 25 + (SlotSize + 5) * (4 + row) + 5)
 			slot:SetSize(SlotSize, SlotSize)
 			
-			slots = slots - 1
+			local itm = (LocalPlayer():GetInventory().BackPack or {})[i + 1]
+			if itm != nil then
+				itm:SetupPanel(slot)
+			end
+			
+			if itm != nil then
+				itm:SetupPanel(slot)
+				slots = slots - itm:GetSize()
+			else
+				slots = slots - 1
+			end
+			
 			col = col + 1
 		end
 		row = row + 1
@@ -67,8 +92,14 @@ concommand.Add("+menu", function()
 	frame:SetSize(500 + 10, 5 + 25 + (SlotSize + 5) * (4 + row) + 5 + 5)
 end)
 
+local no_rec = false
 _R.Player.InventoryChange = function(self, tbl)
-	self:SetInventory(tbl)
+	if no_rec then return end
+	
+	no_rec = true
+		self:SetInventory(tbl)
+	no_rec = false
+	
 	
 	if frame then
 		frame:Remove()

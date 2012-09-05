@@ -18,7 +18,7 @@ if SERVER then
 		if CLIENT then return end
 		
 		local contents = file.Read(string.Replace(self:SteamID(), ":", "_"), "DATA")
-		local dec = glon.decode(contents)
+		local dec = glon.decode(contents) or {}
 		self.Inventory = {}
 		
 		for kk,tbl in pairs(dec) do
@@ -62,6 +62,6 @@ _R.Player.GetInventory = function(self)
 	if SERVER and not self.Inventory then
 		self:LoadInventory()
 	end
-	
-	return self.Inventory
+		
+	return self.Inventory or {}
 end

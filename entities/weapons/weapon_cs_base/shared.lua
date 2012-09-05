@@ -116,8 +116,13 @@ function SWEP:Reload()
 	self.ZoomedIn = false
 	self.IronTime = 0
 	self.Owner:SetFOV(0, 0)
+	local oldowner = self.Owner
 	
 	timer.Simple(self.Owner:GetViewModel():SequenceDuration(), function()
+		if not self.Owner then return end
+		if self.Owner != oldowner then return end
+		if self.Owner:GetActiveWeapon() != self then return end
+		
 		self:SetClip1(self.Magazine.Rounds)
 	end)
 end
@@ -194,8 +199,9 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			bul.TraceMask = MASK_SHOT
 			bul.RandSeed = math.Rand(-100000, 100000)
 			
-			bul.Bullet = DefaultBullet
-						
+			bul.Bullet = self.Magazine.Bullet
+			
+			/*
 			if self.UseBullet then
 				bul.Bullet = self.UseBullet
 			elseif numbul > 1 then
@@ -203,6 +209,7 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			elseif dmg > 70 then
 				bul.Bullet = SniperBullet
 			end
+			*/
 			
 			ShootBullet(bul, function(bullet)
 				bullet.Velocity = bullet.Velocity + lp:GetVelocity() + lp:GetAimVector() * math.random(-100, 100)

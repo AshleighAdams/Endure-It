@@ -8,6 +8,26 @@ ENT.Category		= "Endure It"
 ENT.Spawnable			= false
 ENT.AdminSpawnable		= true
 
+function ENT:GetSize() -- amount of slots taken
+	return 1
+end
+
+function ENT:IsBackpack()
+	return false
+end
+
+function ENT:IsPrimaryWeapon()
+	return false
+end
+
+function ENT:IsSecondaryWeapon()
+	return false
+end
+
+function ENT:IsSmall() -- Toolbelt
+	return false
+end
+
 function ENT:InvokeAction(id)
 	if id == "hello" and CLIENT then
 		net.Start("action_item_base_1")

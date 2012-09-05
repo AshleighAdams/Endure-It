@@ -57,10 +57,29 @@ function ENT:Drop(pl)
 	self:SetNoDraw(true)
 end
 
+function ENT:CanPlayerHold(pl)
+	local slots = 11
+	for k,v in pairs((pl:GetInventory().Generic or {})) do
+		slots = slots - v:GetSize()
+	end
+	
+	return slots >= self:GetSize()
+end
+
 function ENT:PickUp(pl)
 	self.Owner = pl
 	self:SetSolid(SOLID_NONE)
 	self:SetNoDraw(true)
+end
+
+function ENT:Use(act, call)
+	if not act:IsPlayer() then return end
+	if self.Owner then return end
+	if not self:CanPlayerHold(act) then return end
+	act:GetInventory().Generic = act:GetInventory().Generic or {}
+	self:PickUp(act)
+	table.insert(act:GetInventory().Generic, self)
+	act:InventoryChange()
 end
 
 util.AddNetworkString("item_state_update")
