@@ -161,10 +161,10 @@ end
 
 DefaultBullet.ReceiveHit = function(self, len, cl, tbl)
 	if SERVER then
-		local vel = net.ReadVector()
-		local hitpos = net.ReadVector()
-		local norm = net.ReadVector()
-		local start = net.ReadVector()
+		local vel = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat()) -- net.ReadVector()
+		local hitpos = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
+		local norm = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
+		local start = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
 		local ent = net.ReadEntity()
 		local mat = net.ReadUInt(32)
 				
@@ -172,7 +172,6 @@ DefaultBullet.ReceiveHit = function(self, len, cl, tbl)
 		if ent and ValidEntity(ent) and not ent:IsVehicle() then
 			local dmginfo = DamageInfo()
 			print((vel:Length() / self.Velocity) * self.Damage)
-			print(vel:Length(), self.Velocity, self.Damage)
 			dmginfo:SetDamage( (vel:Length() / self.Velocity) * self.Damage )
 			dmginfo:SetDamageType(DMG_BULLET) --Bullet damage
 			dmginfo:SetAttacker(cl)
@@ -309,7 +308,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	local speed = (bul.Velocity - Weather.Wind):Length()
 	local coef = self.DragCoefficient / 1000 -- i don't know...
 	local x = ((math.sqrt(1 + 4 * speed * coef * t) - 1.0) / (2.0 * speed * coef * t))
-	print(x)
+
 	bul.Velocity = bul.Velocity * x
 	
 	// apply wind
@@ -379,10 +378,18 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			self:ReceiveHit(nil, nil, res)
 			
 			net.Start("Shoot_Bullet_Hit_" .. self.Name)
-				net.WriteVector(bul.Velocity)
-				net.WriteVector(res.HitPos)
-				net.WriteVector(res.HitNormal)
-				net.WriteVector(tr.start) -- We might need this
+				net.WriteFloat(bul.Velocity.x)
+				net.WriteFloat(bul.Velocity.y)
+				net.WriteFloat(bul.Velocity.z)
+				net.WriteFloat(res.HitPos.x)
+				net.WriteFloat(res.HitPos.y)
+				net.WriteFloat(res.HitPos.z)
+				net.WriteFloat(res.HitNormal.x)
+				net.WriteFloat(res.HitNormal.y)
+				net.WriteFloat(res.HitNormal.z)
+				net.WriteFloat(tr.start.x) -- We might need this
+				net.WriteFloat(tr.start.y)
+				net.WriteFloat(tr.start.z)
 				net.WriteEntity(res.Entity)
 				net.WriteUInt(res.MatType, 32)
 			net.SendToServer()
