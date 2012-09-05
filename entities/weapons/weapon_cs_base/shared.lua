@@ -121,7 +121,24 @@ function SWEP:GetMagazine()
 end
 
 function SWEP:Reload(invoker)
+	if self.Reloading then return end
+	
 	if invoker == nil then
+		if true then return end
+		if self.Magazine and CLIENT then
+			self.Owner:InvDrop(self.Magazine)
+			local bestmag = nil
+			for k, v in pairs((self.Owner.Inventory.ToolBelt or {})) do
+				if v.IsMagazine and self:CanTakeMagazine(v) then
+					if not bestmag or v.Rounds > bestmag.Rounds then
+						bestmag = v
+					end
+				end
+			end
+			if bestmag != nil then
+				bestmag:InvokeAction("pip")
+			end
+		end
 		return
 	end
 	/*
@@ -149,8 +166,10 @@ function SWEP:Reload(invoker)
 	self.IronTime = 0
 	self.Owner:SetFOV(0, 0)
 	local oldowner = self.Owner
+	self.Reloading = true
 	
 	timer.Simple(self.Owner:GetViewModel():SequenceDuration(), function()
+		self.Reloading = false
 		if not self.Owner then return end
 		if self.Owner != oldowner then return end
 		if self.Owner:GetActiveWeapon() != self then return end

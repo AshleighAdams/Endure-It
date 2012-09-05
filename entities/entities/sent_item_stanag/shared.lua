@@ -9,7 +9,7 @@ ENT.Spawnable			= false
 ENT.AdminSpawnable		= true
 
 ENT.PreferedSlot = "ToolBelt"
-
+ENT.IsMagazine = true
 ENT.Rounds = 30
 ENT.Bullet = Stanag_556
 

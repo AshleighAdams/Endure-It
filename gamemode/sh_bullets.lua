@@ -171,6 +171,8 @@ DefaultBullet.ReceiveHit = function(self, len, cl, tbl)
 		
 		if ent and ValidEntity(ent) and not ent:IsVehicle() then
 			local dmginfo = DamageInfo()
+			print((vel:Length() / self.Velocity) * self.Damage)
+			print(vel:Length(), self.Velocity, self.Damage)
 			dmginfo:SetDamage( (vel:Length() / self.Velocity) * self.Damage )
 			dmginfo:SetDamageType(DMG_BULLET) --Bullet damage
 			dmginfo:SetAttacker(cl)
