@@ -95,6 +95,8 @@ function SWEP:SetMagazine(mag)
 	if not self:CanTakeMagazine(mag) then return false end
 	if mag.Inside != nil and ValidEntity(mag.Inside) then return false end -- so they can't put the mag in 2 guns
 	
+	self:GetMagazine().Inside = nil
+	
 	self.Magazine = mag
 	self:SetClip1(0)
 	self:Reload(1)
