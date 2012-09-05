@@ -92,13 +92,14 @@ function SWEP:SetMagazine(mag)
 		return
 	end
 	
+	if CLIENT then print("preReloading") end
+	
 	if not self:CanTakeMagazine(mag) then return false end
-	if mag.Inside != nil and ValidEntity(mag.Inside) then return false end -- so they can't put the mag in 2 guns
 	
-	self:GetMagazine().Inside = nil
-	
+	self:SetMagazine(nil)
 	self.Magazine = mag
-	self:SetClip1(0)
+	
+	if CLIENT then print("Reloading") end
 	self:Reload(1)
 	
 	return true
@@ -112,11 +113,12 @@ function SWEP:Reload(invoker)
 	if invoker == nil then
 		return
 	end
-	if not self.Magazine or self.Magazine.Rounds == 0 then
+	if not self.Magazine then
 		return
 	end
 	
 	--self.Weapon:DefaultReload( ACT_VM_RELOAD )
+	-- This isn't fired if they havn't shot
 	self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
 	self.Owner:SetAnimation(PLAYER_RELOAD)
 	
@@ -139,7 +141,10 @@ function SWEP:PrimaryAttack()
 	self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	
-	if ( !self:CanPrimaryAttack() ) then return end
+	if ( !self:CanPrimaryAttack() ) then
+		self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE)
+		return
+	end
 	
 	self.Weapon:EmitSound( self.Primary.Sound )
 	self:CSShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone )
