@@ -20,7 +20,7 @@ if ( CLIENT ) then
 	
 end
 
-SWEP.UseBullet = StanagBullet_556_Para
+SWEP.UseBullet = Nato_556_Para
 
 SWEP.HoldType			= "ar2"
 SWEP.Base				= "weapon_cs_base"
