@@ -27,7 +27,7 @@ SWEP.ViewModelFlip		= true
 SWEP.ViewModel			= "models/weapons/v_snip_scout.mdl"
 SWEP.WorldModel			= "models/weapons/w_snip_scout.mdl"
 
-SWEP.UseBullet = StanagBullet_556_Sniper
+SWEP.UseBullet = Nato_556_Sniper
 
 SWEP.Weight				= 9
 SWEP.AutoSwitchTo		= false
@@ -39,9 +39,9 @@ SWEP.Primary.Recoil			= 1
 SWEP.Primary.Damage			= 95
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 4
-SWEP.Primary.ClipSize		= 11
+SWEP.Primary.ClipSize		= -1
 SWEP.Primary.Delay			= 1.2
-SWEP.Primary.DefaultClip	= 10
+SWEP.Primary.DefaultClip	= 0
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Ammo			= "smg1"
 

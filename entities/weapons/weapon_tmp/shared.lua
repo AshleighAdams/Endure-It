@@ -33,9 +33,9 @@ SWEP.Primary.Recoil			= 0.4
 SWEP.Primary.Damage			= 30
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 0.04
-SWEP.Primary.ClipSize		= 21
+SWEP.Primary.ClipSize		= -1
 SWEP.Primary.Delay			= 0.05
-SWEP.Primary.DefaultClip	= 20
+SWEP.Primary.DefaultClip	= 0
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 

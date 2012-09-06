@@ -1,20 +1,21 @@
 ENT.Type 			= "anim"
-ENT.Base 			= "sent_item_base"
+ENT.Base 			= "sent_base_item"
 ENT.PrintName		= "Stanag Magazine"
 ENT.Author			= "victormeriqui & C0BRA"
 ENT.Information		= ""
 ENT.Category		= "Endure It"
+ENT.Model 			= "models/wystan/stanag_magazine.mdl"
 
 ENT.Spawnable			= false
 ENT.AdminSpawnable		= true
 
 ENT.PreferedSlot = "ToolBelt"
-
+ENT.IsMagazine = true
 ENT.Rounds = 30
-ENT.Bullet = Stanag_556
+ENT.Bullet = "Nato_556"
 
 function ENT:GetPrintName()
-	return "5.56mm\n" .. tostring(self.Rounds)
+	return self.PrintName .. "\n" .. tostring(self.Rounds)
 end
 
 function ENT:InvokeAction(id, gun)
@@ -59,7 +60,7 @@ if SERVER then
 end
 
 function ENT:OnDrop()
-	if self.Inside != nil then
+	if self.Inside != nil and ValidEntity(self.Inside) and self.Entity.SetMagazine then
 		self.Inside:SetMagazine(nil)
 		self.Inside = nil
 	end

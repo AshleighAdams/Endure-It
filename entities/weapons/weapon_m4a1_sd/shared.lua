@@ -18,8 +18,6 @@ if ( CLIENT ) then
 	
 end
 
-SWEP.UseBullet = StanagBullet_556
-
 SWEP.HoldType			= "ar2"
 SWEP.Base				= "weapon_cs_base"
 SWEP.Category			= "Counter-Strike"
@@ -40,9 +38,9 @@ SWEP.Primary.Recoil			= 1
 SWEP.Primary.Damage			= 30
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 4.3
-SWEP.Primary.ClipSize		= 30
+SWEP.Primary.ClipSize		= -1
 SWEP.Primary.Delay			= 0.1
-SWEP.Primary.DefaultClip	= 60
+SWEP.Primary.DefaultClip	= 0
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 
@@ -54,6 +52,8 @@ SWEP.Secondary.Ammo			= "none"
 SWEP.ZoomScale = 30;
 SWEP.ZoomSpeed = 1;
 
+
 SWEP.IronSightsPos = Vector (3.6317, -3.6443, 2.7934)
 SWEP.IronSightsAng = Vector (0, 0, 0)
+SWEP.IronMoveSpeed = 0.02;
 

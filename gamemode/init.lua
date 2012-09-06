@@ -15,7 +15,5 @@ include("sv_inventory.lua")
 ---------------------------------------------------------*/
 function GM:PlayerLoadout( pl )
 	pl:Give( "weapon_deagle" )
-	pl:Give( "weapon_m4a1" )
-	
-	
+	pl:Give( "weapon_m4a1_sd" )
 end

@@ -57,7 +57,6 @@ SWEP.Primary.ClipSize		= -1
 SWEP.Primary.DefaultClip	= -1
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Ammo			= "none"
-SWEP.UseBullet = DefaultBullet
 
 SWEP.Secondary.ClipSize		= -1
 SWEP.Secondary.DefaultClip	= -1
@@ -74,11 +73,23 @@ SWEP.ZoomSpeed = 0.25;
 function SWEP:Initialize()	
 	self:SetWeaponHoldType( self.HoldType )
 	self.IronTime = 0;
-	if self.Supressed then
-		self:SendWeaponAnim(ACT_VM_ATTACH_SILENCER)
-	end
 	
 	self.Zero = { ClicksY = 0, ClicksX = 0 }
+end
+
+function SWEP:Deploy()
+	if self.Suppressed then
+		self:SendWeaponAnim(ACT_VM_DRAW_SILENCED)
+	end
+	if self:GetMagazine() == nil or self:GetMagazine().Rounds == 0 then
+		if self.Suppressed then
+			self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE_SILENCED)
+		else
+			self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE)
+		end
+	end
+	self:SetNextPrimaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
+	self:SetNextSecondaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
 end
 
 function SWEP:CanTakeMagazine(mag)
@@ -110,31 +121,71 @@ function SWEP:GetMagazine()
 end
 
 function SWEP:Reload(invoker)
+	if self.Reloading then return end
+	
 	if invoker == nil then
+		if true then return end
+		if self.Magazine and CLIENT then
+			self.Owner:InvDrop(self.Magazine)
+			local bestmag = nil
+			for k, v in pairs((self.Owner.Inventory.ToolBelt or {})) do
+				if v.IsMagazine and self:CanTakeMagazine(v) then
+					if not bestmag or v.Rounds > bestmag.Rounds then
+						bestmag = v
+					end
+				end
+			end
+			if bestmag != nil then
+				bestmag:InvokeAction("pip")
+			end
+		end
 		return
 	end
+	/*
+	if invoker == 1 then
+		self.Weapon:SendWeaponAnim(ACT_VM_DEPLOY)
+		timer.Simple(0.5, function() self:Reload(2) end)
+	end
+	*/
 	if not self.Magazine then
 		return
 	end
 	
 	--self.Weapon:DefaultReload( ACT_VM_RELOAD )
 	-- This isn't fired if they havn't shot
-	self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
+	--self.Owner:GetViewModel():ResetSequenceInfo()
+	--ACT_VM_DRAW
+	if self.Suppressed then
+		self.Weapon:SendWeaponAnim(ACT_VM_RELOAD_SILENCED)
+	else
+		self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
+	end
 	self.Owner:SetAnimation(PLAYER_RELOAD)
 	
 	self.ZoomedIn = false
 	self.IronTime = 0
 	self.Owner:SetFOV(0, 0)
 	local oldowner = self.Owner
+	self.Reloading = true
 	
 	timer.Simple(self.Owner:GetViewModel():SequenceDuration(), function()
+		self.Reloading = false
 		if not self.Owner then return end
 		if self.Owner != oldowner then return end
 		if self.Owner:GetActiveWeapon() != self then return end
 		
+		if self:GetMagazine() == nil or self:GetMagazine().Rounds == 0 then
+			if self.Suppressed then
+				self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE_SILENCED)
+			else
+				self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE)
+			end
+		end
+		
 		self:SetClip1(self.Magazine.Rounds)
 	end)
 end
+
 
 function SWEP:PrimaryAttack()
 
@@ -142,7 +193,6 @@ function SWEP:PrimaryAttack()
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	
 	if ( !self:CanPrimaryAttack() ) then
-		self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE)
 		return
 	end
 	
@@ -202,8 +252,6 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			
 			spread = Angle(math.Rand(-ang, ang), math.Rand(-ang, ang), math.Rand(-ang, ang))
 			
-			print(spread)
-			
 			//bul.Direction = bul.Direction:GetNormal() //+ conevec
 			bul.Direction = (bul.Direction:Angle() + spread):Forward()
 
@@ -211,18 +259,8 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			bul.TraceMask = MASK_SHOT
 			bul.RandSeed = math.Rand(-100000, 100000)
 			
-			bul.Bullet = self.Magazine.Bullet
-			
-			/*
-			if self.UseBullet then
-				bul.Bullet = self.UseBullet
-			elseif numbul > 1 then
-				bul.Bullet = BuckShot
-			elseif dmg > 70 then
-				bul.Bullet = SniperBullet
-			end
-			*/
-			
+			bul.Bullet = GetBullet(self.Magazine.Bullet)
+						
 			ShootBullet(bul, function(bullet)
 				bullet.Velocity = bullet.Velocity + lp:GetVelocity() + lp:GetAimVector() * math.random(-100, 100)
 			end)
@@ -234,9 +272,21 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	end
 	
 	if self.DontPrimaryAttackAnim == nil then
-		self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK ) 		// View model animation
+		local anim
+		if self.Suppressed then
+			anim = ACT_VM_DRYFIRE_SILENCED
+			if self.Magazine.Rounds > 0 then
+				anim = ACT_VM_PRIMARYATTACK_SILENCED
+			end
+		else
+			local anim = ACT_VM_DRYFIRE
+			if self.Magazine.Rounds > 0 then
+				anim = ACT_VM_PRIMARYATTACK
+			end
+		end
+		self.Weapon:SendWeaponAnim( anim ) 		// View model animation
 	end
-	if not self.Supressed then
+	if not self.Suppressed then
 		self.Owner:MuzzleFlash()								// Crappy muzzle light
 	end
 	

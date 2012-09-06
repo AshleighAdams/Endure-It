@@ -57,8 +57,8 @@ end
 
 function ENT:Drop(pl)
 	self.Owner = nil
-	self:SetPos(pl:GetPos() + Vector(0, 0, 10))
-	self:SetAngles(Angle(0, math.random(0, 360), 0))
+	self:SetPos(pl:GetShootPos() - Vector(0, 0, -5))
+	self:SetAngles(Angle(math.random(0, 360), math.random(0, 360), math.random(0, 360)))
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetNoDraw(false)
 	self:GetPhysicsObject():Wake()
@@ -75,6 +75,9 @@ end
 function ENT:Use(act, call)
 	if not act:IsPlayer() then return end
 	if self.Owner then return end
+	
+	local dist = (self:GetPos() - act:GetEyeTrace().HitPos):Length()
+	if dist > 25 then return end
 	--self:SetNWEntity("Owner", self.Owner)
 	act:InvPickup(self)
 end
