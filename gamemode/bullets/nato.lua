@@ -11,6 +11,8 @@ Nato_556.TracerChance = 0
 Nato_556.Mass = 0.004
 Nato_556.DragCoefficient = 0.25 / (Nato_556.Mass * 1000)
 
+RegisterBullet(Nato_556)
+
 Nato_556_SD = {}
 
 -- Bullet shit
