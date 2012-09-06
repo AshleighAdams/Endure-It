@@ -23,7 +23,7 @@ Nato_556_SD.TracerChance = 0
 Nato_556_SD.Mass = 0.004
 Nato_556_SD.DragCoefficient = 0.25 / (Nato_556_SD.Mass * 1000)
 
-RegisterBullet(Nato_556)
+RegisterBullet(Nato_556_SD)
 
 Nato_556_Para = {}
 

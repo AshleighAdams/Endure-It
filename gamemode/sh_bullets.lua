@@ -356,7 +356,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
 					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos)
 				else
-					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 6)) .. ".wav", pos)
+					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos)
 				end
 			end
 		end
