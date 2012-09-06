@@ -283,7 +283,8 @@ function RegisterBullet(bull)
 		util.AddNetworkString("Shoot_Bullet_Hit_" .. bull.Name)
 		util.AddNetworkString(bull.Name .. "_Decal")
 		
-		net.Receive("Shoot_Bullet_" .. bull.Name, function(...) 
+		net.Receive("Shoot_Bullet_" .. bull.Name, function(...)
+			RunConsoleCommand("say", bull.Name)
 			bull:ReceiveShoot(...) 
 		end)
 		net.Receive("Shoot_Bullet_Hit_" .. bull.Name, function(...)
@@ -305,12 +306,16 @@ function RegisterBullet(bull)
 	print("Registered bullet ", bull.Name)
 end
 
-local function EmitWorldSound(name, pos)
-	local te = ClientsideModel("models/props_lab/huladoll.mdl", RENDERGROUP_OPAQUE)
-	timer.Simple(0.1, function() te:Remove() end)
-	te:SetNoDraw(true)
-	te:SetPos(pos)
-	te:EmitSound(name, pos, 100, 200)
+local function EmitWorldSound(name, pos, shush)
+	-- We do it n times to make it loudder
+	local to = 5
+	if shush then
+		to = 1
+	end
+	for i = 1, to do
+		WorldSound(name, pos)
+	end
+	--te:EmitSound(name, pos, 100, 200)
 end
 
 local GRAVITY = Vector(0, 0, 600)
@@ -339,26 +344,38 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 		self:ExtraSimulate(bul, t)
 	end
 	
-	if not bul.Cracked then
+	if not bul.Cracked and not bul.Mine then
 		local dist1 = (LocalPlayer():GetShootPos() - bul.Position):Length()
 		local dist2 = (LocalPlayer():GetShootPos() - bul.LastPos):Length()
 		
-		if dist1 > dist2 --[[ 10m]] then
+		if dist1 > dist2 then
 			bul.Cracked = true
 			
 			local u = bul.Position - bul.LastPos
 			local v = LocalPlayer():GetShootPos() - bul.LastPos
 			
 			u:Normalize()
-			local pos = bul.LastPos + u:Dot(v) * u
-			if (LocalPlayer():GetShootPos() - pos):Length() < 150 then
-				--print(bul.Velocity:Length())
+			local dot = u:Dot(v)
+			local pos = bul.LastPos + dot * u
+					
+			debugoverlay.Line(LocalPlayer():GetShootPos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
+			
+			local tr = util.TraceLine({ startpos = pos, endpos = LocalPlayer():GetShootPos(), mask = MASK_SHOT})
+						
+			if math.abs(dot) < 150 * 10 and (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
 				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
-					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos)
+					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld)
 				else
-					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos)
+					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)
 				end
 			end
+		end
+	else
+		local dist1 = (LocalPlayer():GetShootPos() - bul.Position):Length()
+		local dist2 = (LocalPlayer():GetShootPos() - bul.LastPos):Length()
+		
+		if dist1 < dist2 then
+			self.Cracked = false
 		end
 	end
 	
@@ -452,6 +469,8 @@ for k, v in pairs(files) do
 	if SERVER then AddCSLuaFile((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v) end
 end
 
+RunConsoleCommand("say", "Nato_556: " .. tostring(Nato_556))
+
 if SERVER then
 	AddCSLuaFile("sh_bullets.lua")	
 	return
@@ -505,7 +524,7 @@ function MachineMode()
 		local bul = {}
 		local lp = LocalPlayer()
 		bul.StartPos = Vector(0, 0, 0)
-		bul.Direction = -lp:GetAimVector()
+		bul.Direction = (LocalPlayer():GetShootPos():Angle() + Angle(0, 10, 0)):Forward()
 
 		bul.Direction = bul.Direction + 
 			Vector(
@@ -520,7 +539,7 @@ function MachineMode()
 
 		bul.RandSeed = math.Rand(-100000, 100000)
 		
-		bul.Bullet = Nato_556_SD
+		bul.Bullet = Nato_556
 		
 		ShootBullet(bul, function(bullet)
 			bullet.Velocity = bullet.Velocity + lp:GetVelocity()

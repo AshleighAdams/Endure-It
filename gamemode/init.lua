@@ -10,17 +10,18 @@ resource.AddFile("sound/arma2/sscrack2.wav")
 
 -- Models & textures
 resource.AddFile("models/wystan/stanag_magazine.mdl")
-resource.AddFile("models/wystan/ak47magazine.mdl")
-resource.AddFile("models/wystan/m9magazine.mdl")
-resource.AddFile("models/wystan/m249magazine.mdl")
+resource.AddFile("models/wystan/weapons/ak47magazine.mdl")
+resource.AddFile("models/wystan/weapons/m9magazine.mdl")
+resource.AddFile("models/wystan/weapons/m249magazine.mdl")
 
+resource.AddFile("materials/wystan/556.vmf")
 resource.AddFile("materials/wystan/556_normal.vtf")
-resource.AddFile("materials/wystan/AK47/47_mag.vmt")
-resource.AddFile("materials/wystan/AK47/Magazine.vmt")
-resource.AddFile("materials/wystan/M9/frame.vmt")
-resource.AddFile("materials/wystan/M9/frame_normal.vtf")
-resource.AddFile("materials/wystan/M249/boxmag.vmt")
-resource.AddFile("materials/wystan/M249/bullet.vmt")
+resource.AddFile("materials/wystan/weapons/AK47/47_mag.vmt")
+resource.AddFile("materials/wystan/weapons/AK47/Magazine.vmt")
+resource.AddFile("materials/wystan/weapons/M9/frame.vmt")
+resource.AddFile("materials/wystan/weapons/M9/frame_normal.vtf")
+resource.AddFile("materials/wystan/weapons/M249/boxmag.vmt")
+resource.AddFile("materials/wystan/weapons/M249/bullet.vmt")
 
 
 AddCSLuaFile( "cl_init.lua" )
