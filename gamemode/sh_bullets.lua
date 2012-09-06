@@ -344,7 +344,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 		self:ExtraSimulate(bul, t)
 	end
 	
-	if not bul.Cracked and not bul.Mine then
+	if not bul.Cracked then
 		local dist1 = (LocalPlayer():GetShootPos() - bul.Position):Length()
 		local dist2 = (LocalPlayer():GetShootPos() - bul.LastPos):Length()
 		
@@ -364,8 +364,8 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 						
 			if math.abs(dot) < 150 * 10 and (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
 				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
-					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld)
-				else
+					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
+				elseif not bul.Mine then
 					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)
 				end
 			end
