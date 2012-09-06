@@ -8,9 +8,9 @@ ENT.Category		= "Endure It"
 ENT.Spawnable			= false
 ENT.AdminSpawnable		= true
 
-ENT.Model = "models/wystan/weapons/m249magazine.mdl"
+ENT.Model = "models/wystan/weapons/ak47magazine.mdl"
 
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
 ENT.Rounds = 30
-ENT.Bullet = AKBullet
+ENT.Bullet = "AKBullet"

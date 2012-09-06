@@ -250,7 +250,15 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 	end
 end
 
+local bullets_reg = {}
+
+function GetBullet(name)
+	return bullets_reg[name]
+end
+
 function RegisterBullet(bull)
+	bullets_reg[bull.Name] = bull
+	
 	local col = Color(255, 127, 0, 255)
 	if SERVER then
 		col = Color(100, 200, 255)

@@ -43,7 +43,7 @@ Nato_9mm = {}
 Nato_9mm.Velocity = 940 * 12 * 0.75 -- 940 feet per second
 Nato_9mm.Damage = 25
 Nato_9mm.GravityModifier = 1
-Nato_9mm.Name = "Nato_556"
+Nato_9mm.Name = "Nato_9mm"
 Nato_9mm.TracerChance = 0
 
 Nato_9mm.Mass = 0.004

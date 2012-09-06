@@ -12,5 +12,5 @@ ENT.Model = "models/wystan/weapons/m9magazine.mdl"
 
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
-ENT.Rounds = 30
-ENT.Bullet = AKBullet
+ENT.Rounds = 17
+ENT.Bullet = "Nato_9mm"

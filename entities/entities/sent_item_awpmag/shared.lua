@@ -13,4 +13,4 @@ ENT.Model = "models/wystan/weapons/m9magazine.mdl"
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
 ENT.Rounds = 8
-ENT.Bullet = SniperBullet
+ENT.Bullet = "SniperBullet"

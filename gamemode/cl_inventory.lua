@@ -110,7 +110,7 @@ _R.Player.InventoryChange = function(self, tbl)
 		self:SetInventory(tbl)
 	no_rec = false
 	
-	if frame:IsVisible() then
+	if frame and frame:IsVisible() then
 		RemakeFrame()
 		frame:SetVisible(true)
 		frame:MakePopup()

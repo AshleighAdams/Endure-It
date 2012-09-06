@@ -1,5 +1,5 @@
 ENT.Type 			= "anim"
-ENT.Base 			= "sent_item_base"
+ENT.Base 			= "sent_base_item"
 ENT.PrintName		= "Stanag Magazine"
 ENT.Author			= "victormeriqui & C0BRA"
 ENT.Information		= ""
@@ -12,7 +12,7 @@ ENT.AdminSpawnable		= true
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
 ENT.Rounds = 30
-ENT.Bullet = Nato_556
+ENT.Bullet = "Nato_556"
 
 function ENT:GetPrintName()
 	return self.PrintName .. "\n" .. tostring(self.Rounds)

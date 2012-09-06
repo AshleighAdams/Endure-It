@@ -13,4 +13,4 @@ ENT.Model = "models/wystan/stanag_magazine.mdl"
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
 ENT.Rounds = 30
-ENT.Bullet = Stanag_556
+ENT.Bullet = "Stanag_556"

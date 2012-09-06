@@ -259,7 +259,7 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			bul.TraceMask = MASK_SHOT
 			bul.RandSeed = math.Rand(-100000, 100000)
 			
-			bul.Bullet = self.Magazine.Bullet
+			bul.Bullet = GetBullet(self.Magazine.Bullet)
 						
 			ShootBullet(bul, function(bullet)
 				bullet.Velocity = bullet.Velocity + lp:GetVelocity() + lp:GetAimVector() * math.random(-100, 100)
