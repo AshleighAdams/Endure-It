@@ -80,7 +80,10 @@ end
 function SWEP:Deploy()
 	if self.Suppressed then
 		self:SendWeaponAnim(ACT_VM_DRAW_SILENCED)
+	else
+		self:SendWeaponAnim(ACT_VM_DRAW)
 	end
+	
 	if self:GetMagazine() == nil or self:GetMagazine().Rounds == 0 then
 		if self.Suppressed then
 			self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE_SILENCED)
@@ -88,6 +91,7 @@ function SWEP:Deploy()
 			self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE)
 		end
 	end
+	
 	self:SetNextPrimaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
 	self:SetNextSecondaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
 end
@@ -288,7 +292,7 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 				anim = ACT_VM_PRIMARYATTACK_SILENCED
 			end
 		else
-			local anim = ACT_VM_DRYFIRE
+			anim = ACT_VM_DRYFIRE  
 			if self.Magazine.Rounds > 0 then
 				anim = ACT_VM_PRIMARYATTACK
 			end

@@ -457,8 +457,8 @@ end
 
 RegisterBullet(DefaultBullet)
 
-local path = (GM or GAMEMODE).Folder .. "/gamemode/bullets/*.lua", "gamemodes/"
-local files = file.Find(path, "MOD") or {}
+local path = (GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/*.lua", "gamemodes/"
+local files = file.Find(path,  LUA_PATH) or {}
 
 print(path)
 print("Files:")
