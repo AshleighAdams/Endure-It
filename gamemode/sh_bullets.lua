@@ -391,7 +391,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	
 	local res = util.TraceLine(tr)
 	local dot = -bul.Direction:Dot(res.HitNormal)
-	
+		
 	if not res.HitSky and res.HitWorld and (bul.Velocity:Length() > 100) and dot < 0.5 then -- about 45 deg
 		
 		local vellen = bul.Velocity:Length()
@@ -450,7 +450,23 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 				net.WriteUInt(res.MatType, 32)
 			net.SendToServer()
 		end
-	
+		
+		if not bul.Cracked then
+			bul.Cracked = true
+			local pos = bul.Position
+					
+			debugoverlay.Line(LocalPlayer():GetShootPos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
+			local tr = util.TraceLine({ startpos = pos, endpos = LocalPlayer():GetShootPos(), mask = MASK_SHOT})
+			
+			if math.abs(dot) < 150 * 10 and (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
+				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
+					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
+				elseif not bul.Mine then
+					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)
+				end
+			end
+		end
+		
 		return true
 	end
 end
@@ -524,7 +540,7 @@ function MachineMode()
 		local bul = {}
 		local lp = LocalPlayer()
 		bul.StartPos = Vector(0, 0, 0)
-		bul.Direction = (LocalPlayer():GetShootPos():Angle() + Angle(0, 10, 0)):Forward()
+		bul.Direction = (LocalPlayer():GetShootPos():Angle() + Angle(0, 0, 0)):Forward()
 
 		bul.Direction = bul.Direction + 
 			Vector(
@@ -543,6 +559,7 @@ function MachineMode()
 		
 		ShootBullet(bul, function(bullet)
 			bullet.Velocity = bullet.Velocity + lp:GetVelocity()
+			bullet.Mine = false
 		end)
 	--end
 end
