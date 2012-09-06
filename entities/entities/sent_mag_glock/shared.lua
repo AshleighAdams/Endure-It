@@ -1,6 +1,6 @@
 ENT.Type 			= "anim"
 ENT.Base 			= "sent_item_basemagazine"
-ENT.PrintName		= "Stanag Magazine"
+ENT.PrintName		= "Glock Mag"
 ENT.Author			= "victormeriqui & C0BRA"
 ENT.Information		= ""
 ENT.Category		= "Endure It"
