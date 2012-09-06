@@ -189,10 +189,19 @@ end
 
 function SWEP:PrimaryAttack()
 
-	self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
+	--self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	
 	if ( !self:CanPrimaryAttack() ) then
+		return
+	end
+	
+	if self.Magazine and ValidEntity(self.Magazine) then
+		if SERVER then
+			self.Magazine:StateChanged(SYNCSTATE_OWNER, self.Primary.Delay + 0.25)
+		end
+	else
+		self:SetClip1(0)
 		return
 	end
 	

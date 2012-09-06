@@ -32,9 +32,6 @@ function ENT:OnTakeDamage(dmginfo)
 	self.Entity:TakePhysicsDamage(dmginfo)
 end
 
-function ENT:Think()
-end
-
 function ENT:RestoreState(state)
 	self.Rounds = state.Rounds
 	self:SendState()
@@ -43,4 +40,3 @@ end
 function ENT:GetState()
 	return {Rounds = self.Rounds}
 end
-

@@ -352,7 +352,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			u:Normalize()
 			local pos = bul.LastPos + u:Dot(v) * u
 			if (LocalPlayer():GetShootPos() - pos):Length() < 150 then
-				print(bul.Velocity:Length())
+				--print(bul.Velocity:Length())
 				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
 					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos)
 				else

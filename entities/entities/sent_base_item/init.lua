@@ -34,18 +34,56 @@ function ENT:OnTakeDamage(dmginfo)
 	self.Entity:TakePhysicsDamage(dmginfo)
 end
 
+ENT.SendNextUpdate = 0
+ENT.ToWhom = 3
+SYNCSTATE_EVERYONE = 1
+SYNCSTATE_PVS = 2
+SYNCSTATE_OWNER = 3
+
+local net_sends = {}
+net_sends[SYNCSTATE_OWNER] = function(self)
+	if not self.Owner or not ValidEntity(self.Owner) then
+		net.Broadcast()
+		return
+	end
+	net.Send(self.Owner)
+end
+net_sends[SYNCSTATE_PVS] = function(self)
+	net.SendPVS((self.Owner or self):GetPos())
+end
+net_sends[SYNCSTATE_EVERYONE] = function(self)
+	net.Broadcast()
+end
+
+function ENT:StateChanged(towhom, wait_time)
+	if wait_time == nil then wait_time = -1 end -- send it right away
+	if towhom == nil then towhom = SYNCSTATE_EVERYONE end
+	if towhom < self.ToWhom then
+		self.ToWhom = towhom
+	end
+	self.SendNextUpdate = CurTime() + wait_time
+	print(self:GetClass() .. " will send state in " .. tostring(wait_time) .. " seconds")
+end
+
 function ENT:Think()
-	
+	if self.SendNextUpdate != 0 then
+		if CurTime() > self.SendNextUpdate then
+			self.SendNextUpdate = 0
+			self:SendState(self.ToWhom)
+			self.ToWhom = 3
+			print(self:GetClass() .. " sent state")
+		end
+	end
 end
 
 function ENT:RestoreState(state)
 end
 
-function ENT:SendState()
-	net.Start(item_state_update)
+function ENT:SendState(syncstate)
+	net.Start("item_state_update")
 		net.WriteEntity(self)
 		net.WriteTable(self:GetState())
-	net.Broadcast()
+	net_sends[syncstate](self) -- send using the prefered method
 end
 
 function ENT:GetState()
@@ -70,6 +108,7 @@ function ENT:PickUp(pl)
 	--self:SetNWEntity("Owner", self.Owner)
 	self:SetSolid(SOLID_NONE)
 	self:SetNoDraw(true)
+	self:StateChanged(SYNCSTATE_OWNER)
 end
 
 function ENT:Use(act, call)
