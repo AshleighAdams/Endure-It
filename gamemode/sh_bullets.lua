@@ -310,7 +310,7 @@ local function EmitWorldSound(name, pos)
 	timer.Simple(0.1, function() te:Remove() end)
 	te:SetNoDraw(true)
 	te:SetPos(pos)
-	te:EmitSound(name, pos, 500, 200)
+	te:EmitSound(name, pos, 100, 200)
 end
 
 local GRAVITY = Vector(0, 0, 600)
@@ -346,15 +346,18 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 		if dist1 > dist2 --[[ 10m]] then
 			bul.Cracked = true
 			
-			local perc = dist2 / dist1
-			local pos = LerpVector(perc, bul.LastPos, bul.Position)
-			print(pos:Distance(LocalPlayer():GetShootPos()))
+			local u = bul.Position - bul.LastPos
+			local v = LocalPlayer():GetShootPos() - bul.LastPos
 			
-			--hello
-			if bul.Velocity:Length() > 1120 * 12 * 0.75 then
-				EmitWorldSound("arma2/scrack" .. tostring(math.random(1, 2)) .. ".wav", pos)
-			else
-				EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 6)) .. ".wav", pos)
+			u:Normalize()
+			local pos = bul.LastPos + u:Dot(v) * u
+			if (LocalPlayer():GetShootPos() - pos):Length() < 150 then
+				print(bul.Velocity:Length())
+				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
+					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos)
+				else
+					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 6)) .. ".wav", pos)
+				end
 			end
 		end
 	end
@@ -501,8 +504,8 @@ function MachineMode()
 	--for i=0, 15 do
 		local bul = {}
 		local lp = LocalPlayer()
-		bul.StartPos = lp:GetShootPos()
-		bul.Direction = lp:GetAimVector()
+		bul.StartPos = Vector(0, 0, 0)
+		bul.Direction = -lp:GetAimVector()
 
 		bul.Direction = bul.Direction + 
 			Vector(
@@ -517,7 +520,7 @@ function MachineMode()
 
 		bul.RandSeed = math.Rand(-100000, 100000)
 		
-		bul.Bullet = DefaultBullet
+		bul.Bullet = Nato_556_SD
 		
 		ShootBullet(bul, function(bullet)
 			bullet.Velocity = bullet.Velocity + lp:GetVelocity()
