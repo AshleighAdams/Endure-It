@@ -296,6 +296,14 @@ function RegisterBullet(bull)
 	print("Registered bullet ", bull.Name)
 end
 
+local function EmitWorldSound(name, pos)
+	local te = ClientsideModel("models/props_lab/huladoll.mdl", RENDERGROUP_OPAQUE)
+	timer.Simple(0.1, function() te:Remove() end)
+	te:SetNoDraw(true)
+	te:SetPos(pos)
+	te:EmitSound(name, pos, 500, 200)
+end
+
 local GRAVITY = Vector(0, 0, 600)
 -- return true to mark bullet as done
 DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
@@ -307,7 +315,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	local speed = (bul.Velocity - Weather.Wind):Length()
 	local coef = self.DragCoefficient / 1000 -- i don't know...
 	local x = ((math.sqrt(1 + 4 * speed * coef * t) - 1.0) / (2.0 * speed * coef * t))
-	print(x)
+	--print(x)
 	bul.Velocity = bul.Velocity * x
 	
 	// apply wind
@@ -322,6 +330,30 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 		self:ExtraSimulate(bul, t)
 	end
 	
+	if not bul.Cracked then
+		local dist1 = (LocalPlayer():GetShootPos() - bul.Position):Length()
+		local dist2 = (LocalPlayer():GetShootPos() - bul.LastPos):Length()
+		
+		if dist1 > dist2 --[[ 10m]] then
+			bul.Cracked = true
+			
+			local perc = dist2 / dist1
+			local pos = LerpVector(perc, bul.LastPos, bul.Position)
+			print(pos:Distance(LocalPlayer():GetShootPos()))
+			
+			--hello
+			if bul.Velocity:Length() > 1120 * 12 * 0.75 then
+				EmitWorldSound("arma2/scrack" .. tostring(math.random(1, 2)) .. ".wav", pos)
+			else
+				EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 6)) .. ".wav", pos)
+			end
+		end
+	end
+	
+	if CLIENT then
+		debugoverlay.Line(PrePos, bul.Position, 1)
+	end
+	
 	local tr = {}
 	tr.start = PrePos
 	tr.endpos = bul.Position
@@ -329,11 +361,6 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	tr.mask = bul.TraceMask or MASK_SHOT
 	
 	local res = util.TraceLine(tr)
-	
-	if CLIENT then
-		debugoverlay.Line(PrePos, bul.Position, 1)
-	end
-	
 	local dot = -bul.Direction:Dot(res.HitNormal)
 	
 	if not res.HitSky and res.HitWorld and (bul.Velocity:Length() > 100) and dot < 0.5 then -- about 45 deg
@@ -365,7 +392,8 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 		bul.Velocity = ( randomspread + vel_new ) * vellen * (0.5 - dot)
 		bul.Position = res.HitPos + res.HitNormal
 		
-		self:Decal(nil, nil, res)		
+		self:Decal(nil, nil, res)	
+
 	elseif res.Hit then
 		
 		if res.HitSky then
@@ -385,7 +413,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 				net.WriteUInt(res.MatType, 32)
 			net.SendToServer()
 		end
-
+	
 		return true
 	end
 end
