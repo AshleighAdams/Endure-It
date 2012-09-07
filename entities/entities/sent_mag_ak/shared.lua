@@ -12,5 +12,6 @@ ENT.Model = "models/wystan/weapons/ak47magazine.mdl"
 
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
-ENT.Rounds = 30
+ENT.Rounds = 0
+ENT.Capacity = 30
 ENT.Bullet = "AKBullet"

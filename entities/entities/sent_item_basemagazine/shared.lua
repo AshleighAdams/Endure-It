@@ -11,10 +11,13 @@ ENT.AdminSpawnable		= true
 
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
-ENT.Rounds = 30
+ENT.Rounds = 0
+ENT.Capacity = 30
 ENT.Bullet = "Nato_556"
 
 function ENT:CanTakeBullet(bul)
+	if self.Rounds == self.Capacity then return false end
+	
 	if type(bul) == "table" then
 		bul = bul.Name
 	end

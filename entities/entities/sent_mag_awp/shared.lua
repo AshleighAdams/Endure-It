@@ -12,5 +12,6 @@ ENT.Model = "models/wystan/weapons/trg-42magazine.mdl"
 
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
-ENT.Rounds = 8
+ENT.Rounds = 0
+ENT.Capacity = 8
 ENT.Bullet = "SniperBullet"

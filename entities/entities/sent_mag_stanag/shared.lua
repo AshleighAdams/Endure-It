@@ -12,5 +12,21 @@ ENT.Model = "models/wystan/stanag_magazine.mdl"
 
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
-ENT.Rounds = 30
+ENT.Rounds = 0
+ENT.Capacity = 30
 ENT.Bullet = "Nato_556"
+
+function ENT:CanTakeBullet(bul)
+	if self.Rounds == self.Capacity then return false end
+	
+	if type(bul) == "table" then
+		bul = bul.Name
+	end
+	
+	if self.Rounds == 0 then
+		return bul.StartWith("Nato_556") -- It can take any Nato 5.56mm
+	else
+		print("HURPY")
+		return self.Bullet == bul
+	end
+end

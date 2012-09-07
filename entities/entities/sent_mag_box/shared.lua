@@ -12,5 +12,6 @@ ENT.Model = "models/wystan/weapons/m249magazine.mdl"
 
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
-ENT.Rounds = 200
+ENT.Rounds = 0
+ENT.Capacity = 200
 ENT.Bullet = "Nato_556_Para"

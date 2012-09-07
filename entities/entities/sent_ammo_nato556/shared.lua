@@ -1,16 +1,14 @@
 ENT.Type 			= "anim"
-ENT.Base 			= "sent_item_basemagazine"
-ENT.PrintName		= "Stanag SD Mag"
+ENT.Base 			= "sent_item_baseammo"
+ENT.PrintName		= "5.56mm Ammo"
 ENT.Author			= "victormeriqui & C0BRA"
 ENT.Information		= ""
 ENT.Category		= "Endure It"
 
+ENT.Model 			= "models/Items/357ammo.mdl"
 ENT.Spawnable			= false
 ENT.AdminSpawnable		= true
 
-ENT.Model = "models/wystan/stanag_magazine.mdl"
-
+ENT.Count = 30 * 10
 ENT.PreferedSlot = "ToolBelt"
-ENT.IsMagazine = true
-ENT.Rounds = 30
-ENT.Bullet = "Nato_556_SD"
+ENT.Bullet = "Nato_556"

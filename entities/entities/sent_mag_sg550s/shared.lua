@@ -12,5 +12,6 @@ ENT.Model = "models/wystan/weapons/sr-25magazine.mdl"
 
 ENT.PreferedSlot = "ToolBelt"
 ENT.IsMagazine = true
-ENT.Rounds = 20
+ENT.Rounds = 0
+ENT.Capacity = 20
 ENT.Bullet = "Nato_556_Sniper"
