@@ -41,16 +41,12 @@ function ENT:InvokeAction(id)
 	end
 end
 
-function ENT:Move(oldpos, newpos)
-	
+function ENT:GetEquipSlot()
+	return ""
 end
 
 function ENT:GetActions()
 	local ret = {}
-	table.insert(ret, { Name = "Hello", ID = "hello" })
+	--table.insert(ret, { Name = "Hello", ID = "hello" })
 	return ret
 end
-
-net.Receive("action_item_base_1", function(len, pl)
-	pl:Kill()
-end)

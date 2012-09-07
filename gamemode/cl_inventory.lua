@@ -18,7 +18,7 @@ function RemakeFrame()
 	local primary = vgui.Create("DPanel", frame)
 	primary:SetPos(10, 5 + 25)
 	primary:SetSize(SlotSize * 6, SlotSize * 2)
-
+	
 	local secondary = vgui.Create("DPanel", frame)
 	secondary:SetPos(10 + 5 * 1 + SlotSize * 6, 5 + 25)
 	secondary:SetSize(SlotSize * 3, SlotSize * 2)
@@ -26,7 +26,19 @@ function RemakeFrame()
 	local backpack = vgui.Create("DPanel", frame)
 	backpack:SetPos(10 + 5 * 2 + SlotSize * 9, 5 + 25)
 	backpack:SetSize(SlotSize * 3, SlotSize * 2)
-
+	
+	if LocalPlayer():GetInventory().Primary then
+		LocalPlayer():GetInventory().Primary:SetupPanel(primary)
+	end
+	
+	if LocalPlayer():GetInventory().Secondary then
+		LocalPlayer():GetInventory().Secondary:SetupPanel(secondary)
+	end
+	
+	if LocalPlayer():GetInventory().BackPack_EQ then
+		LocalPlayer():GetInventory().BackPack_EQ:SetupPanel(backpack)
+	end
+	
 	-- Toolbelt
 	for i = 0, 10 do -- Only 1 slot size items can go here...
 		local slot = vgui.Create("DPanel", frame)

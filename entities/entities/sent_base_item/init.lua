@@ -23,7 +23,7 @@ function ENT:Initialize()
 	ent:SetMoveType(MOVETYPE_VPHYSICS) 
 	ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 	ent:SetUseType(SIMPLE_USE)
-	ent:SetAngle(Angle(0, math.random(0, 360), 0))
+	ent:SetAngles(Angle(0, math.random(0, 360), 0))
 	local phys = ent:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
@@ -114,6 +114,9 @@ function ENT:PickUp(pl)
 	self:SetSolid(SOLID_NONE)
 	self:SetNoDraw(true)
 	self:StateChanged(SYNCSTATE_OWNER)
+end
+
+function ENT:Equip(ison)
 end
 
 function ENT:Use(act, call)

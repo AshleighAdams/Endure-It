@@ -30,15 +30,16 @@ if SERVER then
 					ent:PickUp(self)
 					self.Inventory[k] = self.Inventory[k] or {}
 					table.insert(self.Inventory[k], ent)
+					
+					if ent:GetEquipSlot() == tostring(k) then -- Run equip codens!
+						ent:Equip(true)
+					end
 				end
 			end
 		end
 		
 		self:InventoryChange()
 	end
-	
-	util.AddNetworkString("inventory_change")
-	
 	
 	_R.Player.InventoryChange = function(self)
 		net.Start("inventory_change")
@@ -47,10 +48,19 @@ if SERVER then
 		net.Send(self)
 	end
 	
-	_R.Player.CanHold = function(self, v)
-		local slots = 11
-		local slotpos = v.PreferedSlot
-				
+	local SlotSizes = {
+		ToolBelt = 11,
+		Generic = 11
+	}
+	
+	_R.Player.CanHold = function(self, v, slot)
+		local slotpos = slot or v.PreferedSlot
+		local slots = SlotSizes[slotpos] or 0
+		
+		if slotpos == "BackPack" then
+			slots = self:GetBackPackSize()
+		end
+		
 		for k,v in pairs((self:GetInventory()[slotpos] or {})) do
 			slots = slots - v:GetSize()
 		end
@@ -59,7 +69,7 @@ if SERVER then
 			return slotpos
 		end
 		
-		slots = 11
+		slots = SlotSizes["Generic"] or 0
 		for k,v in pairs((self:GetInventory().Generic or {})) do
 			slots = slots - v:GetSize()
 		end
@@ -88,6 +98,23 @@ if SERVER then
 		
 		pl:InvDrop(ent)
 	end)
+	
+	net.Receive("inventory_change", function(len)
+		net.ReadEntity():InventoryChange(net.ReadTable())
+	end)
+	
+	net.Receive("inventory_move", function(len, pl)
+		local itm = net.ReadEntity()
+		local slot = net.ReadString()
+		
+		pl:InvMove(itm, slot)
+	end)
+	
+	net.Receive("inventory_equip", function(len, pl)
+		local itm = net.ReadEntity()
+		
+		pl:InvEquip(itm)
+	end)
 else
 	net.Receive("inventory_change", function(len)
 		net.ReadEntity():InventoryChange(net.ReadTable())
@@ -96,41 +123,63 @@ end
 
 if SERVER then
 	util.AddNetworkString("inventory_drop")
+	util.AddNetworkString("inventory_change")
+	util.AddNetworkString("inventory_move")
+	util.AddNetworkString("inventory_equip")
+end
+
+_R.Player.GetBackPackSize = function(self) return 16 end
+
+_R.Player.InvRemoveItem = function(self, item)
+	
+	for k,v in pairs(self:GetInventory()) do
+		if type(v) == "table" then
+			for kk, vv in pairs(v) do
+				if vv == item then
+					table.remove(v, kk)
+				end
+			end
+		else
+			if v == item then
+				if type(k) == "string" then
+					self:GetInventory()[k] = nil
+				else
+					table.remove(self:GetInventory(), k)
+				end
+			end
+		end
+	end
 	
 end
 
 _R.Player.InvDrop = function(self, itm)
 	if SERVER then
-		for k,v in pairs((self:GetInventory().Generic or {})) do
-			if v == itm then
-				table.remove(self:GetInventory().Generic, k)
-			end
-		end
-		
-		for k,v in pairs((self:GetInventory().Generic or {})) do
-			if v == itm then
-				table.remove(self:GetInventory().Generic, k)
-			end
-		end
-		
-		for k,v in pairs((self:GetInventory().ToolBelt or {})) do
-			if v == itm then
-				table.remove(self:GetInventory().ToolBelt, k)
-			end
-		end
-		
-		for k,v in pairs((self:GetInventory().BackPack or {})) do
-			if v == itm then
-				table.remove(self:GetInventory().BackPack, k)
-			end
-		end
-				
+		self:InvRemoveItem(itm)
 		itm:Drop(self)
 		self:InventoryChange()
 	else
 		net.Start("inventory_drop")
 			net.WriteEntity(itm)
 		net.SendToServer()
+	end
+end
+
+_R.Player.InvMove = function(self, itm, slot)
+	if CLIENT then
+		net.Start("inventory_move")
+			net.WriteEntity(itm)
+			net.WriteString(slot)
+		net.SendToServer()
+	else
+		local slot_good = self:CanHold(itm, slot)
+		if slot_good and slot_good == slot then
+			self:InvRemoveItem(itm)
+			
+			self:GetInventory()[slot] = self:GetInventory()[slot] or {}
+			table.insert(self:GetInventory()[slot], itm)
+			itm:Move(slot)
+			self:InventoryChange()
+		end
 	end
 end
 
@@ -145,4 +194,28 @@ _R.Player.GetInventory = function(self)
 	end
 		
 	return self.Inventory or {}
+end
+
+_R.Player.InvEquip = function(self, itm)
+	if CLIENT then
+		net.Start("inventory_equip")
+			net.WriteEntity(itm)
+		net.SendToServer()
+	else
+		self:InvRemoveItem(itm)
+	
+		local place = itm:GetEquipSlot()
+		if place == "" then return end
+		
+		if self.Inventory[place] != nil and ValidEntity(self.Inventory[place]) then
+			self.Inventory[place]:Equip(false)
+			self:InvDrop(self.Inventory[place])
+			self.Inventory[place] = nil
+		end
+		
+		self.Inventory[place] = itm
+		itm:Equip(true)
+		
+		self:InventoryChange()
+	end
 end
