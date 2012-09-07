@@ -14,6 +14,12 @@ function ENT:SpawnFunction(ply, tr)
 	return ent
 end
 
+function ENT:PositionDrop(pl)
+	self:SetAngles(Angle(0, 0, 0))
+	local beloweye = pl:GetAimVector():Angle():Up() * -10
+	self:SetPos(pl:GetShootPos() - self:OBBCenter() + beloweye)
+end
+
 function ENT:Initialize()
 	local ent = self.Entity
 	ent:SetModel(self.Model)

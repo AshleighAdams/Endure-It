@@ -58,7 +58,7 @@ SWEP.IronSightsPos = Vector (5.017, -8.9258, 2.5139)
 SWEP.IronSightsAng = Vector (0, 0, 0)
 
 function SWEP:PrimaryAttack()
-	self.BaseClass:PrimaryAttack()
+	self.BaseClass.PrimaryAttack(self)
 	self.NeedsReload = true
 end
 

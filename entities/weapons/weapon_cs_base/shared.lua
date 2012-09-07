@@ -128,16 +128,11 @@ function SWEP:Reload(invoker)
 	if invoker == nil then
 		--if true then return end
 		if CLIENT and CurTime() > self.NextQuickReload then
-			local oldmag
-			if self.Magazine then
-				oldmag = self.Magazine
-				self.Owner:InvDrop(self.Magazine)
-			end
 			
 			local bestmag = nil
-			for k, v in pairs((self.Owner.Inventory.ToolBelt or {})) do
+			for k, v in pairs((self.Owner:GetInventory().ToolBelt or {})) do
 				if v.IsMagazine and self:CanTakeMagazine(v) then
-					if oldmag and oldmag == v then continue end -- So we don't drop and put in gun at same time...
+					if self.Magazine and self.Magazine == v then continue end -- So we don't drop and put in gun at same time...
 					
 					if not bestmag or (v.Rounds > bestmag.Rounds) then
 						bestmag = v
@@ -146,6 +141,10 @@ function SWEP:Reload(invoker)
 			end
 			
 			if bestmag != nil then
+				if self.Magazine then
+					self.Owner:InvDrop(self.Magazine)
+				end
+				
 				bestmag:InvokeAction("pip")
 				self.NextQuickReload = CurTime() + 1 -- will also be set a bit later, when we start to reload
 			end
@@ -205,7 +204,7 @@ end
 function SWEP:PrimaryAttack()
 
 	--self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
-	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	
 	if ( !self:CanPrimaryAttack() ) then
 		return
@@ -220,7 +219,7 @@ function SWEP:PrimaryAttack()
 		return
 	end
 	
-	self.Weapon:EmitSound( self.Primary.Sound )
+	self:EmitSound( self.Primary.Sound )
 	self:CSShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone )
 	self:TakePrimaryAmmo( 1 )
 	

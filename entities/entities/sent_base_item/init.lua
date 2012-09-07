@@ -93,14 +93,19 @@ end
 function ENT:OnDrop(pl)
 end
 
+function ENT:PositionDrop(pl)
+	self:SetAngles(Angle(0, 0, 0))
+	self:SetPos(pl:GetShootPos() - self:OBBCenter() - Vector(0, 0, 20))
+end
+
 function ENT:Drop(pl)
-	self:SetPos(pl:GetShootPos() - Vector(0, 0, 10))
-	self:SetAngles(Angle(0, self.Owner:GetAimVector():Angle().y, math.random(0, 360)))
+	self:PositionDrop(pl)
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetNoDraw(false)
 	self:GetPhysicsObject():Wake()
 	self.Owner = nil
 	self:OnDrop(pl)
+	self:SetAngles(Angle(0, 0, 0))
 end
 
 function ENT:PickUp(pl)

@@ -27,8 +27,6 @@ SWEP.ViewModelFlip		= true
 SWEP.ViewModel			= "models/weapons/v_snip_sg550.mdl"
 SWEP.WorldModel			= "models/weapons/w_snip_sg550.mdl"
 
-SWEP.UseBullet = Nato_556_Sniper
-
 SWEP.Weight				= 12
 SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false

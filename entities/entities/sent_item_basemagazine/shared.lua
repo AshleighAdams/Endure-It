@@ -60,7 +60,7 @@ if SERVER then
 end
 
 function ENT:OnDrop()
-	if self.Inside != nil and ValidEntity(self.Inside) and self.Entity.SetMagazine then
+	if self.Inside != nil and ValidEntity(self.Inside) and self.Inside.SetMagazine then
 		self.Inside:SetMagazine(nil)
 		self.Inside = nil
 	end

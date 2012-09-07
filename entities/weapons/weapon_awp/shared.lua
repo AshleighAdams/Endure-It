@@ -58,7 +58,7 @@ SWEP.IronSightsPos = Vector (5.5862, -4.5, 2.0838)
 SWEP.IronSightsAng = Vector (0, 0, 0)
 
 function SWEP:PrimaryAttack()
-	self.BaseClass:PrimaryAttack()
+	self.BaseClass.PrimaryAttack(self)
 	self.NeedsReload = true
 	
 	/*
@@ -110,29 +110,6 @@ function SWEP:Think()
 	end	
 end	
 
-function SWEP:Reload()
-	
-	self.Weapon:DefaultReload( ACT_VM_RELOAD );
-		
-end
-
-local sin, cos = math.sin, math.cos; --SPEED!
-local function DrawCircle(x, y, rad, qual, color, xmod, tex)
-		
-	local matrix = {};
-	local vert = 1;
-	for i = 0, math.pi*2, qual do
-		
-		matrix[vert] = {x = x + math.cos(i)*(rad+xmod), y = y + math.sin(i)*rad};
-		vert = vert+1;
-
-	end 
-	
-	surface.SetDrawColor(color)	
-	surface.SetTexture(tex)
-	
-	--surface.DrawPoly(matrix)
-end
 
 if CLIENT then
 	SWEP.ScopeRT = SWEP.ScopeRT or GetRenderTarget("ei_scope_", 1024, 1024, true)
