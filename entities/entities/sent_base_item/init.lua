@@ -100,6 +100,7 @@ end
 function ENT:PositionDrop(pl)
 	self:SetAngles(Angle(0, 0, 0))
 	self:SetPos(pl:GetShootPos() - self:OBBCenter() - Vector(0, 0, 20))
+	self:SetVelocity(pl:GetVelocity())
 end
 
 function ENT:Drop(pl)
@@ -109,7 +110,6 @@ function ENT:Drop(pl)
 	self:GetPhysicsObject():Wake()
 	self.Owner = nil
 	self:OnDrop(pl)
-	self:SetAngles(Angle(0, 0, 0))
 end
 
 function ENT:PickUp(pl)

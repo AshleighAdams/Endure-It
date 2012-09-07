@@ -44,4 +44,54 @@ include("sv_inventory.lua")
    Desc: Give the player the default spawning weapons/ammo
 ---------------------------------------------------------*/
 function GM:PlayerLoadout( pl )
+	pl:SetWalkSpeed(7 * 17.6 * 0.75) -- 8mph
+	pl:SetRunSpeed(20 * 17.6 * 0.75) -- 20mph
+end
+
+function GM:ScalePlayerDamage(pl, hitbox, dmginf)
+	if ( hitgroup == HITGROUP_HEAD ) then
+		dmginfo:ScaleDamage( 2 )
+	end
+
+	// Less damage if we're shot in the arms or legs
+	if hitbox == HITGROUP_RIGHTARM then
+		local inv = pl:GetInventory()
+		local prim = inv.Primary
+		local sec = inv.Secondary
+		
+		local acw = LocalPlayer():GetActiveWeapon():GetClass()
+		
+		if prim and prim.Weapon_Class and acw == prim.Weapon_Class then
+			-- Drop gun
+			LocalPlayer():InvDrop(prim)
+		end
+		
+		if sec and sec.Weapon_Class and acw == sec.Weapon_Class then
+			-- Drop gun
+			LocalPlayer():InvDrop(sec)
+		end
+	end
+	
+	if hitbox == HITGROUP_HEAD then
+		dmginf:SetDamage(1000)
+	end
+end
+
+local ZOMBIE_HEADSHOT_TIME = 0
+local ZOMBIE_HEADSHOT_INFO = nil
+function GM:ScaleNPCDamage(npc, hitbox, dmginf)
+	if hitbox == HITGROUP_HEAD then
+		dmginf:SetDamage(10000)
+		
+		if npc:GetClass() == "npc_zombie" then
+			ZOMBIE_HEADSHOT_TIME = CurTime()
+			ZOMBIE_HEADSHOT_INFO = dmginf
+		end
+	end
+end
+
+function GM:OnEntityCreated(ent)
+	if ent:GetClass() == "npc_headcrab" and ZOMBIE_HEADSHOT_TIME == CurTime() then -- Please, fuck off
+		ent:TakeDamageInfo(ZOMBIE_HEADSHOT_INFO)
+	end
 end

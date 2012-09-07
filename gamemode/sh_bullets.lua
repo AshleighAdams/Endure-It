@@ -167,15 +167,22 @@ DefaultBullet.ReceiveHit = function(self, len, cl, tbl)
 		local start = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
 		local ent = net.ReadEntity()
 		local mat = net.ReadUInt(32)
+		local hg = net.ReadUInt(8)
 				
-		
 		if ent and ValidEntity(ent) and not ent:IsVehicle() then
 			local dmginfo = DamageInfo()
-			print((vel:Length() / self.Velocity) * self.Damage)
 			dmginfo:SetDamage( (vel:Length() / self.Velocity) * self.Damage )
 			dmginfo:SetDamageType(DMG_BULLET) --Bullet damage
 			dmginfo:SetAttacker(cl)
+			dmginfo:SetDamagePosition(hitpos)
 			dmginfo:SetDamageForce(vel:GetNormal() * 50)
+			
+			if ent:IsPlayer() then
+				hook.Call("ScalePlayerDamage", (GM or GAMEMODE), ent, hg, dmginfo)
+			elseif ent:IsNPC() then
+				hook.Call("ScaleNPCDamage", (GM or GAMEMODE), ent, hg, dmginfo)
+			end
+			
 			ent:TakeDamageInfo(dmginfo)
 		else
 			local RS = RecipientFilter()
@@ -247,8 +254,6 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 		end
 		
 		table.insert(bullets, bul)
-		
-		RunConsoleCommand("say", "poop: " .. bul.Bullet.Name)
 	end
 end
 
@@ -453,6 +458,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 				net.WriteFloat(tr.start.z)
 				net.WriteEntity(res.Entity)
 				net.WriteUInt(res.MatType, 32)
+				net.WriteUInt(res.HitGroup, 8)
 			net.SendToServer()
 		end
 		

@@ -94,6 +94,7 @@ function SWEP:Deploy()
 	
 	self:SetNextPrimaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
 	self:SetNextSecondaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
+	
 end
 
 function SWEP:CanTakeMagazine(mag)

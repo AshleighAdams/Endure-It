@@ -34,6 +34,7 @@ function ENT:Equip(ison, pl)
 	
 	if ison then
 		pl:Give(self.Weapon_Class)
+		pl:SelectWeapon(self.Weapon_Class)
 	else
 		pl:StripWeapon(self.Weapon_Class)
 	end

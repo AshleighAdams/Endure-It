@@ -4,7 +4,7 @@ end
 
 if ( CLIENT ) then
 
-	SWEP.PrintName			= "Steyr Scout"			
+	SWEP.PrintName			= "Steyr Scout"
 	SWEP.Author				= "victormeriqui & C0BRA"
 
 	SWEP.Slot				= 3
