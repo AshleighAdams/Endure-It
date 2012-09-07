@@ -5,6 +5,8 @@ ENT.Author			= "victormeriqui & C0BRA"
 ENT.Information		= ""
 ENT.Category		= "Endure It"
 
+ENT.Model 			= "models/Combine_turrets/ground_turret.mdl"
+
 ENT.Spawnable			= false
 ENT.AdminSpawnable		= true
 

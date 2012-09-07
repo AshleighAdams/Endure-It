@@ -17,6 +17,19 @@ function ENT:GetPrintName()
 	return self.PrintName .. "\n" .. self.Count
 end
 
+local function PlayerHasClip(ply)
+	local inv = ply:GetInventory()
+	local tool = inv.ToolBelt
+	
+	for k,v in pairs(tool) do
+		if v:GetClass() == "sent_item_clip" then
+			return true
+		end
+	end
+	
+	return false
+end
+
 function ENT:InvokeAction(id)
 	if CLIENT then
 		net.Start("action_item_ammo_1")
@@ -25,13 +38,27 @@ function ENT:InvokeAction(id)
 		net.SendToServer()
 	else
 		local mag = id
-		print(mag)
+		
+		if not self.Owner or not ValidEntity(self.Owner) then return end
 		if mag == nil or not ValidEntity(mag) then return end
+		if self.Count <= 0 then return end
+		
+		local maxrounds = 1
+		if PlayerHasClip(self.Owner) then
+			local to_full_clip = mag.Capacity - mag.Rounds
+			to_full_clip = math.min(self.Count, to_full_clip)
+			to_full_clip = math.min(10, to_full_clip)
+			maxrounds = to_full_clip
+		end
+		
+		if mag.Rounds + maxrounds > mag.Capacity then return end
 		
 		mag.Bullet = self.Bullet
-		mag.Rounds = mag.Rounds + 1
+		mag:BulletChangedFunc()
+		
+		mag.Rounds = mag.Rounds + maxrounds
 		mag.BulletChanged = true
-		self.Count = self.Count - 1
+		self.Count = self.Count - maxrounds
 		
 		mag:StateChanged(SYNCSTATE_OWNER, nil, true)
 		self:StateChanged(SYNCSTATE_OWNER, nil, true)
@@ -81,7 +108,7 @@ function ENT:GetActions()
 	local ret = {}
 	
 	for k,v in pairs(self:GetAllMags()) do
-		table.insert(ret, {Name = v:GetPrintName(false), ID = tostring(k)})
+		table.insert(ret, {Name = v:GetPrintName(true), ID = tostring(k)})
 	end
 	
 	--table.insert(ret, { Name = "Hello", ID = "hello" })

@@ -17,7 +17,7 @@ end
 
 function ENT:Initialize()
 	local ent = self.Entity
-	ent:SetModel("models/Combine_turrets/ground_turret.mdl")
+	ent:SetModel(self.Model)
 	ent:PhysicsInit(SOLID_VPHYSICS)
 	ent:SetSolid(SOLID_VPHYSICS)
 	ent:SetMoveType(MOVETYPE_VPHYSICS) 

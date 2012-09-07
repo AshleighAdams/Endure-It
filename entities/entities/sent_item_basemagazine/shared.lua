@@ -24,6 +24,10 @@ function ENT:CanTakeBullet(bul)
 	return self.Bullet == bul
 end
 
+function ENT:BulletChangedFunc(bul)
+	
+end
+
 function ENT:GetPrintName(nonewlines)
 	local nl = "\n"
 	if nonewlines then
