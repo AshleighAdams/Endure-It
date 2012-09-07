@@ -41,11 +41,11 @@ function ENT:SetupPanel(pan)
 		Choice:AddOption("Move to generic", function()
 			LocalPlayer():InvMove(self, "Generic")
 		end)
-		
+		/*
 		Choice:AddOption("Move to backpack", function()
 			LocalPlayer():InvMove(self, "BackPack")
 		end)
-		
+		*/
 		for k,vv in pairs(self:GetActions()) do
 			local v = vv
 			Choice:AddOption(v.Name, function()

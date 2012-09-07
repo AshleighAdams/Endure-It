@@ -22,6 +22,12 @@ function ENT:OnDrop(pl)
 	self:Equip(false, pl)
 end
 
+function ENT:Move(newpos)
+	if newpos != self:GetEquipSlot() then
+		self:Equip(false)
+	end
+end
+
 function ENT:Equip(ison, pl)
 	pl = self.Owner or pl
 	if not pl then return end

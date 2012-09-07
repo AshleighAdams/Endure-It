@@ -37,7 +37,7 @@ function ENT:InvokeAction(id, gun)
 	end
 end
 
-function ENT:Move(oldpos, newpos)
+function ENT:Move(newpos)
 	
 end
 

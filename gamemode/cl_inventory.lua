@@ -54,6 +54,7 @@ function RemakeFrame()
 	-- Generic Inventory
 	local slots = 11
 	local i = 0
+	/*
 
 	while slots > 0 do
 		local slot = vgui.Create("DPanel", frame)
@@ -72,10 +73,10 @@ function RemakeFrame()
 		i = i + 1
 	end
 
+*/
+	-- -B-a-c-k-p-a-c-k- Generic
 
-	-- Backpack
-
-	slots = 16
+	slots = 22
 
 	local row = 0
 	local col = 0
@@ -83,10 +84,10 @@ function RemakeFrame()
 	while slots > 0 do
 		while col <= 10 and slots > 0 do
 			local slot = vgui.Create("DPanel", frame)
-			slot:SetPos(10 + col * SlotSize + 5 * col, 5 + 25 + (SlotSize + 5) * (4 + row) + 5)
+			slot:SetPos(10 + col * SlotSize + 5 * col, 5 + 25 + (SlotSize + 5) * (3 + row) + 5)
 			slot:SetSize(SlotSize, SlotSize)
 			
-			local itm = (LocalPlayer():GetInventory().BackPack or {})[i + 1]
+			local itm = (LocalPlayer():GetInventory().Generic or {})[i + 1]
 			if itm != nil then
 				itm:SetupPanel(slot)
 			end
@@ -97,14 +98,14 @@ function RemakeFrame()
 			else
 				slots = slots - 1
 			end
-			
+			i = i + 1
 			col = col + 1
 		end
 		row = row + 1
 		col = 0
 	end
 
-	frame:SetSize(500 + 10, 5 + 25 + (SlotSize + 5) * (4 + row) + 5 + 5)
+	frame:SetSize(500 + 10, 5 + 25 + (SlotSize + 5) * (3 + row) + 5 + 5)
 end
 
 concommand.Add("+menu", function()

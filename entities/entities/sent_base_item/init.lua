@@ -93,6 +93,10 @@ end
 function ENT:OnDrop(pl)
 end
 
+function ENT:Move(newpos)
+	
+end
+
 function ENT:PositionDrop(pl)
 	self:SetAngles(Angle(0, 0, 0))
 	self:SetPos(pl:GetShootPos() - self:OBBCenter() - Vector(0, 0, 20))

@@ -50,7 +50,7 @@ if SERVER then
 	
 	local SlotSizes = {
 		ToolBelt = 11,
-		Generic = 11
+		Generic = 22
 	}
 	
 	_R.Player.CanHold = function(self, v, slot)
