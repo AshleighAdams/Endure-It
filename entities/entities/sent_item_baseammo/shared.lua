@@ -18,8 +18,6 @@ function ENT:GetPrintName()
 end
 
 function ENT:InvokeAction(id)
-	id = tostring(id)
-	
 	if CLIENT then
 		net.Start("action_item_ammo_1")
 			net.WriteEntity(self)
@@ -27,7 +25,7 @@ function ENT:InvokeAction(id)
 		net.SendToServer()
 	else
 		local mag = id
-		
+		print(mag)
 		if mag == nil or not ValidEntity(mag) then return end
 		
 		mag.Bullet = self.Bullet
@@ -35,8 +33,8 @@ function ENT:InvokeAction(id)
 		mag.BulletChanged = true
 		self.Count = self.Count - 1
 		
-		mag:StateChanged(SYNCSTATE_OWNER)
-		self:StateChanged(SYNCSTATE_OWNER)
+		mag:StateChanged(SYNCSTATE_OWNER, nil, true)
+		self:StateChanged(SYNCSTATE_OWNER, nil, true)
 	end
 end
 
@@ -55,19 +53,20 @@ end
 
 function ENT:GetAllMags()
 	local tbl = {}
+	if not self.Owner then self.Owner = LocalPlayer() end
 	if not self.Owner then return tbl end
 	
 	for k, v in pairs(self.Owner:GetInventory()) do
 		if type(v) == "table" then
 			for kk,vv in pairs(v) do
-				if vv.BaseClass.ClassName == "sent_item_basemag" then
+				if vv.BaseClass.ClassName == "sent_item_basemagazine" and not vv.Inside then
 					if vv:CanTakeBullet(self.Bullet) then
 						table.insert(tbl, vv)
 					end
 				end
 			end
 		else
-			if v.BaseClass.ClassName == "sent_item_basemag" then
+			if v.BaseClass.ClassName == "sent_item_basemagazine" and not vv.Inside  then
 				if v:CanTakeBullet(self.Bullet) then
 					table.insert(tbl, v)
 				end
@@ -82,7 +81,7 @@ function ENT:GetActions()
 	local ret = {}
 	
 	for k,v in pairs(self:GetAllMags()) do
-		table.insert(ret, {Name = self:GetPrintName(), ID = tostring(k)})
+		table.insert(ret, {Name = v:GetPrintName(false), ID = tostring(k)})
 	end
 	
 	--table.insert(ret, { Name = "Hello", ID = "hello" })

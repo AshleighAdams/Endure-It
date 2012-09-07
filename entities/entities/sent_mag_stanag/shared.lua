@@ -24,9 +24,8 @@ function ENT:CanTakeBullet(bul)
 	end
 	
 	if self.Rounds == 0 then
-		return bul.StartWith("Nato_556") -- It can take any Nato 5.56mm
+		return bul:StartWith("Nato_556") -- It can take any Nato 5.56mm
 	else
-		print("HURPY")
 		return self.Bullet == bul
 	end
 end

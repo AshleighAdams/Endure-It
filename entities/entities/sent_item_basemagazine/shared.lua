@@ -24,8 +24,13 @@ function ENT:CanTakeBullet(bul)
 	return self.Bullet == bul
 end
 
-function ENT:GetPrintName()
-	return self.PrintName .. "\n" .. tostring(self.Rounds)
+function ENT:GetPrintName(nonewlines)
+	local nl = "\n"
+	if nonewlines then
+		nl = ": "
+	end
+
+	return self.PrintName .. nl .. tostring(self.Rounds)
 end
 
 function ENT:InvokeAction(id, gun)
@@ -35,6 +40,7 @@ function ENT:InvokeAction(id, gun)
 			net.Start("action_item_stanag_1")
 				net.WriteEntity(self)
 				net.WriteEntity(gun)
+				net.WriteString("pip")
 			net.SendToServer()
 		end
 		if gun.SetMagazine != nil and gun.CanTakeMagazine and gun:CanTakeMagazine(self) then
@@ -43,6 +49,23 @@ function ENT:InvokeAction(id, gun)
 			end
 			gun:SetMagazine(self)
 			self.Inside = gun
+		end
+	end
+	
+	if id == "top" then
+		if CLIENT then
+			gun = LocalPlayer():GetActiveWeapon()
+			net.Start("action_item_stanag_1")
+				net.WriteEntity(self)
+				net.WriteEntity(gun)
+				net.WriteString("top")
+			net.SendToServer()
+		end
+		if self.Inside then
+			if self.Inside and ValidEntity(self.Inside) then
+				self.Inside:SetMagazine(nil)
+			end
+			self.Inside = nil
 		end
 	end
 end
@@ -54,6 +77,7 @@ end
 function ENT:GetActions()
 	local ret = {}
 	table.insert(ret, { Name = "Put in weapon", ID = "pip" })
+	table.insert(ret, { Name = "Take out of weapon", ID = "top" })
 	return ret
 end
 
@@ -62,9 +86,10 @@ if SERVER then
 	net.Receive("action_item_stanag_1", function(len, pl)
 		local itm = net.ReadEntity()
 		local gun = net.ReadEntity()
+		local ivk = net.ReadString()
 		
 		if itm.Owner and itm.Owner == pl then
-			itm:InvokeAction("pip", gun)
+			itm:InvokeAction(ivk, gun)
 		end
 	end)
 end

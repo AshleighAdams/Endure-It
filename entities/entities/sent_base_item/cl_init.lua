@@ -46,6 +46,7 @@ function ENT:SetupPanel(pan)
 			LocalPlayer():InvMove(self, "BackPack")
 		end)
 		*/
+		
 		for k,vv in pairs(self:GetActions()) do
 			local v = vv
 			Choice:AddOption(v.Name, function()

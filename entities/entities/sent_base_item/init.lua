@@ -36,6 +36,7 @@ end
 
 ENT.SendNextUpdate = 0
 ENT.ToWhom = 3
+ENT.UpdateInventory = false
 SYNCSTATE_EVERYONE = 1
 SYNCSTATE_PVS = 2
 SYNCSTATE_OWNER = 3
@@ -55,7 +56,7 @@ net_sends[SYNCSTATE_EVERYONE] = function(self)
 	net.Broadcast()
 end
 
-function ENT:StateChanged(towhom, wait_time)
+function ENT:StateChanged(towhom, wait_time, updateowner)
 	if wait_time == nil then wait_time = -1 end -- send it right away
 	if towhom == nil then towhom = SYNCSTATE_EVERYONE end
 	if towhom < self.ToWhom then
@@ -63,6 +64,10 @@ function ENT:StateChanged(towhom, wait_time)
 	end
 	self.SendNextUpdate = CurTime() + wait_time
 	print(self:GetClass() .. " will send state in " .. tostring(wait_time) .. " seconds")
+	
+	if updateowner and updateowner == true and self.Owner and ValidEntity(self.Owner) then
+		self.UpdateInventory = true
+	end
 end
 
 function ENT:Think()
@@ -72,6 +77,14 @@ function ENT:Think()
 			self:SendState(self.ToWhom)
 			self.ToWhom = 3
 			print(self:GetClass() .. " sent state")
+		end
+	end
+	
+	if self.UpdateInventory then
+		self.UpdateInventory = false
+		
+		if self.Owner and ValidEntity(self.Owner) then
+			self.Owner:InventoryChange()
 		end
 	end
 end
