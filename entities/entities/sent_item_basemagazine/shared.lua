@@ -14,6 +14,13 @@ ENT.IsMagazine = true
 ENT.Rounds = 30
 ENT.Bullet = "Nato_556"
 
+function ENT:CanTakeBullet(bul)
+	if type(bul) == "table" then
+		bul = bul.Name
+	end
+	return self.Bullet == bul
+end
+
 function ENT:GetPrintName()
 	return self.PrintName .. "\n" .. tostring(self.Rounds)
 end
