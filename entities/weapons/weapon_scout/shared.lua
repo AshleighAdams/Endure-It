@@ -58,23 +58,8 @@ SWEP.IronSightsPos = Vector (5.017, -8.9258, 2.5139)
 SWEP.IronSightsAng = Vector (0, 0, 0)
 
 function SWEP:PrimaryAttack()
-	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-	
-	if ( !self:CanPrimaryAttack() ) then return end
-	
-
-	self.Weapon:EmitSound( self.Primary.Sound )
-	
-	self:CSShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, cone )
-	
-	self:TakePrimaryAmmo( 1 )
-	
-	if ( (SinglePlayer() && SERVER) || CLIENT ) then
-		self.Weapon:SetNetworkedFloat( "LastShootTime", CurTime() )
-	end
-	
+	self.BaseClass:PrimaryAttack()
 	self.NeedsReload = true
-	
 end
 
 
@@ -112,10 +97,6 @@ function SWEP:Think()
 		self.IsZoomedIn = false
 	end	
 end	
-
-function SWEP:Reload()
-	self.Weapon:DefaultReload( ACT_VM_RELOAD );	
-end
 
 if CLIENT then
 	SWEP.ScopeRT = SWEP.ScopeRT or GetRenderTarget("ei_scope_", 1024, 1024, true)
@@ -235,58 +216,6 @@ function SWEP:DrawHUD()
 		render.SetViewPort(0, 0, w, h)
 	render.SetRenderTarget(oldrt)
 	
-	/*
-	local oldrt = render.GetRenderTarget()
-	render.SetRenderTarget(self.ScopeRT)
-		render.Clear(0, 0, 0, 255)
-		render.ClearDepth()
-		local w, h = ScrW(), ScrH()
-		render.SetViewPort(0, 0, 512, 512)
-			cam.Start2D()
-				render.RenderView(Cam)
-					surface.SetDrawColor(255, 255, 255, 255)
-					surface.SetMaterial(self.mat)
-					--surface.SetTexture(self.ScopeRT)
-					
-					surface.DrawTexturedRectUV(0, 0, 512, 512, 1, -1)
-			cam.End2D()
-		render.SetViewPort(0, 0, w, h)
-		
-	--render.SetRenderTarget(self.ScopeRT)
-	
-	render.SetRenderTarget(oldrt)
-	
-	*/
-
-	
-	if(self.IsZoomedIn && self.IronTime == 1 && !self:GetNetworkedBool("Reloading")) then
-		
-		
-		--DrawCircle(ScrW()/2, ScrH()/2, 300, 0.1, Color(255,255,255,255), 0, self.ScopeRT)
-		
-		/*
-		render.ClearStencil()
-		render.SetStencilEnable( true ) 
-
-		render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_NEVER);
-		render.SetStencilFailOperation(STENCILOPERATION_INCR);
-		render.SetStencilPassOperation(STENCILOPERATION_KEEP); 
-
-		DrawCircle(ScrW()/2, ScrH()/2, 300, 0.1, Color(255,255,255,255), 0);
-		
-		render.SetStencilPassOperation( STENCILOPERATION_DECR);
-		
-		DrawCircle(ScrW()/2, ScrH()/2, 200, 0.1, Color(255,255,255,255), 0);
-		
-		render.SetStencilReferenceValue(1);
-		render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_EQUAL);
-		
-		surface.SetDrawColor(0, 0, 0, 255);
-		surface.DrawRect(0, 0, ScrW(), ScrH());
-		
-		render.SetStencilEnable(false);
-		*/
-	end
 end
 
 function SWEP:AdjustMouseSensitivity()
@@ -298,3 +227,6 @@ function SWEP:AdjustMouseSensitivity()
 end
 
 
+function SWEP:CanTakeMagazine(mag)
+	return mag:GetClass() == "sent_mag_scout"
+end

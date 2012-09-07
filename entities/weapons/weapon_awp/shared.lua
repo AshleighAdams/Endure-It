@@ -58,35 +58,7 @@ SWEP.IronSightsPos = Vector (5.5862, -4.5, 2.0838)
 SWEP.IronSightsAng = Vector (0, 0, 0)
 
 function SWEP:PrimaryAttack()
-	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-	
-	if ( !self:CanPrimaryAttack() ) then return end
-	
-	// Play shoot sound
-	self.Weapon:EmitSound( self.Primary.Sound )
-	
-	// Shoot the bullet
-	local cone = self.Primary.Cone
-	if not self.Zoomed then
-		cone = 0.5
-	end
-	self:CSShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, cone )
-	
-	// Remove 1 bullet from our clip
-	self:TakePrimaryAmmo( 1 )
-	
-	if ( self.Owner:IsNPC() ) then return end
-	
-	// Punch the player's view
-	self.Owner:ViewPunch( Angle( math.Rand(-0.2,-0.1) * self.Primary.Recoil, math.Rand(-0.1,0.1) *self.Primary.Recoil, 0 ) )
-	
-	// In singleplayer this function doesn't get called on the client, so we use a networked float
-	// to send the last shoot time. In multiplayer this is predicted clientside so we don't need to 
-	// send the float.
-	if ( (SinglePlayer() && SERVER) || CLIENT ) then
-		self.Weapon:SetNetworkedFloat( "LastShootTime", CurTime() )
-	end
-	
+	self.BaseClass:PrimaryAttack()
 	self.NeedsReload = true
 	
 	/*
@@ -359,3 +331,6 @@ function SWEP:AdjustMouseSensitivity()
 end
 
 
+function SWEP:CanTakeMagazine(mag)
+	return mag:GetClass() == "sent_mag_awp"
+end

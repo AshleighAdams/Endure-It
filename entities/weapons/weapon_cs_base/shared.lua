@@ -106,15 +106,12 @@ function SWEP:SetMagazine(mag)
 		self:SetClip1(0)
 		return
 	end
-	
-	if CLIENT then print("preReloading") end
-	
+		
 	if not self:CanTakeMagazine(mag) then return false end
 	
 	self:SetMagazine(nil)
 	self.Magazine = mag
 	
-	if CLIENT then print("Reloading") end
 	self:Reload(1)
 	
 	return true
@@ -124,23 +121,33 @@ function SWEP:GetMagazine()
 	return self.Magazine
 end
 
+SWEP.NextQuickReload = 0
 function SWEP:Reload(invoker)
 	if self.Reloading then return end
 	
 	if invoker == nil then
-		if true then return end
-		if self.Magazine and CLIENT then
-			self.Owner:InvDrop(self.Magazine)
+		--if true then return end
+		if CLIENT and CurTime() > self.NextQuickReload then
+			local oldmag
+			if self.Magazine then
+				oldmag = self.Magazine
+				self.Owner:InvDrop(self.Magazine)
+			end
+			
 			local bestmag = nil
 			for k, v in pairs((self.Owner.Inventory.ToolBelt or {})) do
 				if v.IsMagazine and self:CanTakeMagazine(v) then
-					if not bestmag or v.Rounds > bestmag.Rounds then
+					if oldmag and oldmag == v then continue end -- So we don't drop and put in gun at same time...
+					
+					if not bestmag or (v.Rounds > bestmag.Rounds) then
 						bestmag = v
 					end
 				end
 			end
+			
 			if bestmag != nil then
 				bestmag:InvokeAction("pip")
+				self.NextQuickReload = CurTime() + 1 -- will also be set a bit later, when we start to reload
 			end
 		end
 		return
@@ -172,6 +179,8 @@ function SWEP:Reload(invoker)
 	local oldowner = self.Owner
 	self.Reloading = true
 	
+	self.NextQuickReload = self.Owner:GetViewModel():SequenceDuration() + CurTime()
+	
 	timer.Simple(self.Owner:GetViewModel():SequenceDuration(), function()
 		self.Reloading = false
 		if not self.Owner then return end
@@ -188,6 +197,8 @@ function SWEP:Reload(invoker)
 		
 		self:SetClip1(self.Magazine.Rounds)
 	end)
+	
+	if self.OnReload then self:OnReload() end
 end
 
 

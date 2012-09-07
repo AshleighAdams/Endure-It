@@ -94,12 +94,12 @@ function ENT:OnDrop(pl)
 end
 
 function ENT:Drop(pl)
-	self.Owner = nil
-	self:SetPos(pl:GetShootPos() - Vector(0, 0, -5))
-	self:SetAngles(Angle(math.random(0, 360), math.random(0, 360), math.random(0, 360)))
+	self:SetPos(pl:GetShootPos() - Vector(0, 0, 10))
+	self:SetAngles(Angle(0, self.Owner:GetAimVector():Angle().y, math.random(0, 360)))
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetNoDraw(false)
 	self:GetPhysicsObject():Wake()
+	self.Owner = nil
 	self:OnDrop(pl)
 end
 

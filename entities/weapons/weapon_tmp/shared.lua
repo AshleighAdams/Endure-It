@@ -56,3 +56,6 @@ SWEP.OverrideAng = Vector (0, 0, 0)
 
 
 
+function SWEP:CanTakeMagazine(mag)
+	return mag:GetClass() == "sent_mag_tmp"
+end

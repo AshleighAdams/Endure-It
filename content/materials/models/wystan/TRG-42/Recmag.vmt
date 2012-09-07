@@ -1,0 +1,12 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/wystan/trg-42/Recmag"	
+	"$bumpmap" "models/wystan/trg-42\recmag_normal"
+
+                "$normalmapalphaenvmapmask" "1"
+                "$phong" 		"1"
+                "$phongexponent" 	"30"
+                "$phongboost" "0.8"
+                "$phongfresnelranges" "[2 5 9]"
+                "$phongalbedotint" "1"
+}

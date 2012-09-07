@@ -57,27 +57,6 @@ SWEP.IronSightsPos = Vector (5.6005, -5, 1.8803)
 SWEP.IronSightsAng = Vector (0, 0, 0)
 
 
-function SWEP:PrimaryAttack()
-	
-	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-	
-	if ( !self:CanPrimaryAttack() ) then return end
-	
-	self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
-	self.Owner:SetAnimation( PLAYER_ATTACK1 )
-	self.Weapon:EmitSound( self.Primary.Sound )
-	
-	self:CSShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, cone )
-	
-	self:TakePrimaryAmmo( 1 )
-	
-	if ( (SinglePlayer() && SERVER) || CLIENT ) then
-		self.Weapon:SetNetworkedFloat( "LastShootTime", CurTime() )
-	end
-		
-end
-
-
 function SWEP:Think()
 
 	if self.IsZoomedIn then
@@ -102,12 +81,10 @@ function SWEP:Think()
 	end	
 end	
 
-function SWEP:Reload()
-	
-	self.Weapon:DefaultReload( ACT_VM_RELOAD );	
-	self.Owner:SetFOV(0, 0);
+function SWEP:OnReload()
 	
 	if CLIENT and not (self.IronTime <= 0) then
+		self.Owner:SetFOV(0, 0)
 		// Yes, I know... timer.Simple can't be called recursivly
 		for i = self.IronTime, 0, -0.01 do
 			local ii = i
@@ -115,16 +92,6 @@ function SWEP:Reload()
 		end
 		
 	end
-	--slowlyputback()
-	
-	--self.IronTime = 0
-	
-	/*
-	local time = self.Owner:GetViewModel():SequenceDuration();
-	timer.Simple(time, function() 
-		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed);
-	end);
-	*/
 	
 end
 
@@ -231,4 +198,6 @@ function SWEP:AdjustMouseSensitivity()
 	return 1
 end
 
-
+function SWEP:CanTakeMagazine(mag)
+	return mag:GetClass() == "sent_mag_sg550s"
+end

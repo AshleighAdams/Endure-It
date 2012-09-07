@@ -16,12 +16,6 @@ if ( CLIENT ) then
 	
 end
 
-SWEP.UseBullet = AKBullet
-
-
-print(SWEP.UseBullet)
-print("ASD")
-
 SWEP.HoldType			= "ar2"
 SWEP.Base				= "weapon_cs_base"
 SWEP.Category			= "Endure-It"
@@ -55,6 +49,9 @@ function SWEP:Special()
 	self.Primary.Automatic = !self.Primary.Automatic;
 end
 
+function SWEP:CanTakeMagazine(mag)
+	return mag:GetClass():StartWith("sent_mag_ak")
+end
 
 SWEP.ZoomScale = 55;
 SWEP.ZoomSpeed = 0.1;

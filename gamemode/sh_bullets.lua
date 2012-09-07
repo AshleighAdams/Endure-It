@@ -247,6 +247,8 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 		end
 		
 		table.insert(bullets, bul)
+		
+		RunConsoleCommand("say", "poop: " .. bul.Bullet.Name)
 	end
 end
 
@@ -284,7 +286,6 @@ function RegisterBullet(bull)
 		util.AddNetworkString(bull.Name .. "_Decal")
 		
 		net.Receive("Shoot_Bullet_" .. bull.Name, function(...)
-			RunConsoleCommand("say", bull.Name)
 			bull:ReceiveShoot(...) 
 		end)
 		net.Receive("Shoot_Bullet_Hit_" .. bull.Name, function(...)
@@ -357,12 +358,16 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			u:Normalize()
 			local dot = u:Dot(v)
 			local pos = bul.LastPos + dot * u
+			
+			if pos:Distance(bul.Position) > bul.LastPos:Distance(bul.Position) then
+				pos = bul.Position
+			end
 					
 			debugoverlay.Line(LocalPlayer():GetShootPos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
 			
 			local tr = util.TraceLine({ startpos = pos, endpos = LocalPlayer():GetShootPos(), mask = MASK_SHOT})
 						
-			if math.abs(dot) < 150 * 10 and (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
+			if (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
 				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
 					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
 				elseif not bul.Mine then
@@ -481,11 +486,14 @@ print("Files:")
 PrintTable(files)
 
 for k, v in pairs(files) do
-	include((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v)
+	include("bullets/" .. v)
+	--include((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v)
 	if SERVER then AddCSLuaFile((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v) end
 end
 
-RunConsoleCommand("say", "Nato_556: " .. tostring(Nato_556))
+timer.Simple(10, function()
+	RunConsoleCommand("say", "Nato_556: " .. tostring(Nato_556))
+end)
 
 if SERVER then
 	AddCSLuaFile("sh_bullets.lua")	
@@ -540,7 +548,7 @@ function MachineMode()
 		local bul = {}
 		local lp = LocalPlayer()
 		bul.StartPos = Vector(0, 0, 0)
-		bul.Direction = (LocalPlayer():GetShootPos():Angle() + Angle(0, 0, 0)):Forward()
+		bul.Direction = -(LocalPlayer():GetShootPos():Angle() + Angle(0, 0, 0)):Forward()
 
 		bul.Direction = bul.Direction + 
 			Vector(
