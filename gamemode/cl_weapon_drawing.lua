@@ -98,15 +98,15 @@ weaponsinfos["weapon_crossbow"]={}
 weaponsinfos["weapon_crossbow"].Model="models/weapons/W_crossbow.mdl"
 weaponsinfos["weapon_crossbow"].Bone="ValveBiped.Bip01_L_Clavicle"
 weaponsinfos["weapon_crossbow"].BoneOffset={Vector(0,5,-5),Angle(180,90,0)}//offset,weapon angle
- 
-hook.Add("InitPostEntity", "load_others_guns", function()
+
+local function LoadOthers()
 	for k,v in pairs(weapons.GetList()) do
 		if not v.HoldType then continue end
 		if v.HoldType == "ar2" or v.HoldType == "smg" then
 			weaponsinfos[v.ClassName] = table.Copy(weaponsinfos["weapon_ar2"])
 			weaponsinfos[v.ClassName].Model = v.WorldModel
-			weaponsinfos[v.ClassName].BoneOffset[1] = Vector(20,12,5)
-			weaponsinfos[v.ClassName].BoneOffset[2] = Angle(97,180,290)
+			weaponsinfos[v.ClassName].BoneOffset[1] = Vector(20,5,5)
+			weaponsinfos[v.ClassName].BoneOffset[2] = Angle(97,180,270)
 		elseif v.HoldType == "pistol" then
 			weaponsinfos[v.ClassName] = table.Copy(weaponsinfos["weapon_pistol"])
 			weaponsinfos[v.ClassName].Model = v.WorldModel
@@ -114,9 +114,11 @@ hook.Add("InitPostEntity", "load_others_guns", function()
 			weaponsinfos[v.ClassName].BoneOffset[2] = Angle(0,270,0)
 		end
 	end
-end) 
+end
 
+hook.Add("InitPostEntity", "load_others_guns", LoadOthers) 
 
+LoadOthers()
 
 function LPGB(dotrace)
     if !dotrace then

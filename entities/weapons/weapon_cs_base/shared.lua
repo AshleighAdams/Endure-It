@@ -69,6 +69,7 @@ SWEP.InventoryPrimary = true
 SWEP.ZoomScale = 100;
 SWEP.ZoomSpeed = 0.25;
 SWEP.HoldType = "ar2"
+SWEP.Suppressed = false
 
 
 function SWEP:Initialize()	
@@ -79,6 +80,11 @@ function SWEP:Initialize()
 end
 
 function SWEP:Deploy()
+	if self.PostWorldModel then
+		self.WorldModel = self.PostWorldModel
+		--self:SetModel(self.PostWorldModel)
+	end
+	
 	if self.Suppressed then
 		self:SendWeaponAnim(ACT_VM_DRAW_SILENCED)
 	else

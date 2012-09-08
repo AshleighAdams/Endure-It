@@ -22,7 +22,8 @@ SWEP.Spawnable			= true
 SWEP.AdminSpawnable		= true
 
 SWEP.ViewModel			= "models/weapons/v_pist_usp.mdl"
-SWEP.WorldModel			= "models/weapons/w_pist_usp_silencer.mdl"
+SWEP.WorldModel			= "models/weapons/w_pist_usp.mdl"
+SWEP.PostWorldModel		= "models/weapons/w_pist_usp_silencer.mdl"
 
 SWEP.Weight				= 5
 SWEP.AutoSwitchTo		= false
