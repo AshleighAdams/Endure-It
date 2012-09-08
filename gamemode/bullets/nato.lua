@@ -50,3 +50,4 @@ Nato_9mm.TracerChance = 0
 
 Nato_9mm.Mass = 0.004
 Nato_9mm.DragCoefficient = 0.29 / (Nato_556.Mass * 1000)
+RegisterBullet(Nato_9mm)

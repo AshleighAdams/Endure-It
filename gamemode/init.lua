@@ -33,6 +33,7 @@ resource.AddFile("materials/wystan/weapons/TRG-42/Recmag_Normal.vtf")
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
+AddCSLuaFile( "cl_weapon_drawing.lua" )
 
 include( 'shared.lua' )
 include("sv_inventory.lua")
