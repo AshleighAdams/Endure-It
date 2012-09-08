@@ -218,7 +218,7 @@ end
 
 function SWEP:PrimaryAttack()
 	
-	if self.Sprinting then return end
+	if self.Sprinting or self.SprintTime != 0 then return end
 	
 	--self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
@@ -382,13 +382,7 @@ end
 SWEP.SprintTime = 0
 function SWEP:GetViewModelPosition( pos, ang )
 	
-	if self.Sprinting or self.SprintTime != 0 then
-		self.SprintTime = self.SprintTime + 0.1 * FrameTime()
-		
-		self.SprintTime = math.Clamp(self.SprintTime, 0, 1)
-		
-		return pos, ang + Angle(90, 0, 0) * self.SprintTime
-	end
+	
 	
 	local grad = Lerp( self.IronTime, 0, 1)
 	
@@ -422,6 +416,20 @@ function SWEP:GetViewModelPosition( pos, ang )
 	pos = pos + IronPos.y * Forward * grad
 	pos = pos + IronPos.z * Up * grad
 
+	if self.Sprinting or self.SprintTime != 0 then
+		local mod = 5
+		if not self.Sprinting then
+			mod = -5
+		end
+		
+		self.SprintTime = self.SprintTime + mod * FrameTime()
+		self.SprintTime = math.Clamp(self.SprintTime, 0, 1)
+				
+		if self.SprintTime >= 1 then self.SprintTime = 1 end
+		
+		return pos, ang - Angle(20, -20, 0) * self.SprintTime * -1
+	end
+	
 	return pos, ang
 
 end
