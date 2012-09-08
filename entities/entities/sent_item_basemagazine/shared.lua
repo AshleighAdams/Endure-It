@@ -47,6 +47,9 @@ function ENT:InvokeAction(id, gun)
 				net.WriteString("pip")
 			net.SendToServer()
 		end
+		
+		print(gun:CanTakeMagazine(self), gun.CanTakeMagazine(gun, self))
+		
 		if gun.SetMagazine != nil and gun.CanTakeMagazine and gun:CanTakeMagazine(self) then
 			if self.Inside and ValidEntity(self.Inside) then
 				self.Inside:SetMagazine(nil)
