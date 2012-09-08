@@ -68,6 +68,7 @@ SWEP.InventoryPrimary = true
 
 SWEP.ZoomScale = 100;
 SWEP.ZoomSpeed = 0.25;
+SWEP.HoldType = "ar2"
 
 
 function SWEP:Initialize()	
@@ -103,6 +104,9 @@ end
 
 function SWEP:SetMagazine(mag)
 	if mag == nil then
+		if self.Magazine and self.Magazine.Inside and self.Magazine.Inside then
+			self.Magazine.Inside = nil
+		end
 		self.Magazine = nil
 		self:SetClip1(0)
 		return
@@ -195,7 +199,11 @@ function SWEP:Reload(invoker)
 			end
 		end
 		
-		self:SetClip1(self.Magazine.Rounds)
+		if not self.Magazine then
+			self:SetClip1(0)
+		else
+			self:SetClip1(self.Magazine.Rounds)
+		end
 	end)
 	
 	if self.OnReload then self:OnReload() end

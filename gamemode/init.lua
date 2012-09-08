@@ -46,6 +46,7 @@ include("sv_inventory.lua")
 function GM:PlayerLoadout( pl )
 	pl:SetWalkSpeed(7 * 17.6 * 0.75) -- 8mph
 	pl:SetRunSpeed(20 * 17.6 * 0.75) -- 20mph
+	pl:Give("empty_weapon")
 end
 
 function GM:ScalePlayerDamage(pl, hitbox, dmginf)

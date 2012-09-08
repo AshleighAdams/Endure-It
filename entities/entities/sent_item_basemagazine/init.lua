@@ -15,8 +15,9 @@ function ENT:SpawnFunction(ply, tr)
 end
 
 function ENT:PositionDrop(pl)
-	self:SetAngles(Angle(0, 0, 0))
-	local beloweye = pl:GetAimVector():Angle():Up() * -10
+	local av = pl:GetAimVector():Angle()
+	self:SetAngles(Angle(av.p, av.y + math.random(-30, 30), math.random(-30, 30)))
+	local beloweye = av:Up() * -10
 	self:SetPos(pl:GetShootPos() - self:OBBCenter() + beloweye)
 end
 
