@@ -34,48 +34,26 @@ function ENT:Initialize()
 	end
 		
 end
-
-function ENT:OnTakeDamage(dmginfo)
-	self.Entity:TakePhysicsDamage(dmginfo);
-end
-
-
-
+ENT.SpawnRange = 12000 -- about 400m
+ENT.m_NextThink = CurTime()
 function ENT:Think()
+	if self.m_NextThink > CurTime() then return end
+	self.m_NextThink = CurTime() + 1
 	
 	local ent = self.Entity;
-	local pos = ent:GetPos();	
+	local pos = ent:GetPos();
 	
-	local npcn = 0;
-	for k,v in pairs(ents.FindInSphere(pos, 1000)) do
-		
-		if (v:GetClass() == "npc_zombie") then
-			npcn = npcn + 1;
+	for k, v in pairs(ents.FindByClass("sent_city")) do
+		for _, pl in pairs(player.GetAll()) do
+			if pl:GetPos():Distance(v:GetPos()) < self.SpawnRange then
+				v:Populate(pl)
+			else
+				v:UnPopulate(pl)
+			end
 		end
 		
 	end
 	
-	for k,v in pairs(ents.FindInSphere(pos, 1000)) do
-		
-		if (v:IsPlayer() && npcn <= self.MaxNPC) then
-			
-			timer.Simple(math.random(1, 10), function()
-				
-				local zambiepos =  pos + Vector(math.random(10, 500), math.random(10, 500), 0);
-				local zambie = ents.Create("npc_zombie");
-				zambie:SetPos(zambiepos);
-				zambie:Spawn();
-				
-				local effectdata = EffectData();
-				effectdata:SetStart(zambiepos);
-				effectdata:SetOrigin(zambiepos);
-				effectdata:SetScale(10);
-				util.Effect("BloodImpact", effectdata);	
-				
-			end)
-			
-		end
-	end
 
 end
 
