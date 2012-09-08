@@ -17,13 +17,13 @@ end
 
 function ENT:Initialize()
 	local ent = self.Entity
-	ent:SetModel("models/Combine_turrets/ground_turret.mdl")
+	ent:SetModel(self.Model)
 	ent:PhysicsInit(SOLID_VPHYSICS)
 	ent:SetSolid(SOLID_VPHYSICS)
 	ent:SetMoveType(MOVETYPE_VPHYSICS) 
 	ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 	ent:SetUseType(SIMPLE_USE)
-	ent:SetAngle(Angle(0, math.random(0, 360), 0))
+	ent:SetAngles(Angle(0, math.random(0, 360), 0))
 	local phys = ent:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:Wake()
@@ -34,18 +34,69 @@ function ENT:OnTakeDamage(dmginfo)
 	self.Entity:TakePhysicsDamage(dmginfo)
 end
 
-function ENT:Think()
+ENT.SendNextUpdate = 0
+ENT.ToWhom = 3
+ENT.UpdateInventory = false
+SYNCSTATE_EVERYONE = 1
+SYNCSTATE_PVS = 2
+SYNCSTATE_OWNER = 3
+
+local net_sends = {}
+net_sends[SYNCSTATE_OWNER] = function(self)
+	if not self.Owner or not ValidEntity(self.Owner) then
+		net.Broadcast()
+		return
+	end
+	net.Send(self.Owner)
+end
+net_sends[SYNCSTATE_PVS] = function(self)
+	net.SendPVS((self.Owner or self):GetPos())
+end
+net_sends[SYNCSTATE_EVERYONE] = function(self)
+	net.Broadcast()
+end
+
+function ENT:StateChanged(towhom, wait_time, updateowner)
+	if wait_time == nil then wait_time = -1 end -- send it right away
+	if towhom == nil then towhom = SYNCSTATE_EVERYONE end
+	if towhom < self.ToWhom then
+		self.ToWhom = towhom
+	end
+	self.SendNextUpdate = CurTime() + wait_time
+	print(self:GetClass() .. " will send state in " .. tostring(wait_time) .. " seconds")
 	
+	if updateowner and updateowner == true and self.Owner and ValidEntity(self.Owner) then
+		self.UpdateInventory = true
+	end
+end
+
+function ENT:Think()
+	if self.SendNextUpdate != 0 then
+		if CurTime() > self.SendNextUpdate then
+			self.SendNextUpdate = 0
+			self:SendState(self.ToWhom)
+			self.ToWhom = 3
+			print(self:GetClass() .. " sent state")
+		end
+	end
+	
+	if self.UpdateInventory then
+		self.UpdateInventory = false
+		
+		if self.Owner and ValidEntity(self.Owner) then
+			self.Owner:InventoryChange()
+		end
+	end
 end
 
 function ENT:RestoreState(state)
 end
 
-function ENT:SendState()
-	net.Start(item_state_update)
+function ENT:SendState(syncstate)
+	net.Start("item_state_update")
 		net.WriteEntity(self)
 		net.WriteTable(self:GetState())
-	net.Broadcast()
+	net_sends[syncstate](self) -- send using the prefered method
 end
 
 function ENT:GetState()
@@ -55,13 +106,22 @@ end
 function ENT:OnDrop(pl)
 end
 
+function ENT:Move(newpos)
+	
+end
+
+function ENT:PositionDrop(pl)
+	self:SetAngles(Angle(0, 0, 0))
+	self:SetPos(pl:GetShootPos() - self:OBBCenter() - Vector(0, 0, 20))
+	self:SetVelocity(pl:GetVelocity())
+end
+
 function ENT:Drop(pl)
-	self.Owner = nil
-	self:SetPos(pl:GetShootPos() - Vector(0, 0, -5))
-	self:SetAngles(Angle(math.random(0, 360), math.random(0, 360), math.random(0, 360)))
+	self:PositionDrop(pl)
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetNoDraw(false)
 	self:GetPhysicsObject():Wake()
+	self.Owner = nil
 	self:OnDrop(pl)
 end
 
@@ -70,6 +130,10 @@ function ENT:PickUp(pl)
 	--self:SetNWEntity("Owner", self.Owner)
 	self:SetSolid(SOLID_NONE)
 	self:SetNoDraw(true)
+	self:StateChanged(SYNCSTATE_OWNER)
+end
+
+function ENT:Equip(ison)
 end
 
 function ENT:Use(act, call)

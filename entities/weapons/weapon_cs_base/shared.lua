@@ -80,7 +80,10 @@ end
 function SWEP:Deploy()
 	if self.Suppressed then
 		self:SendWeaponAnim(ACT_VM_DRAW_SILENCED)
+	else
+		self:SendWeaponAnim(ACT_VM_DRAW)
 	end
+	
 	if self:GetMagazine() == nil or self:GetMagazine().Rounds == 0 then
 		if self.Suppressed then
 			self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE_SILENCED)
@@ -88,8 +91,10 @@ function SWEP:Deploy()
 			self.Weapon:SendWeaponAnim(ACT_VM_DRYFIRE)
 		end
 	end
+	
 	self:SetNextPrimaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
 	self:SetNextSecondaryFire(CurTime() + self.Owner:GetViewModel():SequenceDuration())
+	
 end
 
 function SWEP:CanTakeMagazine(mag)
@@ -102,15 +107,12 @@ function SWEP:SetMagazine(mag)
 		self:SetClip1(0)
 		return
 	end
-	
-	if CLIENT then print("preReloading") end
-	
+		
 	if not self:CanTakeMagazine(mag) then return false end
 	
 	self:SetMagazine(nil)
 	self.Magazine = mag
 	
-	if CLIENT then print("Reloading") end
 	self:Reload(1)
 	
 	return true
@@ -120,23 +122,32 @@ function SWEP:GetMagazine()
 	return self.Magazine
 end
 
+SWEP.NextQuickReload = 0
 function SWEP:Reload(invoker)
 	if self.Reloading then return end
 	
 	if invoker == nil then
-		if true then return end
-		if self.Magazine and CLIENT then
-			self.Owner:InvDrop(self.Magazine)
+		--if true then return end
+		if CLIENT and CurTime() > self.NextQuickReload then
+			
 			local bestmag = nil
-			for k, v in pairs((self.Owner.Inventory.ToolBelt or {})) do
+			for k, v in pairs((self.Owner:GetInventory().ToolBelt or {})) do
 				if v.IsMagazine and self:CanTakeMagazine(v) then
-					if not bestmag or v.Rounds > bestmag.Rounds then
+					if self.Magazine and self.Magazine == v then continue end -- So we don't drop and put in gun at same time...
+					
+					if not bestmag or (v.Rounds > bestmag.Rounds) then
 						bestmag = v
 					end
 				end
 			end
+			
 			if bestmag != nil then
+				if self.Magazine then
+					self.Owner:InvDrop(self.Magazine)
+				end
+				
 				bestmag:InvokeAction("pip")
+				self.NextQuickReload = CurTime() + 1 -- will also be set a bit later, when we start to reload
 			end
 		end
 		return
@@ -168,6 +179,8 @@ function SWEP:Reload(invoker)
 	local oldowner = self.Owner
 	self.Reloading = true
 	
+	self.NextQuickReload = self.Owner:GetViewModel():SequenceDuration() + CurTime()
+	
 	timer.Simple(self.Owner:GetViewModel():SequenceDuration(), function()
 		self.Reloading = false
 		if not self.Owner then return end
@@ -184,19 +197,30 @@ function SWEP:Reload(invoker)
 		
 		self:SetClip1(self.Magazine.Rounds)
 	end)
+	
+	if self.OnReload then self:OnReload() end
 end
 
 
 function SWEP:PrimaryAttack()
 
-	self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
-	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	--self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
+	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	
 	if ( !self:CanPrimaryAttack() ) then
 		return
 	end
 	
-	self.Weapon:EmitSound( self.Primary.Sound )
+	if self.Magazine and ValidEntity(self.Magazine) then
+		if SERVER then
+			self.Magazine:StateChanged(SYNCSTATE_OWNER, self.Primary.Delay + 0.25)
+		end
+	else
+		self:SetClip1(0)
+		return
+	end
+	
+	self:EmitSound( self.Primary.Sound )
 	self:CSShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone )
 	self:TakePrimaryAmmo( 1 )
 	
@@ -279,7 +303,7 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 				anim = ACT_VM_PRIMARYATTACK_SILENCED
 			end
 		else
-			local anim = ACT_VM_DRYFIRE
+			anim = ACT_VM_DRYFIRE  
 			if self.Magazine.Rounds > 0 then
 				anim = ACT_VM_PRIMARYATTACK
 			end

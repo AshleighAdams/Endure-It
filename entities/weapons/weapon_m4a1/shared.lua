@@ -60,3 +60,6 @@ SWEP.OverrideAng = Vector (0.5698, 2.4502, 0)
 SWEP.IronSightsPos = Vector (3.5167, 0, 1.3197)
 SWEP.IronSightsAng = Vector (2.8766, -0.5125, 3.4012)
 
+function SWEP:CanTakeMagazine(mag)
+	return mag:GetClass():StartWith("sent_mag_stanag")
+end

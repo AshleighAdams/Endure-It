@@ -1,7 +1,0 @@
-VertexLitGeneric
-{
-	"$baseTexture" "models\wystan\M9\slide"
-	"$envmap" "env_cubemap"
-	"$bumpmap" "models\wystan\M9\slide_normal"
-	"$normalmapalphaenvmapmask" "1"
-}

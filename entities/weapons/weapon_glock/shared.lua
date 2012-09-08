@@ -58,3 +58,6 @@ SWEP.IronSightsAng = Vector (0, 0, 0)
 
 
 
+function SWEP:CanTakeMagazine(mag)
+	return mag:GetClass() == "sent_mag_9mm"
+end

@@ -14,20 +14,48 @@ function ENT:SetupPanel(pan)
 	btn:SetText(self:GetPrintName())
 	btn:SetSize(pan:GetWide(), pan:GetTall())
 	btn.DoClick = function()
-		local Choice = DermaMenu()
 		local x,y = gui.MousePos()
-		Choice:SetPos(0, y) -- TODO: Hack, can't click menu if it's over a derma item...
+		--frame:SetVisible(false)
+		
+		local Choice = DermaMenu()
+		Choice:SetPos(x, y) -- TODO: Hack, can't click menu if it's over a derma item...
+		--timer.Simple(0.2, gui.EnableScreenClicker)
+		
+		if self:GetEquipSlot() != "" then
+			Choice:AddOption("Equip", function()
+				LocalPlayer():InvEquip(self)
+			end)
+			Choice:AddOption("Unequip", function()
+				LocalPlayer():InvMove(self, self.PreferedSlot)
+			end)
+		end
+		
 		Choice:AddOption("Drop", function()
 			LocalPlayer():InvDrop(self)
 		end)
 		
+		Choice:AddOption("Move to toolbelt", function()
+			LocalPlayer():InvMove(self, "ToolBelt")
+		end)
+		
+		Choice:AddOption("Move to generic", function()
+			LocalPlayer():InvMove(self, "Generic")
+		end)
+		/*
+		Choice:AddOption("Move to backpack", function()
+			LocalPlayer():InvMove(self, "BackPack")
+		end)
+		*/
+		
 		for k,vv in pairs(self:GetActions()) do
 			local v = vv
 			Choice:AddOption(v.Name, function()
+				frame:SetVisible(true)
 				self:InvokeAction(v.ID)
 			end)
 		end
 		
+		Choice:Open()
 		--InvokeAction(id, gun)
 	end
 end

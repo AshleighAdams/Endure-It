@@ -50,3 +50,7 @@ SWEP.IronMoveSpeed = 0.05;
 
 SWEP.IronSightsPos = Vector (2.0013, -0.5384, 1.9127)
 SWEP.IronSightsAng = Vector (0, 0, 0)
+
+function SWEP:CanTakeMagazine(mag)
+	return mag:GetClass():StartWith("sent_mag_9mm")
+end

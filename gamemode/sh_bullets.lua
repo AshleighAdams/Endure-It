@@ -167,15 +167,22 @@ DefaultBullet.ReceiveHit = function(self, len, cl, tbl)
 		local start = Vector(net.ReadFloat(), net.ReadFloat(), net.ReadFloat())
 		local ent = net.ReadEntity()
 		local mat = net.ReadUInt(32)
+		local hg = net.ReadUInt(8)
 				
-		
 		if ent and ValidEntity(ent) and not ent:IsVehicle() then
 			local dmginfo = DamageInfo()
-			print((vel:Length() / self.Velocity) * self.Damage)
 			dmginfo:SetDamage( (vel:Length() / self.Velocity) * self.Damage )
 			dmginfo:SetDamageType(DMG_BULLET) --Bullet damage
 			dmginfo:SetAttacker(cl)
+			dmginfo:SetDamagePosition(hitpos)
 			dmginfo:SetDamageForce(vel:GetNormal() * 50)
+			
+			if ent:IsPlayer() then
+				hook.Call("ScalePlayerDamage", (GM or GAMEMODE), ent, hg, dmginfo)
+			elseif ent:IsNPC() then
+				hook.Call("ScaleNPCDamage", (GM or GAMEMODE), ent, hg, dmginfo)
+			end
+			
 			ent:TakeDamageInfo(dmginfo)
 		else
 			local RS = RecipientFilter()
@@ -283,7 +290,7 @@ function RegisterBullet(bull)
 		util.AddNetworkString("Shoot_Bullet_Hit_" .. bull.Name)
 		util.AddNetworkString(bull.Name .. "_Decal")
 		
-		net.Receive("Shoot_Bullet_" .. bull.Name, function(...) 
+		net.Receive("Shoot_Bullet_" .. bull.Name, function(...)
 			bull:ReceiveShoot(...) 
 		end)
 		net.Receive("Shoot_Bullet_Hit_" .. bull.Name, function(...)
@@ -305,12 +312,16 @@ function RegisterBullet(bull)
 	print("Registered bullet ", bull.Name)
 end
 
-local function EmitWorldSound(name, pos)
-	local te = ClientsideModel("models/props_lab/huladoll.mdl", RENDERGROUP_OPAQUE)
-	timer.Simple(0.1, function() te:Remove() end)
-	te:SetNoDraw(true)
-	te:SetPos(pos)
-	te:EmitSound(name, pos, 500, 200)
+local function EmitWorldSound(name, pos, shush)
+	-- We do it n times to make it loudder
+	local to = 5
+	if shush then
+		to = 1
+	end
+	for i = 1, to do
+		WorldSound(name, pos)
+	end
+	--te:EmitSound(name, pos, 100, 200)
 end
 
 local GRAVITY = Vector(0, 0, 600)
@@ -343,19 +354,38 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 		local dist1 = (LocalPlayer():GetShootPos() - bul.Position):Length()
 		local dist2 = (LocalPlayer():GetShootPos() - bul.LastPos):Length()
 		
-		if dist1 > dist2 --[[ 10m]] then
+		if dist1 > dist2 then
 			bul.Cracked = true
 			
-			local perc = dist2 / dist1
-			local pos = LerpVector(perc, bul.LastPos, bul.Position)
-			print(pos:Distance(LocalPlayer():GetShootPos()))
+			local u = bul.Position - bul.LastPos
+			local v = LocalPlayer():GetShootPos() - bul.LastPos
 			
-			--hello
-			if bul.Velocity:Length() > 1120 * 12 * 0.75 then
-				EmitWorldSound("arma2/scrack" .. tostring(math.random(1, 2)) .. ".wav", pos)
-			else
-				EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 6)) .. ".wav", pos)
+			u:Normalize()
+			local dot = u:Dot(v)
+			local pos = bul.LastPos + dot * u
+			
+			if pos:Distance(bul.Position) > bul.LastPos:Distance(bul.Position) then
+				pos = bul.Position
 			end
+					
+			debugoverlay.Line(LocalPlayer():GetShootPos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
+			
+			local tr = util.TraceLine({ startpos = pos, endpos = LocalPlayer():GetShootPos(), mask = MASK_SHOT})
+						
+			if (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
+				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
+					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
+				elseif not bul.Mine then
+					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)
+				end
+			end
+		end
+	else
+		local dist1 = (LocalPlayer():GetShootPos() - bul.Position):Length()
+		local dist2 = (LocalPlayer():GetShootPos() - bul.LastPos):Length()
+		
+		if dist1 < dist2 then
+			self.Cracked = false
 		end
 	end
 	
@@ -371,7 +401,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	
 	local res = util.TraceLine(tr)
 	local dot = -bul.Direction:Dot(res.HitNormal)
-	
+		
 	if not res.HitSky and res.HitWorld and (bul.Velocity:Length() > 100) and dot < 0.5 then -- about 45 deg
 		
 		local vellen = bul.Velocity:Length()
@@ -428,26 +458,48 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 				net.WriteFloat(tr.start.z)
 				net.WriteEntity(res.Entity)
 				net.WriteUInt(res.MatType, 32)
+				net.WriteUInt(res.HitGroup, 8)
 			net.SendToServer()
 		end
-	
+		
+		if not bul.Cracked then
+			bul.Cracked = true
+			local pos = bul.Position
+					
+			debugoverlay.Line(LocalPlayer():GetShootPos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
+			local tr = util.TraceLine({ startpos = pos, endpos = LocalPlayer():GetShootPos(), mask = MASK_SHOT})
+			
+			if math.abs(dot) < 150 * 10 and (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
+				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
+					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
+				elseif not bul.Mine then
+					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)
+				end
+			end
+		end
+		
 		return true
 	end
 end
 
 RegisterBullet(DefaultBullet)
 
-local path = (GM or GAMEMODE).Folder .. "/gamemode/bullets/*.lua", "gamemodes/"
-local files = file.Find(path, "MOD") or {}
+local path = (GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/*.lua", "gamemodes/"
+local files = file.Find(path,  LUA_PATH) or {}
 
 print(path)
 print("Files:")
 PrintTable(files)
 
 for k, v in pairs(files) do
-	include((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v)
+	include("bullets/" .. v)
+	--include((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v)
 	if SERVER then AddCSLuaFile((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v) end
 end
+
+timer.Simple(10, function()
+	RunConsoleCommand("say", "Nato_556: " .. tostring(Nato_556))
+end)
 
 if SERVER then
 	AddCSLuaFile("sh_bullets.lua")	
@@ -501,8 +553,8 @@ function MachineMode()
 	--for i=0, 15 do
 		local bul = {}
 		local lp = LocalPlayer()
-		bul.StartPos = lp:GetShootPos()
-		bul.Direction = lp:GetAimVector()
+		bul.StartPos = Vector(0, 0, 0)
+		bul.Direction = -(LocalPlayer():GetShootPos():Angle() + Angle(0, 0, 0)):Forward()
 
 		bul.Direction = bul.Direction + 
 			Vector(
@@ -517,10 +569,11 @@ function MachineMode()
 
 		bul.RandSeed = math.Rand(-100000, 100000)
 		
-		bul.Bullet = DefaultBullet
+		bul.Bullet = Nato_556
 		
 		ShootBullet(bul, function(bullet)
 			bullet.Velocity = bullet.Velocity + lp:GetVelocity()
+			bullet.Mine = false
 		end)
 	--end
 end

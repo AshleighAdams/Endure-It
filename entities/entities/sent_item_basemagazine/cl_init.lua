@@ -10,4 +10,7 @@ end
 
 function ENT:UpdateState(state) -- called on the client
 	self.Rounds = state.Rounds
+	if self.Inside and ValidEntity(self.Inside) then
+		self.Inside:SetClip1(self.Rounds)
+	end
 end

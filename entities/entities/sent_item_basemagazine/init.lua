@@ -14,6 +14,12 @@ function ENT:SpawnFunction(ply, tr)
 	return ent
 end
 
+function ENT:PositionDrop(pl)
+	self:SetAngles(Angle(0, 0, 0))
+	local beloweye = pl:GetAimVector():Angle():Up() * -10
+	self:SetPos(pl:GetShootPos() - self:OBBCenter() + beloweye)
+end
+
 function ENT:Initialize()
 	local ent = self.Entity
 	ent:SetModel(self.Model)
@@ -32,9 +38,6 @@ function ENT:OnTakeDamage(dmginfo)
 	self.Entity:TakePhysicsDamage(dmginfo)
 end
 
-function ENT:Think()
-end
-
 function ENT:RestoreState(state)
 	self.Rounds = state.Rounds
 	self:SendState()
@@ -43,4 +46,3 @@ end
 function ENT:GetState()
 	return {Rounds = self.Rounds}
 end
-
