@@ -13,6 +13,7 @@ concommand.Add("mag", function(pl, cmd, arg)
 			local ent = ents.Create(k)
 			ent:SetPos(pl:GetEyeTrace().HitPos)
 			ent:Spawn()
+			ent.Rounds = ent.Capacity
 		end
 	end
 end)

@@ -59,16 +59,18 @@ function GM:ScalePlayerDamage(pl, hitbox, dmginf)
 		local prim = inv.Primary
 		local sec = inv.Secondary
 		
-		local acw = pl:GetActiveWeapon():GetClass()
-		
-		if prim and prim.Weapon_Class and acw == prim.Weapon_Class then
-			-- Drop gun
-			pl:InvDrop(prim)
-		end
-		
-		if sec and sec.Weapon_Class and acw == sec.Weapon_Class then
-			-- Drop gun
-			pl:InvDrop(sec)
+		if ValidEntity(pl:GetActiveWeapon()) then		
+			local acw = pl:GetActiveWeapon():GetClass()
+			
+			if prim and prim.Weapon_Class and acw == prim.Weapon_Class then
+				-- Drop gun
+				pl:InvDrop(prim)
+			end
+			
+			if sec and sec.Weapon_Class and acw == sec.Weapon_Class then
+				-- Drop gun
+				pl:InvDrop(sec)
+			end
 		end
 	end
 	
