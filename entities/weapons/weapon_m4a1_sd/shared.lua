@@ -12,11 +12,11 @@ if ( CLIENT ) then
 	SWEP.SlotPos			= 1
 	SWEP.IconLetter			= "w"
 	
-	killicon.AddFont( "weapon_m16", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
+	killicon.AddFont( "rifle_m4", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
 	
 end
 
-SWEP.HoldType			= "ar2"
+SWEP.HoldType			= "smg" -- "ar2" -- smg doesn't bug out for now TODO: put back
 SWEP.Base				= "weapon_cs_base"
 SWEP.Category			= "Counter-Strike"
 SWEP.Suppressed = true
@@ -25,7 +25,10 @@ SWEP.Spawnable			= true
 SWEP.AdminSpawnable		= true
 
 SWEP.ViewModel			= "models/weapons/v_rif_m4a1.mdl"
-SWEP.WorldModel			= "models/weapons/w_rif_m4a1_silencer.mdl"
+SWEP.WorldModel			= "models/weapons/w_rif_m4a1.mdl" --_silencer.mdl"
+SWEP.PostWorldModel		= "models/weapons/w_rif_m4a1_silencer.mdl"
+
+--SWEP.AnimPrefix         = "ar2"
 
 SWEP.Weight				= 5
 SWEP.AutoSwitchTo		= false
@@ -49,6 +52,14 @@ SWEP.Secondary.Ammo			= "none"
 
 SWEP.ZoomScale = 30;
 SWEP.ZoomSpeed = 1;
+
+function SWEP:Special()
+	self:EmitSound(Sound("Weapon_Glock.Slideback"));
+	self.Primary.Automatic = !self.Primary.Automatic;
+end
+
+SWEP.OverridePos = Vector (1.0621, 0, -2)
+SWEP.OverrideAng = Vector (0.5698, 2.4502, 0)
 
 
 SWEP.IronSightsPos = Vector (3.6317, -3.6443, 2.7934)

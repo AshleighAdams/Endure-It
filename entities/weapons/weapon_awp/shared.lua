@@ -74,9 +74,7 @@ end
 
 
 function SWEP:Think()
-	if self.UseBullet != SniperBullet then
-		self.UseBullet = SniperBullet
-	end
+	self.BaseClass.Think(self)
 	if self.NeedsReload and not self.Owner:KeyDown(IN_ATTACK) then
 		self.NeedsReload = false
 		self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
@@ -88,26 +86,6 @@ function SWEP:Think()
 		self.Owner:SetAnimation( PLAYER_ATTACK1 )
 	end
 
-	if self.IsZoomedIn && !self:GetNetworkedBool("Reloading") then
-		self.IronTime = self.IronTime + self.IronMoveSpeed
-	else
-		self.IronTime = self.IronTime - self.IronMoveSpeed
-	end
-	
-	self.IronTime = math.Clamp(self.IronTime, 0, 1)
-	
-	if (self.Owner:KeyDown(IN_ATTACK2) && !self.Owner:KeyDown(IN_USE)) and not self.IsZoomedIn then
-		self.SwayScale = 0.5;
-		self.BobScale = 0.5;
-		self.Owner:SetFOV(self.ZoomScale, self.ZoomSpeed)
-		self.IsZoomedIn = true
-		self:SetNWBool("zoomed", true)
-	elseif not self.Owner:KeyDown(IN_ATTACK2) and self.IsZoomedIn then
-		self.SwayScale = 2;
-		self.BobScale = 2;
-		self.Owner:SetFOV(0, self.ZoomSpeed)
-		self.IsZoomedIn = false
-	end	
 end	
 
 

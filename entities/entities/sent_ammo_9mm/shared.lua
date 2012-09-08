@@ -1,6 +1,6 @@
 ENT.Type 			= "anim"
 ENT.Base 			= "sent_item_baseammo"
-ENT.PrintName		= "5.56mm Ammo"
+ENT.PrintName		= "9mm Ammo"
 ENT.Author			= "victormeriqui & C0BRA"
 ENT.Information		= ""
 ENT.Category		= "Endure It"
@@ -11,4 +11,4 @@ ENT.AdminSpawnable		= true
 
 ENT.Count = 30 * 10
 ENT.PreferedSlot = "ToolBelt"
-ENT.Bullet = "Nato_556"
+ENT.Bullet = "Nato_9mm"

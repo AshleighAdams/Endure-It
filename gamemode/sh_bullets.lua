@@ -28,6 +28,15 @@ DefaultBullet.DecalMats[MAT_DIRT] = "Impact.Concrete"
 DefaultBullet.DecalMats[MAT_SAND] = "Impact.Sand"
 DefaultBullet.DecalMats[MAT_WOOD] = "Impact.Wood"
 
+BulletHitSounds = {}
+BulletHitSounds[MAT_GLASS] = "Glass"
+BulletHitSounds[MAT_DIRT] = "Dirt"
+BulletHitSounds[MAT_FLESH] = "Flesh"
+BulletHitSounds[MAT_CONCRETE] = "BulletImpact"
+BulletHitSounds[MAT_TILE] = "Tile"
+BulletHitSounds[MAT_SAND] = "Sand"
+BulletHitSounds[MAT_WOOD] = "Wood"
+
 if CLIENT then
 
 	local Tube = Material("trails/tube")
@@ -102,7 +111,8 @@ if CLIENT then
 			end
 		
 		end
-		WorldSound("Default.BulletImpact", pos, 50)
+		local type_prfx = BulletHitSounds[mat] or "Default"
+		WorldSound( type_prfx.. ".BulletImpact", pos, 50 )
 	end
 	
 	
@@ -143,7 +153,7 @@ if CLIENT then
 		
 		local func = self.DecalEffects[mat]
 		if func then
-			func(self, hit, norm)
+			func(self, hit, norm, mat)
 		end
 		
 		if ent and (ent:IsPlayer() or ent:IsNPC()) then
@@ -181,7 +191,13 @@ DefaultBullet.ReceiveHit = function(self, len, cl, tbl)
 				hook.Call("ScalePlayerDamage", (GM or GAMEMODE), ent, hg, dmginfo)
 			elseif ent:IsNPC() then
 				hook.Call("ScaleNPCDamage", (GM or GAMEMODE), ent, hg, dmginfo)
+			elseif ent:Health() > 0 then
+				ent:SetHealth(ent:Health() - dmginfo:GetDamage())
+				if ent:Health() <= 0 then
+					ent:Input("Break")
+				end
 			end
+			
 			
 			ent:TakeDamageInfo(dmginfo)
 		else

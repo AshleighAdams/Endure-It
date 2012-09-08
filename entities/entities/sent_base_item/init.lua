@@ -140,6 +140,11 @@ function ENT:Use(act, call)
 	if not act:IsPlayer() then return end
 	if self.Owner then return end
 	
+	if (act.NextUseTime or 0) > CurTime() then return end
+	act.NextUseTime = CurTime() + 0.1
+	
+	print("USE")
+	
 	local dist = (self:GetPos() - act:GetEyeTrace().HitPos):Length()
 	if dist > 25 then return end
 	--self:SetNWEntity("Owner", self.Owner)

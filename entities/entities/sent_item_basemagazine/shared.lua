@@ -50,6 +50,7 @@ function ENT:InvokeAction(id, gun)
 		if gun.SetMagazine != nil and gun.CanTakeMagazine and gun:CanTakeMagazine(self) then
 			if self.Inside and ValidEntity(self.Inside) then
 				self.Inside:SetMagazine(nil)
+				self.Inside = nil
 			end
 			gun:SetMagazine(self)
 			self.Inside = gun

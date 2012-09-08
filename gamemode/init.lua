@@ -33,6 +33,8 @@ resource.AddFile("materials/wystan/weapons/TRG-42/Recmag_Normal.vtf")
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
+AddCSLuaFile( "cl_weapon_drawing.lua" )
+AddCSLuaFile( "cl_legs.lua" )
 
 include( 'shared.lua' )
 include("sv_inventory.lua")
@@ -46,6 +48,7 @@ include("sv_inventory.lua")
 function GM:PlayerLoadout( pl )
 	pl:SetWalkSpeed(7 * 17.6 * 0.75) -- 8mph
 	pl:SetRunSpeed(20 * 17.6 * 0.75) -- 20mph
+	pl:Give("empty_weapon")
 end
 
 function GM:ScalePlayerDamage(pl, hitbox, dmginf)

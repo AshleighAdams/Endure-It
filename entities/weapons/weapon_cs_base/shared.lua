@@ -68,6 +68,8 @@ SWEP.InventoryPrimary = true
 
 SWEP.ZoomScale = 100;
 SWEP.ZoomSpeed = 0.25;
+SWEP.HoldType = "ar2"
+SWEP.Suppressed = false
 
 
 function SWEP:Initialize()	
@@ -78,6 +80,11 @@ function SWEP:Initialize()
 end
 
 function SWEP:Deploy()
+	if self.PostWorldModel then
+		self.WorldModel = self.PostWorldModel
+		--self:SetModel(self.PostWorldModel)
+	end
+	
 	if self.Suppressed then
 		self:SendWeaponAnim(ACT_VM_DRAW_SILENCED)
 	else
@@ -103,6 +110,9 @@ end
 
 function SWEP:SetMagazine(mag)
 	if mag == nil then
+		if self.Magazine and self.Magazine.Inside and self.Magazine.Inside then
+			self.Magazine.Inside = nil
+		end
 		self.Magazine = nil
 		self:SetClip1(0)
 		return
@@ -195,7 +205,11 @@ function SWEP:Reload(invoker)
 			end
 		end
 		
-		self:SetClip1(self.Magazine.Rounds)
+		if not self.Magazine then
+			self:SetClip1(0)
+		else
+			self:SetClip1(self.Magazine.Rounds)
+		end
 	end)
 	
 	if self.OnReload then self:OnReload() end
@@ -203,7 +217,9 @@ end
 
 
 function SWEP:PrimaryAttack()
-
+	
+	if self.Sprinting or self.SprintTime != 0 then return end
+	
 	--self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	
@@ -355,10 +371,19 @@ function SWEP:Think()
 		self.Owner:SetFOV(0, self.ZoomSpeed)
 		self.IsZoomedIn = false
 	end	
+	
+	if self.Owner:KeyDown(IN_SPEED) and self.Owner:GetVelocity():Length() > self.Owner:GetRunSpeed() * 0.5 then
+		self.Sprinting = true
+	else
+		self.Sprinting = false
+	end
 end	
 
+SWEP.SprintTime = 0
 function SWEP:GetViewModelPosition( pos, ang )
-		
+	
+	
+	
 	local grad = Lerp( self.IronTime, 0, 1)
 	
 	local IronPos = self.IronSightsPos;
@@ -391,6 +416,20 @@ function SWEP:GetViewModelPosition( pos, ang )
 	pos = pos + IronPos.y * Forward * grad
 	pos = pos + IronPos.z * Up * grad
 
+	if self.Sprinting or self.SprintTime != 0 then
+		local mod = 5
+		if not self.Sprinting then
+			mod = -5
+		end
+		
+		self.SprintTime = self.SprintTime + mod * FrameTime()
+		self.SprintTime = math.Clamp(self.SprintTime, 0, 1)
+				
+		if self.SprintTime >= 1 then self.SprintTime = 1 end
+		
+		return pos, ang - Angle(20, -20, 0) * self.SprintTime * -1
+	end
+	
 	return pos, ang
 
 end
