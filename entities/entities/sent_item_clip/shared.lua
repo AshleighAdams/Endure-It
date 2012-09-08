@@ -5,7 +5,7 @@ ENT.Author			= "victormeriqui & C0BRA"
 ENT.Information		= ""
 ENT.Category		= "Endure It"
 
-ENT.Model = "models/wystan/weapons/m9magazine.mdl"
+ENT.Model = "models/Gibs/metal_gib5.mdl"
 ENT.Spawnable			= false
 ENT.AdminSpawnable		= true
 

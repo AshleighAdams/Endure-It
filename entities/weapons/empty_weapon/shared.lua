@@ -7,11 +7,15 @@ SWEP.PrintName		= "Hands"
 SWEP.Purpose		= ""
 SWEP.Instructions	= ""
 
+
+SWEP.DrawAmmo		= false
+SWEP.DrawCrosshair	= false
 SWEP.ViewModelFOV	= 62
 SWEP.ViewModelFlip	= false
 SWEP.ViewModel		= "models/weapons/v_pistol.mdl"
 SWEP.WorldModel		= "models/weapons/w_357.mdl"
-SWEP.AnimPrefix		= "python"
+
+--SWEP.AnimPrefix		= "python"
 
 SWEP.Spawnable			= false
 SWEP.AdminSpawnable		= false
