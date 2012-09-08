@@ -217,7 +217,9 @@ end
 
 
 function SWEP:PrimaryAttack()
-
+	
+	if self.Sprinting then return end
+	
 	--self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	
@@ -369,10 +371,25 @@ function SWEP:Think()
 		self.Owner:SetFOV(0, self.ZoomSpeed)
 		self.IsZoomedIn = false
 	end	
+	
+	if self.Owner:KeyDown(IN_SPEED) and self.Owner:GetVelocity():Length() > self.Owner:GetRunSpeed() * 0.5 then
+		self.Sprinting = true
+	else
+		self.Sprinting = false
+	end
 end	
 
+SWEP.SprintTime = 0
 function SWEP:GetViewModelPosition( pos, ang )
+	
+	if self.Sprinting or self.SprintTime != 0 then
+		self.SprintTime = self.SprintTime + 0.1 * FrameTime()
 		
+		self.SprintTime = math.Clamp(self.SprintTime, 0, 1)
+		
+		return pos, ang + Angle(90, 0, 0) * self.SprintTime
+	end
+	
 	local grad = Lerp( self.IronTime, 0, 1)
 	
 	local IronPos = self.IronSightsPos;
