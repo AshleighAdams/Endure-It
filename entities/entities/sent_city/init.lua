@@ -128,7 +128,7 @@ end
 ENT.PlayersInHotzone = {}
 
 function ENT:UnPopulate(pl)
-	PlayersInHotzone[pl] = nil
+	self.PlayersInHotzone[pl] = nil
 end
 
 function ENT:Populate(pl)
