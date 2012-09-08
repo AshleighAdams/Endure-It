@@ -8,10 +8,12 @@ ENT.Category		= "Endure-It";
 ENT.Spawnable			= true;
 ENT.AdminSpawnable		= true;
 
-ENT.MaxZombies = 10
+ENT.MaxZombies = 15
 
-ENT.InitialSpawnCount = 50;
-ENT.SpawnAdditionalEvery = 20;
+ENT.NoLower = true;
+
+ENT.InitialSpawnCount = 10;
+ENT.SpawnAdditionalEvery = 5;
 
 ENT.CitySize = 1000 // 10,000 source units
 

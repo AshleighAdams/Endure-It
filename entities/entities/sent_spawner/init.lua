@@ -34,7 +34,7 @@ function ENT:Initialize()
 	end
 		
 end
-ENT.SpawnRange = 12000 -- about 400m
+ENT.SpawnRange = 8000 -- about 400m
 ENT.m_NextThink = CurTime()
 function ENT:Think()
 	if self.m_NextThink > CurTime() then return end

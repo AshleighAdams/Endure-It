@@ -38,7 +38,7 @@ function ENT:SuitibleHeight(x, y, ent) // later, we can impliment this better, b
 	
 	local starti, endi, stepdir = self.Steps, -self.Steps, -1
 	
-	if math.random(1, 2) == 1 then
+	if self.NoLower == false and math.random(1, 2) == 1 then
 		starti, endi, stepdir = -self.Steps, self.Steps, 1
 	end
 	
@@ -83,14 +83,12 @@ ENT.NPCs = {
 	"npc_fastzombie",
 	
 	"npc_poisonzombie",
-	"npc_poisonzombie",
 	
 	"npc_zombine",
 	
 	"npc_headcrab",
 	"npc_headcrab",
 	"npc_headcrab",
-	"npc_headcrab_fast",
 	"npc_headcrab_fast",
 	"npc_headcrab_poison"
 	
@@ -165,6 +163,7 @@ function ENT:Think()
 				v:Remove()
 			end
 		end
+		self.CleanUpTime = 0
 	end
 	
 	self.CurrentZombies = 0
@@ -179,15 +178,14 @@ function ENT:Think()
 		if not k then continue end
 		if not ValidEntity(v) then return end
 		
+		self.CleanUpTime =  CurTime() + self.ClearAllTimeThreshold -- Reset the counter.
+		
 		if v:GetPos():Distance(self:GetPos()) < self.CitySize then
 			count = count + 1
 		end
 	end
 	
 	if count == 0 then return end
-	
-	self.CleanUpTime =  CurTime() + self.ClearAllTimeThreshold -- Reset the counter.
-	print("Resetting counter")
 	
 	if CurTime() > self.NextSpawn then
 		self.NextSpawn = CurTime() + self.SpawnAdditionalEvery / count -- / count so that i spawn more often, but not in a batch
