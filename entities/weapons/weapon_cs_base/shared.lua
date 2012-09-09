@@ -134,7 +134,7 @@ end
 
 SWEP.NextQuickReload = 0
 function SWEP:Reload(invoker)
-	if self.Reloading then return end
+	if self.Reloading or self.CanPrimaryAttack_Reload then return end
 	
 	if invoker == nil then
 		--if true then return end
@@ -223,9 +223,12 @@ function SWEP:PrimaryAttack()
 	--self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	
+	self.CanPrimaryAttack_Reload = true
 	if ( !self:CanPrimaryAttack() ) then
+		self.CanPrimaryAttack_Reload = false
 		return
 	end
+	self.CanPrimaryAttack_Reload = false
 	
 	if self.Magazine and ValidEntity(self.Magazine) then
 		if SERVER then
