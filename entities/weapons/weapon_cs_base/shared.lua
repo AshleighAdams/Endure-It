@@ -133,12 +133,24 @@ function SWEP:GetMagazine()
 end
 
 SWEP.NextQuickReload = 0
+SWEP.StartReload = nil -- Used so you can hold R
 function SWEP:Reload(invoker)
 	if self.Reloading or self.CanPrimaryAttack_Reload then return end
 	
 	if invoker == nil then
 		--if true then return end
 		if CLIENT and CurTime() > self.NextQuickReload then
+			
+			if self.StartReload == nil then
+				self.StartReload = CurTime() + 0.5
+			end
+			
+			if CurTime() < self.StartReload and self.Owner:KeyDown(IN_RELOAD) then
+				return
+			end
+			
+			local manual_reload = self.Owner:KeyDown(IN_RELOAD) and self.StartReload != nil
+			self.StartReload = nil
 			
 			local bestmag = nil
 			for k, v in pairs((self.Owner:GetInventory().ToolBelt or {})) do
@@ -152,7 +164,7 @@ function SWEP:Reload(invoker)
 			end
 			
 			if bestmag != nil then
-				if self.Magazine then
+				if self.Magazine and not manual_reload then
 					self.Owner:InvDrop(self.Magazine)
 				end
 				
