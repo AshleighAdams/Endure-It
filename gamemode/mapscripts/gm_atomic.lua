@@ -63,7 +63,7 @@ function SetupCities()
 	Station.ClearAllTimeThreshold = 30
 	Station:Spawn()
 	
-	BigTown = Station or ents.Create("sent_city")
+	BigTown = BigTown or ents.Create("sent_city")
 	BigTown:SetPos(Vector(-8723.720703, -2342.315674, -12259.845703))
 	BigTown.CitySize = 1500
 	BigTown.InitialSpawnCount = 25
