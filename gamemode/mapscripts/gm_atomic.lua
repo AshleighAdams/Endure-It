@@ -59,7 +59,7 @@ function SetupCities()
 	Station = Station or ents.Create("sent_city")
 	Station:SetPos(Vector(3647.132080, 2414.435059, -12270.764648))
 	Station.CitySize = 1000
-	Station.InitialSpawnCount = 15
+	Station.InitialSpawnCount = 5
 	Station.ClearAllTimeThreshold = 30
 	Station:Spawn()
 	

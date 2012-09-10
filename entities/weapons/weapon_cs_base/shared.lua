@@ -136,18 +136,28 @@ SWEP.NextQuickReload = 0
 SWEP.StartReload = nil -- Used so you can hold R
 function SWEP:Reload(invoker)
 	if self.Reloading or self.CanPrimaryAttack_Reload then return end
-	
+	print("RELOADING")
 	if invoker == nil then
 		--if true then return end
 		if CLIENT and CurTime() > self.NextQuickReload then
 			
 			if self.StartReload == nil then
 				self.StartReload = CurTime() + 1
+				timer.Simple(0.1, function()
+					if not self.Reload then return end
+					self:Reload() end
+				)
+				return
 			end
 			
 			if not self.Owner:KeyReleased(IN_RELOAD) then --self.Owner:KeyDown(IN_RELOAD) then
-				timer.Simple(0.1, function() self:Reload() end)
-				return
+				if self.Owner:KeyDown(IN_RELOAD) == true then -- erm, you're wrong, game
+					timer.Simple(0.1, function()
+						if not self.Reload then return end
+						self:Reload() end
+					)
+					return
+				end
 			end
 			
 			local manual = self.StartReload < CurTime()			
