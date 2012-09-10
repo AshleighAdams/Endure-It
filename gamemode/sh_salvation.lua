@@ -36,9 +36,14 @@ function Player:AddStanimaTransform(func)
 	table.insert(self.StanimaTransforms, func)
 end
 
+function Player:AddStanimaEffect(effect)
+	self.StanimaEffects = self.StanimaEffects or {}
+	table.insert(self.StanimaEffects, effect)
+end
+
 function Player:StanimaThink(time)
 	local transform = 0
-	for k, trans in pairs(self.StanimaTransforms) do
+	for k, trans in pairs(self.StanimaTransforms or {}) do
 		local ret = trans(self, time)
 		if ret == nil then
 			table.remove(self.StanimaTransforms, k)
@@ -49,6 +54,12 @@ function Player:StanimaThink(time)
 	end
 	
 	self:SetStanima(self:GetStanima() + transform)
+	
+	for k,v in pairs(self.StanimaEffects or {}) do
+		if v(self) then
+			table.remove(self.StanimaEffects, k)
+		end
+	end
 	
 	-- Send it to the clients if needed (you really should add the stanima transform on the client to ensure that it is fluent and predicted)
 	if SERVER and (self.NextStanimaSend == nil or CurTime() > self.NextStanimaSend) then
@@ -61,7 +72,7 @@ end
 
 function stanima:Think()
 	if self.LastThink then
-		local t = CurTime() - self.LastTime -- Time difference, so each call to StanimaThink is proportional
+		local t = CurTime() - self.LastThink -- Time difference, so each call to StanimaThink is proportional
 		
 		for k, v in pairs(player.GetAll()) do
 			if not ValidEntity(v) then continue end
