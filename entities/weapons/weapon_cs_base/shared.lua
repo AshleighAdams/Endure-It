@@ -142,14 +142,15 @@ function SWEP:Reload(invoker)
 		if CLIENT and CurTime() > self.NextQuickReload then
 			
 			if self.StartReload == nil then
-				self.StartReload = CurTime() + 0.5
+				self.StartReload = CurTime() + 1
 			end
 			
-			if CurTime() < self.StartReload and self.Owner:KeyDown(IN_RELOAD) then
+			if not self.Owner:KeyReleased(IN_RELOAD) then --self.Owner:KeyDown(IN_RELOAD) then
+				timer.Simple(0.1, function() self:Reload() end)
 				return
 			end
 			
-			local manual_reload = self.Owner:KeyDown(IN_RELOAD) and self.StartReload != nil
+			local manual = self.StartReload < CurTime()			
 			self.StartReload = nil
 			
 			local bestmag = nil
@@ -164,7 +165,7 @@ function SWEP:Reload(invoker)
 			end
 			
 			if bestmag != nil then
-				if self.Magazine and not manual_reload then
+				if self.Magazine and not manual then
 					self.Owner:InvDrop(self.Magazine)
 				end
 				
