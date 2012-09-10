@@ -4,6 +4,7 @@ include("sh_bullets.lua")
 
 AddCSLuaFile("sh_jetpack_controller.lua")
 include("sh_jetpack_controller.lua")
+include( "sh_salvation.lua" )
 
 
 GM.Name 	= "Endure It"
