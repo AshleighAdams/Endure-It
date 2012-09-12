@@ -185,6 +185,15 @@ local function thinkdamnit()
             NEXT_WEAPONS_UPDATE=CurTime()+5
         end
          
+		for k, v in pairs(pl:GetInventory().Generic or {}) do /* Our inventroy */
+			if v:GetClass():StartWith("sent_weapon_") then
+				local class = v.WeaponClass
+				local wc = weapons.GetList[class]
+				
+				if v.CL_CS_WEPS[class] then continue end
+			end
+		end
+		 
         for i,v in pairs(pl:GetWeapons())do
             if !IsValid(v) then continue; end
              

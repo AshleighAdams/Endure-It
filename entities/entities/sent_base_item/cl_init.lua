@@ -9,10 +9,16 @@ function ENT:Draw()
 end
 
 function ENT:SetupPanel(pan)
-	local btn = vgui.Create("DButton", pan)
+--SpawnIcon DButton
+	local btn = vgui.Create("SpawnIcon", pan)
 	btn:SetPos(0, 0)
-	btn:SetText(self:GetPrintName())
+	
 	btn:SetSize(pan:GetWide(), pan:GetTall())
+	btn:SetModel(self.Model or "")
+	
+	btn:SetToolTip(self:GetPrintName())
+	btn:SetText(self:GetPrintName())
+	btn:SetSize(32)
 	btn.DoClick = function()
 		local x,y = gui.MousePos()
 		--frame:SetVisible(false)

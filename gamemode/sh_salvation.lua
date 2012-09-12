@@ -22,6 +22,7 @@ function Player:GetStanima()
 end
 
 function Player:SetStanima(Value)
+	Value = math.Clamp(Value, 0, 100)
 	if CLIENT then -- Usefull for prediction, we don't want to send the NWFloat every frame...
 		self:SetNWFloat("Stanima", Value)
 		return
@@ -82,3 +83,10 @@ function stanima:Think()
 	self.LastThink = CurTime()
 end
 hook.Add("Think", "StanimaThink", function() stanima:Think() end)
+
+stanima.PlayerSlowdown = function(pl)
+	local max_runspeed = 20 * 17.6 * 0.75
+	local walk_speed = pl:GetWalkSpeed()
+	
+	local stanima = pl:GetStanima() / 100
+end
