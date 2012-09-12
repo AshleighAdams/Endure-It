@@ -11,13 +11,28 @@ local Player = _R.Player
 --]]
 
 stanima = stanima or {}
+stanima.MaxBlood = 1200
 
 -- Player functions
+
+function Player:GetBlood()
+	return self:Health()
+end
+
+function Player:SetBlood(Value)
+	self:SetHealth(Value)
+end
+
+function Player:Bleed(dmginfo)
+	self.Bleeders = self.Bleeders or {}
+	table.insert(self.Bleeders, {dmginfo, dmginfo:GetDamage() / 120})
+end
+
 function Player:GetStanima()
 	if CLIENT then
-		return self:GetNWFloat("Stanima", 1)
+		return self:GetNWFloat("Stanima", 100)
 	else
-		return self:GetPData("Stanima", 1)
+		return self:GetPData("Stanima", 100)
 	end
 end
 
@@ -42,7 +57,20 @@ function Player:AddStanimaEffect(effect)
 	table.insert(self.StanimaEffects, effect)
 end
 
+function Player:ResetStanima()
+	self.StanimaTransforms = {}
+	self.StanimaEffects = {}
+	self.Bleeders = {}
+	self:SetStanima(100)
+end
+
 function Player:StanimaThink(time)
+	for k, v in pairs(self.Bleeders) do
+		v[1]:SetDamage(v[2] * time)
+		self:TakeDamageInfo(v[1])
+		v[2] = v[2] - 1 * time -- Slow the bleeding down a bit
+	end
+
 	local transform = 0
 	for k, trans in pairs(self.StanimaTransforms or {}) do
 		local ret = trans(self, time)
@@ -53,6 +81,8 @@ function Player:StanimaThink(time)
 		
 		transform = transform + ret
 	end
+	
+	transform = transform * time
 	
 	self:SetStanima(self:GetStanima() + transform)
 	
@@ -84,9 +114,50 @@ function stanima:Think()
 end
 hook.Add("Think", "StanimaThink", function() stanima:Think() end)
 
-stanima.PlayerSlowdown = function(pl)
+function stanima.PlayerSlowdown(pl) /* Used to set the players speed based upon stanima */
 	local max_runspeed = 20 * 17.6 * 0.75
 	local walk_speed = pl:GetWalkSpeed()
 	
-	local stanima = pl:GetStanima() / 100
+	local newspeed = pl:GetStanima() / 100 * (max_runspeed - walk_speed)
 end
+
+stanima.BreathSound = "player/breathe1.wav"
+
+function stanima.Breath(pl)
+	if SERVER then
+		
+		if pl.BreathSound == nil then
+			pl.BreathSound = CreateSound(pl, stanima.BreathSound)
+			pl.BreathSound:SetSoundLevel(30)
+			
+		end
+		
+		pl.BreathSound:ChangeVolume(1 - (pl:GetStanima() / 100))
+		
+		if not pl.BreathSound:IsPlaying() then
+			pl.BreathSound:Play()
+		end
+		--player/breathe1.wav
+		--ambient/creatures/town_scared_breathing[1-2].wav
+	end
+end
+
+function stanima.PlayerStanimaIncrease(pl)
+	local blood = pl:GetBlood() / stanima.MaxBlood
+	return blood * 1 /* 1% per second, 100 seconds at full blood */
+end
+
+function stanima:PlayerSpawn(pl)
+	pl:ResetStanima()
+	pl:SetBlood(self.MaxBlood)
+	pl:SetMaxHealth(self.MaxBlood)
+	
+	-- Default effects
+	pl:AddStanimaEffect(self.PlayerSlowdown)
+	pl:AddStanimaEffect(self.Breath)
+	
+	-- Default transforms
+	pl:AddStanimaTransform(self.PlayerStanimaIncrease)
+end
+
+function stanima.ScalePlayerDamage(
