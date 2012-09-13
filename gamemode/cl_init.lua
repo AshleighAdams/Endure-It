@@ -25,7 +25,7 @@ hook.Add( "PreDrawHalos", "ShowItems", function()
 			base = base.BaseClass
 		end
 		
-		if add then
+		if add or true then
 			halo.Add({ent}, Color( 255, 0, 0 )) --, 5, 5, 2)
 		end
     end

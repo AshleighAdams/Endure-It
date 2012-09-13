@@ -11,7 +11,7 @@ local Player = _R.Player
 --]]
 
 stanima = stanima or {}
-stanima.MaxBlood = 1200
+stanima.MaxBlood = 100
 
 -- Player functions
 
@@ -25,7 +25,8 @@ end
 
 function Player:Bleed(dmginfo)
 	self.Bleeders = self.Bleeders or {}
-	table.insert(self.Bleeders, {dmginfo, dmginfo:GetDamage() / 120})
+	table.insert(self.Bleeders, {dmginfo, dmginfo:GetDamage() / 50})
+	print(self, "is bleeding with ", dmginfo, dmginfo:GetDamage() / 50, " dps")
 end
 
 function Player:GetStanima()
@@ -65,12 +66,16 @@ function Player:ResetStanima()
 end
 
 function Player:StanimaThink(time)
-	for k, v in pairs(self.Bleeders) do
-		v[1]:SetDamage(v[2] * time)
-		self:TakeDamageInfo(v[1])
-		v[2] = v[2] - 1 * time -- Slow the bleeding down a bit
+	if SERVER and (self.NextBleed == nil or CurTime() > self.NextBleed) then
+		self.NextBleed = CurTime() + 1
+		for k, v in pairs(self.Bleeders or {}) do
+			self:SetHealth(self:Health() - v[2])
+			if self:Health() <= 0 and self:Alive() then
+				self:Kill()
+			end
+		end
 	end
-
+	
 	local transform = 0
 	for k, trans in pairs(self.StanimaTransforms or {}) do
 		local ret = trans(self, time)
@@ -159,5 +164,3 @@ function stanima:PlayerSpawn(pl)
 	-- Default transforms
 	pl:AddStanimaTransform(self.PlayerStanimaIncrease)
 end
-
-function stanima.ScalePlayerDamage(

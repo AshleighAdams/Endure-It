@@ -53,6 +53,18 @@ function GM:PlayerLoadout( pl )
 	stanima:PlayerSpawn(pl)
 end
 
+function GM:EntityTakeDamage(ent, inflictor, attacker, amount, dmginf)
+	if ent:IsPlayer() then
+		
+		if dmginf:GetDamageType() == DMG_BULLET 
+				or dmginf:GetDamageType() == DMG_BLAST
+				or dmginf:GetDamageType() == DMG_BUCKSHOT
+				or math.random(1, 50) == 25 then
+			ent:Bleed(dmginf)
+		end
+	end
+end
+
 function GM:ScalePlayerDamage(pl, hitbox, dmginf)
 	
 	if ( hitgroup == HITGROUP_HEAD ) then
@@ -84,10 +96,16 @@ function GM:ScalePlayerDamage(pl, hitbox, dmginf)
 		dmginf:SetDamage(1000)
 	end
 	
-	dmginf:ScaleDamage(12)
 	
-	if dmginfo:GetDamageType() == DMG_BULLET or math.random(1, 50) == 25 then
-		pl:Bleed(dmginf)
+	if pl:IsPlayer() then
+		
+		if 		   dmginf:GetDamageType() == DMG_BULLET 
+				or dmginf:GetDamageType() == DMG_BLAST
+				or dmginf:GetDamageType() == DMG_BUCKSHOT
+				or math.random(1, 50) == 25 then
+				
+			pl:Bleed(dmginf)
+		end
 	end
 end
 

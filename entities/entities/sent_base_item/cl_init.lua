@@ -10,15 +10,17 @@ end
 
 function ENT:SetupPanel(pan)
 --SpawnIcon DButton
-	local btn = vgui.Create("SpawnIcon", pan)
+	local btn = vgui.Create("DButton", pan)
 	btn:SetPos(0, 0)
+	btn:SetWidth(pan:GetWide())
+	btn:SetTall(pan:GetTall())
+	--btn:SetSize(pan:GetWide(), pan:GetTall())
+	--btn:SetModel(self.Model or "")
 	
-	btn:SetSize(pan:GetWide(), pan:GetTall())
-	btn:SetModel(self.Model or "")
+	--btn:SetToolTip(self:GetPrintName())
 	
-	btn:SetToolTip(self:GetPrintName())
 	btn:SetText(self:GetPrintName())
-	btn:SetSize(32)
+	--btn:SetSize(32)
 	btn.DoClick = function()
 		local x,y = gui.MousePos()
 		--frame:SetVisible(false)
