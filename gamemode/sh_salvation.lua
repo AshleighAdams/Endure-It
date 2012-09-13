@@ -25,8 +25,14 @@ end
 
 function Player:Bleed(dmginfo)
 	self.Bleeders = self.Bleeders or {}
-	table.insert(self.Bleeders, {dmginfo, dmginfo:GetDamage() / 50})
-	print(self, "is bleeding with ", dmginfo, dmginfo:GetDamage() / 50, " dps")
+	
+	if self.LastBleed then
+		if CurTime() == self.LastBleed then return end
+	end
+	self.LastBleed = CurTime()
+	
+	table.insert(self.Bleeders, {dmginfo, dmginfo:GetDamage() / 10})
+	print(self, "is bleeding with ", dmginfo:GetDamage() / 10, " dps")
 end
 
 function Player:GetStanima()
