@@ -418,7 +418,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			local tr = util.TraceLine({ startpos = pos, endpos = LocalPlayer():GetShootPos(), mask = MASK_SHOT})
 						
 			if (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
-				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
+				if bul.Velocity:Length() > Feet(1120) then
 					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
 				elseif not bul.Mine then
 					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)

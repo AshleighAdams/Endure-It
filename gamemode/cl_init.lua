@@ -6,15 +6,17 @@ include( "cl_weapon_drawing.lua" )
 include( "cl_legs.lua" )
 
 hook.Add( "PreDrawHalos", "ShowItems", function()
+	local tbl_ents = {}
     for _, ent in pairs(ents.GetAll()) do
 		local add = false
 		
 		local lp = LocalPlayer()
 		
-		if not ValidEntity(ent) or not ValidEntity(lp) then return end
+		if not ValidEntity(ent) or not ValidEntity(lp) then continue end
+		if ValidEntity(ent:GetNWEntity("Owner", NullEntity())) then continue end
 		
-		if ent:GetPos():Distance(LocalPlayer():GetShootPos()) > 500 then continue end
-		if lp:GetAimVector():Dot( (ent:GetPos() - lp:GetShootPos()):GetNormal() ) > 0.2 then continue end
+		if ent:GetPos():Distance(LocalPlayer():GetShootPos()) > 100 then continue end
+		if lp:GetAimVector():Dot( (ent:GetPos() - lp:GetShootPos()):GetNormal() ) < 0.95 then continue end
 		
 		local base = ent.BaseClass
 		while base != nil do
@@ -25,10 +27,12 @@ hook.Add( "PreDrawHalos", "ShowItems", function()
 			base = base.BaseClass
 		end
 		
-		if add or true then
-			halo.Add({ent}, Color( 255, 0, 0 )) --, 5, 5, 2)
+		if add then
+			table.insert(tbl_ents, ent)
 		end
     end
+	
+	halo.Add(tbl_ents, Color( 255, 0, 0 )) --, 5, 5, 2)
 end )
 
 function ModifyBloodColor()
