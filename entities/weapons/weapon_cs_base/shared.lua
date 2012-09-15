@@ -133,12 +133,35 @@ function SWEP:GetMagazine()
 end
 
 SWEP.NextQuickReload = 0
+SWEP.StartReload = nil -- Used so you can hold R
 function SWEP:Reload(invoker)
-	if self.Reloading then return end
-	
+	if self.Reloading or self.CanPrimaryAttack_Reload then return end
+	print("RELOADING")
 	if invoker == nil then
 		--if true then return end
 		if CLIENT and CurTime() > self.NextQuickReload then
+			
+			if self.StartReload == nil then
+				self.StartReload = CurTime() + 1
+				timer.Simple(0.1, function()
+					if not self.Reload then return end
+					self:Reload() end
+				)
+				return
+			end
+			
+			if not self.Owner:KeyReleased(IN_RELOAD) then --self.Owner:KeyDown(IN_RELOAD) then
+				if self.Owner:KeyDown(IN_RELOAD) == true then -- erm, you're wrong, game
+					timer.Simple(0.1, function()
+						if not self.Reload then return end
+						self:Reload() end
+					)
+					return
+				end
+			end
+			
+			local manual = self.StartReload < CurTime()			
+			self.StartReload = nil
 			
 			local bestmag = nil
 			for k, v in pairs((self.Owner:GetInventory().ToolBelt or {})) do
@@ -152,7 +175,7 @@ function SWEP:Reload(invoker)
 			end
 			
 			if bestmag != nil then
-				if self.Magazine then
+				if self.Magazine and not manual then
 					self.Owner:InvDrop(self.Magazine)
 				end
 				
@@ -223,9 +246,12 @@ function SWEP:PrimaryAttack()
 	--self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 	self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 	
+	self.CanPrimaryAttack_Reload = true
 	if ( !self:CanPrimaryAttack() ) then
+		self.CanPrimaryAttack_Reload = false
 		return
 	end
+	self.CanPrimaryAttack_Reload = false
 	
 	if self.Magazine and ValidEntity(self.Magazine) then
 		if SERVER then
@@ -296,7 +322,6 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			bul.Direction = (bul.Direction:Angle() + spread):Forward()
 
 			bul.TraceIgnore = {LocalPlayer()}
-			bul.TraceMask = MASK_SHOT
 			bul.RandSeed = math.Rand(-100000, 100000)
 			
 			bul.Bullet = GetBullet(self.Magazine.Bullet)

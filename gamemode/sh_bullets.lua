@@ -251,7 +251,6 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 		for i = 1, count do
 			table.insert(plys, umsgr:ReadEntity())
 		end
-		local mask = umsgr:ReadLong()
 		local seed = umsgr:ReadFloat()
 		
 		bul.Direction = vel:GetNormal()
@@ -259,7 +258,6 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 		bul.Position = pos
 		bul.Bullet = self
 		bul.TraceIgnore = plys
-		bul.TraceMask = mask
 		bul.RandSeed = seed
 		
 		debugoverlay.Line(bul.Position, bul.Position + bul.Direction * 1000, 5, Color(0, 0, 255))
@@ -273,14 +271,19 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 	end
 end
 
+DefaultBullet.GetTraceMask = function(self, bul)
+	return MASK_SHOT
+end
+
 local bullets_reg = {}
 
 function GetBullet(name)
 	return bullets_reg[name]
 end
 
-function RegisterBullet(bull)
+function RegisterBullet(bull, base)
 	bullets_reg[bull.Name] = bull
+	base = base or DefaultBullet
 	
 	local col = Color(255, 127, 0, 255)
 	if SERVER then
@@ -288,6 +291,14 @@ function RegisterBullet(bull)
 	end
 	MsgC(col, "Registering bullet " .. bull.Name .. "\n")
 	
+	for k,v in pairs(base) do
+		if bull[k] == nil then
+			bull[k] = base[k]
+			MsgC(col, "Bullet " .. bull.Name .. " is inheriting " .. tostring(k) .. " from " .. base.Name .. " \n")
+		end
+	end
+	
+	/*
 	bull.Simulate = bull.Simulate or DefaultBullet.Simulate
 	bull.ReceiveShoot = bull.ReceiveShoot or DefaultBullet.ReceiveShoot
 	bull.ReceiveHit = bull.ReceiveHit or DefaultBullet.ReceiveHit
@@ -300,6 +311,7 @@ function RegisterBullet(bull)
 	bull.Emitter = bull.Emitter or DefaultBullet.Emitter
 	bull.Scale = bull.Scale or DefaultBullet.Scale
 	bull.Decal = bull.Decal or DefaultBullet.Decal
+	*/
 	
 	if SERVER then
 		util.AddNetworkString("Shoot_Bullet_" .. bull.Name)
@@ -413,7 +425,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	tr.start = PrePos
 	tr.endpos = bul.Position
 	tr.filter = bul.TraceIgnore
-	tr.mask = bul.TraceMask or MASK_SHOT
+	tr.mask = bul.Bullet:GetTraceMask(bul)
 	
 	local res = util.TraceLine(tr)
 	local dot = -bul.Direction:Dot(res.HitNormal)
@@ -538,7 +550,6 @@ function ShootBullet(bul, modifyfunc) -- Ohhh, nooo, its client side...... I don
 		net.WriteFloat(bul.Velocity.y)
 		net.WriteFloat(bul.Velocity.z)
 		net.WriteTable(bul.TraceIgnore)
-		net.WriteUInt(bul.TraceMask, 32)
 		net.WriteFloat(bul.RandSeed) -- Used to predict the spread when it riches
 	net.SendToServer()
 	
@@ -581,7 +592,6 @@ function MachineMode()
 		bul.Direction:Normalize()
 
 		bul.TraceIgnore = {lp}
-		bul.TraceMask = MASK_SHOT
 
 		bul.RandSeed = math.Rand(-100000, 100000)
 		

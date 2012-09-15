@@ -49,9 +49,24 @@ function GM:PlayerLoadout( pl )
 	pl:SetWalkSpeed(7 * 17.6 * 0.75) -- 8mph
 	pl:SetRunSpeed(20 * 17.6 * 0.75) -- 20mph
 	pl:Give("empty_weapon")
+	
+	stanima:PlayerSpawn(pl)
+end
+
+function GM:EntityTakeDamage(ent, inflictor, attacker, amount, dmginf)
+	if ent:IsPlayer() then
+		
+		if dmginf:GetDamageType() == DMG_BULLET 
+				or dmginf:GetDamageType() == DMG_BLAST
+				or dmginf:GetDamageType() == DMG_BUCKSHOT
+				or math.random(1, 50) == 25 then
+			ent:Bleed(dmginf)
+		end
+	end
 end
 
 function GM:ScalePlayerDamage(pl, hitbox, dmginf)
+	
 	if ( hitgroup == HITGROUP_HEAD ) then
 		dmginfo:ScaleDamage( 2 )
 	end
@@ -79,6 +94,18 @@ function GM:ScalePlayerDamage(pl, hitbox, dmginf)
 	
 	if hitbox == HITGROUP_HEAD then
 		dmginf:SetDamage(1000)
+	end
+	
+	
+	if pl:IsPlayer() then
+		
+		if 		   dmginf:GetDamageType() == DMG_BULLET 
+				or dmginf:GetDamageType() == DMG_BLAST
+				or dmginf:GetDamageType() == DMG_BUCKSHOT
+				or math.random(1, 50) == 25 then
+				
+			pl:Bleed(dmginf)
+		end
 	end
 end
 

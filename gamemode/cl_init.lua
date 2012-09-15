@@ -25,8 +25,24 @@ hook.Add( "PreDrawHalos", "ShowItems", function()
 			base = base.BaseClass
 		end
 		
-		if add then
+		if add or true then
 			halo.Add({ent}, Color( 255, 0, 0 )) --, 5, 5, 2)
 		end
     end
 end )
+
+function ModifyBloodColor()
+	local tab = {}
+	tab[ "$pp_colour_addr" ] = 0
+	tab[ "$pp_colour_addg" ] = 0
+	tab[ "$pp_colour_addb" ] = 0
+	tab[ "$pp_colour_brightness" ] = 0
+	tab[ "$pp_colour_contrast" ] = 1
+	tab[ "$pp_colour_colour" ] = LocalPlayer():Health() / 100
+	tab[ "$pp_colour_mulr" ] = 0
+	tab[ "$pp_colour_mulg" ] = 0
+	tab[ "$pp_colour_mulb" ] = 0
+ 
+	DrawColorModify( tab )
+end
+hook.Add("RenderScreenspaceEffects", "BloodColour", ModifyBloodColor)
