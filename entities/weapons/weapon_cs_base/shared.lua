@@ -322,7 +322,6 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			bul.Direction = (bul.Direction:Angle() + spread):Forward()
 
 			bul.TraceIgnore = {LocalPlayer()}
-			bul.TraceMask = MASK_SHOT
 			bul.RandSeed = math.Rand(-100000, 100000)
 			
 			bul.Bullet = GetBullet(self.Magazine.Bullet)
