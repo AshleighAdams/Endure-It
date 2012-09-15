@@ -79,7 +79,7 @@ end
 
 SWEP.ZoomScale = 60;
 SWEP.ZoomSpeed = 0.2;
-SWEP.IronMoveSpeed = 0.0156761576307;--FUCKING PRECISE MOTHERFUCKER
+SWEP.IronMoveSpeed = 0.025772087632558173;--FUCKING PRECISE MOTHERFUCKER
 
 SWEP.IronSightsPos = Vector (4.662, -9.6774, 2.0213)
 SWEP.IronSightsAng = Vector (0, 0, 0)
@@ -87,4 +87,46 @@ SWEP.IronSightsAng = Vector (0, 0, 0)
 
 function SWEP:CanTakeMagazine(mag)
 	return mag:GetClass() == "sent_mag_mp5"
+end
+
+
+if CLIENT then
+	SWEP.ScopeRT = SWEP.ScopeRT or GetRenderTarget("ei_scope_", 1024, 1024, true)
+	
+	Material("models/weapons/v_models/smg_p90/smg_p90_sight_ref"):SetTexture("$basetexture", SWEP.ScopeRT)
+	Material("models/weapons/v_models/smg_p90/smg_p90_sight_ref"):SetUndefined("$envmap")
+	Material("models/weapons/v_models/smg_p90/smg_p90_sight_ref"):SetUndefined("$envmapmask")
+	Material("models/weapons/v_models/smg_p90/smg_p90_sight_ref"):SetShader("UnlitGeneric")
+	
+	--Material("models/weapons/v_models/snip_awp/v_awp_scope"):SetTexture("$basetexture", Material"models/debug/debugwhite":GetTexture("$basetexture"))
+end
+
+
+function SWEP:DrawHUD()
+	local Cam = {}
+	
+	Cam.angles = LocalPlayer():EyeAngles()
+    Cam.origin = LocalPlayer():GetShootPos()
+    
+	local sizex = 800
+	local sizey = 800
+	
+	Cam.x = 0-- - sizex / 2;
+    Cam.y = 0-- - sizey / 2;
+    Cam.w = 1024;
+    Cam.h = 1024;
+	
+	Cam.drawviewmodel = false;
+	Cam.zfar = 2000 * 16
+	
+	Cam.fov = 6;
+		
+	local oldrt = render.GetRenderTarget()
+	render.SetRenderTarget(self.ScopeRT)
+		local w, h = ScrW(), ScrH()
+		render.SetViewPort(0, 0, 1024, 1024)
+		render.RenderView(Cam)
+		render.SetViewPort(0, 0, w, h)
+	render.SetRenderTarget(oldrt)
+	
 end
