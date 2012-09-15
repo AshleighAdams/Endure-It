@@ -271,8 +271,25 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 	end
 end
 
+function Inches(units)
+	return units * 1.33333333333333
+end
+
+function Feet(units)
+	return units * 16 --* 0.75
+end
+
+function Meters(units)
+	return units * 52.4934
+end
+
 DefaultBullet.GetTraceMask = function(self, bul)
-	return MASK_SHOT
+	local speed = bul.Velocity:Length()
+	local mask = MASK_SHOT
+	
+	if speed < Meters(800) then
+		mask = mask - CONTENTS_WATER
+	end
 end
 
 local bullets_reg = {}
