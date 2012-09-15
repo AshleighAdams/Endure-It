@@ -287,9 +287,11 @@ DefaultBullet.GetTraceMask = function(self, bul)
 	local speed = bul.Velocity:Length()
 	local mask = MASK_SHOT
 	
-	if speed < Meters(800) then
+	if speed > Feet(800) then
 		mask = mask - CONTENTS_WATER
 	end
+	
+	return mask
 end
 
 local bullets_reg = {}
@@ -375,10 +377,36 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	local PrePos = bul.Position -- Used to check for a hit
 	bul.LastPos = bul.Position
 	bul.Position = bul.Position + bul.Velocity * t
+	bul.LastSplash = bul.LastSplash or 0
 	
 	// apply drag
 	local speed = (bul.Velocity - Weather.Wind):Length()
 	local coef = self.DragCoefficient / 1000 -- i don't know...
+	
+	local cont = util.PointContents(bul.Position)
+	if cont == CONTENTS_WATER or cont == CONTENTS_TRANSLUCENT or cont == 268435488 then
+		coef = coef * 20
+		cont = util.PointContents(bul.LastPos)
+		if CurTime() != bul.LastSplash and not (cont == CONTENTS_WATER or cont == CONTENTS_TRANSLUCENT or cont == 268435488) then
+			local tr = {}
+			tr.start = PrePos
+			tr.endpos = bul.Position
+			tr.filter = bul.TraceIgnore
+			tr.mask = MASK_SHOT - CONTENTS_WATER
+			
+			local res = util.TraceLine(tr)
+			
+			local ed = EffectData()
+			ed:SetStart(res.HitPos)
+			ed:SetOrigin(res.HitPos)
+			ed:SetNormal(res.HitNormal)
+			ed:SetScale(8)
+			util.Effect("gunshotsplash", ed)
+			bul.LastSplash = CurTime()
+			// Splash effect
+		end
+	end
+	
 	local x = ((math.sqrt(1 + 4 * speed * coef * t) - 1.0) / (2.0 * speed * coef * t))
 
 	bul.Velocity = bul.Velocity * x
@@ -446,8 +474,27 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	
 	local res = util.TraceLine(tr)
 	local dot = -bul.Direction:Dot(res.HitNormal)
-		
-	if not res.HitSky and res.HitWorld and (bul.Velocity:Length() > 100) and dot < 0.5 then -- about 45 deg
+	
+	local maxbounce = 0.5 /* About 45 deg */
+	--CONTENTS_TRANSLUCENT
+	if res.Hit then
+		local cont = util.PointContents(res.HitPos - res.HitNormal)
+		if cont == CONTENTS_WATER or cont == CONTENTS_TRANSLUCENT or cont == 268435488 then
+			maxbounce = 0.2
+			if bul.LastSplash != CurTime() then
+				local scale = bul.Velocity:Length() / bul.Bullet.Velocity
+				local ed = EffectData()
+				ed:SetStart(res.HitPos)
+				ed:SetOrigin(res.HitPos)
+				ed:SetNormal(res.HitNormal)
+				ed:SetScale(8 * scale)
+				util.Effect("gunshotsplash", ed)
+				bul.LastSplash = CurTime()
+			end
+		end
+	end
+	
+	if not res.HitSky and res.HitWorld and (bul.Velocity:Length() > 100) and dot < maxbounce then
 		
 		local vellen = bul.Velocity:Length()
 		
@@ -473,7 +520,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 		local vel_new = bul.Direction - 2 * (bul.Direction:Dot(norm)) * norm
 		--bul.Velocity:Normalize() + (res.HitNormal * (1 - dot))
 		
-		bul.Velocity = ( randomspread + vel_new ) * vellen * (0.5 - dot)
+		bul.Velocity = ( randomspread + vel_new ) * vellen * (maxbounce - dot)
 		bul.Position = res.HitPos + res.HitNormal
 		
 		self:Decal(nil, nil, res)	
@@ -541,10 +588,6 @@ for k, v in pairs(files) do
 	--include((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v)
 	if SERVER then AddCSLuaFile((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v) end
 end
-
-timer.Simple(10, function()
-	RunConsoleCommand("say", "Nato_556: " .. tostring(Nato_556))
-end)
 
 if SERVER then
 	AddCSLuaFile("sh_bullets.lua")	
