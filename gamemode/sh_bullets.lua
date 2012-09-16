@@ -435,14 +435,14 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	end
 	
 	if not bul.Cracked then
-		local dist1 = (LocalPlayer():GetShootPos() - bul.Position):Length()
-		local dist2 = (LocalPlayer():GetShootPos() - bul.LastPos):Length()
+		local dist1 = (EyePos() - bul.Position):Length()
+		local dist2 = (EyePos() - bul.LastPos):Length()
 		
 		if dist1 > dist2 then
 			bul.Cracked = true
 			
 			local u = bul.Position - bul.LastPos
-			local v = LocalPlayer():GetShootPos() - bul.LastPos
+			local v = EyePos() - bul.LastPos
 			
 			u:Normalize()
 			local dot = u:Dot(v)
@@ -452,11 +452,11 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 				pos = bul.Position
 			end
 					
-			debugoverlay.Line(LocalPlayer():GetShootPos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
+			debugoverlay.Line(EyePos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
 			
-			local tr = util.TraceLine({ startpos = pos, endpos = LocalPlayer():GetShootPos(), mask = MASK_SHOT})
+			local tr = util.TraceLine({ startpos = pos, endpos = EyePos(), mask = MASK_SHOT})
 						
-			if (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
+			if (EyePos() - pos):Length() < 150 * 10 then
 				if bul.Velocity:Length() > Feet(1120) then
 					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
 				elseif not bul.Mine then
@@ -465,8 +465,8 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			end
 		end
 	else
-		local dist1 = (LocalPlayer():GetShootPos() - bul.Position):Length()
-		local dist2 = (LocalPlayer():GetShootPos() - bul.LastPos):Length()
+		local dist1 = (EyePos() - bul.Position):Length()
+		local dist2 = (EyePos() - bul.LastPos):Length()
 		
 		if dist1 < dist2 then
 			self.Cracked = false
@@ -569,10 +569,10 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			bul.Cracked = true
 			local pos = bul.Position
 					
-			debugoverlay.Line(LocalPlayer():GetShootPos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
-			local tr = util.TraceLine({ startpos = pos, endpos = LocalPlayer():GetShootPos(), mask = MASK_SHOT})
+			debugoverlay.Line(EyePos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
+			local tr = util.TraceLine({ startpos = pos, endpos = EyePos(), mask = MASK_SHOT})
 			
-			if math.abs(dot) < 150 * 10 and (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
+			if math.abs(dot) < 150 * 10 and (EyePos() - pos):Length() < 150 * 10 then
 				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
 					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
 				elseif not bul.Mine then
