@@ -647,6 +647,7 @@ function SimulateBullets()
 end
 hook.Add("Tick", "ThinkSimulateBullets", SimulateBullets)
 
+
 function MachineMode()
 	--for i=0, 15 do
 		local bul = {}

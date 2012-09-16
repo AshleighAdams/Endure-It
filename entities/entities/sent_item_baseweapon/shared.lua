@@ -19,9 +19,9 @@ end
 
 function ENT:GetSize() -- amount of slots taken
 	if self:IsPrimaryWeapon() then
-		return 4
+		return 8
 	end
-	return 2
+	return 4
 end
 
 function ENT:IsPrimaryWeapon()

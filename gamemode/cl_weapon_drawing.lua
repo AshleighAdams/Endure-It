@@ -142,7 +142,11 @@ local function clhasweapon(pl,weaponclass)
     for i,v in pairs(pl:GetWeapons()) do
         if string.lower(v:GetClass())==string.lower(weaponclass) then return true end
     end
-     
+    
+	for k,v in pairs(pl:GetInventory().Generic or {}) do
+		if v.Weapon_Class == weaponclass then return true end
+	end
+	
     return false;
 end
  
@@ -187,10 +191,29 @@ local function thinkdamnit()
          
 		for k, v in pairs(pl:GetInventory().Generic or {}) do /* Our inventroy */
 			if v:GetClass():StartWith("sent_weapon_") then
-				local class = v.WeaponClass
-				local wc = weapons.GetList[class]
+				local class = v.Weapon_Class
+				if pl.CL_CS_WEPS[class] then continue end
 				
-				if v.CL_CS_WEPS[class] then continue end
+				
+				local wc
+				for kk, vv in pairs(weapons.GetList()) do
+					if vv.ClassName == class then
+						wc = vv
+						break
+					end
+				end
+				
+				if wc == nil then continue end
+								
+				pl.CL_CS_WEPS[class] = ClientsideModel(wc.PostWorldModel or wc.WorldModel, RENDERGROUP_OPAQUE)
+				pl.CL_CS_WEPS[class]:SetNoDraw(true)
+				
+				pl.CL_CS_WEPS[class].WModelAttachment = wc.WModelAttachment
+				pl.CL_CS_WEPS[class].WorldModelVisible = wc.WorldModelVisible
+				
+				pl.CL_CS_WEPS[class].BuildBonePositions = GetHolsteredWeaponTable(pl, class).BBP
+				
+				print(class, " added")
 			end
 		end
 		 
