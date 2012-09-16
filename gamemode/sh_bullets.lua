@@ -279,6 +279,10 @@ function Feet(units)
 	return units * 16 --* 0.75
 end
 
+function Yards(units)
+	return Feet(units * 3)
+end
+
 function Meters(units)
 	return units * 52.4934
 end

@@ -15,7 +15,7 @@ if ( CLIENT ) then
 	SWEP.ViewModelFOV		= 85
 	SWEP.ViewModelFlip		= true
 	SWEP.CSMuzzleFlashes	= true
-	SWEP.SwayScale = 2;
+	SWEP.SwayScale = 2; -- Causes shaking after a while
 	SWEP.BobScale = 2;
 	
 	local fd1 = {}
@@ -311,9 +311,9 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 			
 			local rand = VectorRand() * cone * 0.5 * 1.25 -- 1unit * 1.25 = 1 inch
 
-			local distance = 300 * 16
+			local distance = Yards(100)
 			
-			local spread = Vector(cone * 0.5 * 1.25, distance, 0):GetNormal():Angle() - Angle(0, 90, 0)
+			local spread = Vector(Inches(cone), distance, 0):GetNormal():Angle() - Angle(0, 90, 0)
 			local ang = math.abs(spread.y)
 			
 			spread = Angle(math.Rand(-ang, ang), math.Rand(-ang, ang), math.Rand(-ang, ang))
@@ -407,8 +407,6 @@ end
 SWEP.SprintTime = 0
 function SWEP:GetViewModelPosition( pos, ang )
 	
-	
-	
 	local grad = Lerp( self.IronTime, 0, 1)
 	
 	local IronPos = self.IronSightsPos;
@@ -440,7 +438,7 @@ function SWEP:GetViewModelPosition( pos, ang )
 	pos = pos + IronPos.x * Right * grad
 	pos = pos + IronPos.y * Forward * grad
 	pos = pos + IronPos.z * Up * grad
-
+	
 	if self.Sprinting or self.SprintTime != 0 then
 		local mod = 5
 		if not self.Sprinting then
