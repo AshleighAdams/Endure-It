@@ -49,6 +49,15 @@ function ModifyBloodColor()
 	
 	if not LocalPlayer():Alive() or LocalPlayer():Health() <= 0 then
 		tab[ "$pp_colour_contrast" ] = 0
+		if LocalPlayer().ORIG_VOL == nil then
+			print("Setting volume to 0")
+			LocalPlayer().ORIG_VOL = GetConVar("volume"):GetFloat()
+		end
+	else
+		if LocalPlayer().ORIG_VOL != nil then
+			RunConsoleCommand("volume", tostring(LocalPlayer().ORIG_VOL))
+			LocalPlayer().ORIG_VOL = nil
+		end
 	end
 	
 	DrawColorModify( tab )
