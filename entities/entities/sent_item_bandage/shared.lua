@@ -22,6 +22,8 @@ function ENT:InvokeAction(id)
 		if table.Count(self.Owner.Bleeders) == 0 then return end -- don't waste this one...
 		self.Owner.Bleeders = {} // Nullify them
 		self.Owner:EmitSound("npc/combine_soldier/zipline_clothing" .. tostring(math.random(1,2)) .. ".wav")
+		
+		self.Owner:InvDrop(self)
 		self:Remove()
 	end
 end
