@@ -42,21 +42,10 @@ include("sv_inventory.lua")
 
 // Serverside only stuff goes here
 
-/*---------------------------------------------------------
-   Name: gamemode:PlayerLoadout( )
-   Desc: Give the player the default spawning weapons/ammo
----------------------------------------------------------*/
-function GM:PlayerLoadout( pl )
-	pl:SetWalkSpeed(7 * 17.6 * 0.75) -- 8mph
-	pl:SetRunSpeed(20 * 17.6 * 0.75) -- 20mph
-	pl:Give("empty_weapon")
-	
-	stanima:PlayerSpawn(pl)
-	
-	local angForward = pl:GetAngles()
-	
+function SpawnFlashlight(pl)
 	if pl.flashlight then
-		pl.flashlight:Remove()
+		if ValidEntity(pl.flashlight) then pl.flashlight:Remove() end
+		pl.flashlight = nil
 	end
 	
 	pl.flashlight = ents.Create( "env_projectedtexture" )
@@ -81,8 +70,34 @@ function GM:PlayerLoadout( pl )
 	pl.flashlight:Spawn()
 	
 	pl.flashlight:Input( "SpotlightTexture", NULL, NULL, "effects/flashlight001" )
-	//pl.flashlight:Fire("setparentattachment", "eyes", 0)
-	//pl.flashlight:Fire("setparentattachmentmaintainoffset", "eyes", 0)
+end
+
+/*---------------------------------------------------------
+   Name: gamemode:PlayerLoadout( )
+   Desc: Give the player the default spawning weapons/ammo
+---------------------------------------------------------*/
+function GM:PlayerLoadout( pl )
+	pl:SetWalkSpeed(7 * 17.6 * 0.75) -- 8mph
+	pl:SetRunSpeed(20 * 17.6 * 0.75) -- 20mph
+	pl:Give("empty_weapon")
+	
+	stanima:PlayerSpawn(pl)
+	
+	if pl.flashlight then
+		if ValidEntity(pl.flashlight) then pl.flashlight:Remove() end
+		pl.flashlight = nil
+	end
+end
+
+function GM:PlayerSwitchFlashlight(pl, on)
+	if pl.flashlight then
+		if ValidEntity(pl.flashlight) then pl.flashlight:Remove() end
+		pl.flashlight = nil
+	else
+		SpawnFlashlight(pl)
+	end
+	
+	return false
 end
 
 function GM:EntityTakeDamage(ent, inflictor, attacker, amount, dmginf)
