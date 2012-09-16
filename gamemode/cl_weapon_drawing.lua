@@ -213,7 +213,6 @@ local function thinkdamnit()
 				
 				pl.CL_CS_WEPS[class].BuildBonePositions = GetHolsteredWeaponTable(pl, class).BBP
 				
-				print(class, " added")
 			end
 		end
 		 
