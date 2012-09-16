@@ -15,6 +15,7 @@ resource.AddFile("models/wystan/weapons/m9magazine.mdl")
 resource.AddFile("models/wystan/weapons/m249magazine.mdl")
 resource.AddFile("models/wystan/weapons/sr-25magazine.mdl")
 resource.AddFile("models/wystan/weapons/trg-42magazine.mdl")
+resource.AddFile("models/kuyler/weapons/glock 17 mag.mdl")
 
 resource.AddFile("materials/wystan/556.vmf")
 resource.AddFile("materials/wystan/556_normal.vtf")
@@ -29,7 +30,7 @@ resource.AddFile("materials/wystan/weapons/SR-25/default_normal.vtf")
 resource.AddFile("materials/wystan/weapons/SR-25/sr25.vmt")
 resource.AddFile("materials/wystan/weapons/TRG-42/Recmag.vmt")
 resource.AddFile("materials/wystan/weapons/TRG-42/Recmag_Normal.vtf")
-
+resource.AddFile("materials/models/kuyler/weapons/Glock 17.vmt")
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
