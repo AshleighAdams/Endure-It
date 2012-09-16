@@ -77,3 +77,55 @@ function HideThings( name )
     end
 end
 hook.Add( "HUDShouldDraw", "HideThings", HideThings )
+
+function PutFlashlights()
+	for k,v in pairs(player.GetAll()) do
+		local fl = v:GetNWEntity("Flashlight")
+		
+		
+		if not ValidEntity(fl) then continue end
+		
+		fl:SetPos(v:GetShootPos() + v:GetAimVector() * 10)
+		fl:SetAngles(v:GetAimVector():Angle())
+		v.FlashLerp = v.FlashLerp or 0
+		
+		if v:GetVelocity():Length() > v:GetWalkSpeed() * 1.2 then
+			v.FlashLerp = v.FlashLerp + 0.15
+		else
+			v.FlashLerp = v.FlashLerp - 0.1
+		end
+		v.FlashLerp = math.Clamp(v.FlashLerp, 0, 1)
+		
+		// wobble
+		local vel = v:GetVelocity()
+		vel.z = 0
+		local intensity = v.FlashLerp
+		
+		if intensity == 0 then
+			v.FlashInc = 0 -- reset this
+		end
+		
+		v.FlashInc = v.FlashInc or 0
+		v.FlashInc = v.FlashInc + vel:Length() / 5000
+		
+		local rt = v.FlashInc
+		local wob_yaw = math.sin(rt) * intensity * 5
+		local wob_p = math.cos(rt * 2) * intensity * 2
+				
+		if v == LocalPlayer() then
+			local lp = LocalPlayer()
+			local vm = lp:GetViewModel()
+			
+			local ang = vm:GetAngles() - lp:GetAimVector():Angle()
+			if lp:GetActiveWeapon().ViewModelFlip then
+				ang.y = -ang.y
+			end
+			ang = lp:GetAimVector():Angle() + ang
+			
+			fl:SetAngles(ang)
+		else
+			fl:SetAngles(v:GetAimVector():Angle() + Angle(20 * v.FlashLerp + wob_p, wob_yaw, 0))
+		end
+	end
+end
+hook.Add("Think", "PutFlashlights", PutFlashlights)

@@ -19,7 +19,6 @@ function GM:Initialize()
 end
 
 
-
 -- Make sure I'm last
 local path = (GM or GAMEMODE).Folder .. "/gamemode/mapscripts/" .. game.GetMap() .. ".lua"
 local files = file.Find(path, "MOD") or {}

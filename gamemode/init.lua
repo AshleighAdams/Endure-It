@@ -52,6 +52,37 @@ function GM:PlayerLoadout( pl )
 	pl:Give("empty_weapon")
 	
 	stanima:PlayerSpawn(pl)
+	
+	local angForward = pl:GetAngles()
+	
+	if pl.flashlight then
+		pl.flashlight:Remove()
+	end
+	
+	pl.flashlight = ents.Create( "env_projectedtexture" )
+		pl:SetNWEntity("Flashlight", pl.flashlight)
+		
+		--pl.flashlight:SetParent( pl )
+		
+		-- The local positions are the offsets from parent..
+		pl.flashlight:SetLocalPos( Vector( 0, 0, 64 ) )
+		pl.flashlight:SetLocalAngles( Angle(0,0,0) )
+		
+		-- Looks like only one flashlight can have shadows enabled!
+		pl.flashlight:SetKeyValue( "enableshadows", 1 )
+		pl.flashlight:SetKeyValue( "farz", 1024 )
+		pl.flashlight:SetKeyValue( "nearz", 8 )
+		pl.flashlight:SetKeyValue( "lightfov", 45 )
+		
+		local c = Color(255,255,255,255)
+		local b = 1
+		pl.flashlight:SetKeyValue( "lightcolor", Format( "%i %i %i 255", c.r * b, c.g * b, c.b * b ) )
+		
+	pl.flashlight:Spawn()
+	
+	pl.flashlight:Input( "SpotlightTexture", NULL, NULL, "effects/flashlight001" )
+	//pl.flashlight:Fire("setparentattachment", "eyes", 0)
+	//pl.flashlight:Fire("setparentattachmentmaintainoffset", "eyes", 0)
 end
 
 function GM:EntityTakeDamage(ent, inflictor, attacker, amount, dmginf)

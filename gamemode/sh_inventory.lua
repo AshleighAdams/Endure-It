@@ -193,7 +193,7 @@ _R.Player.GetInventory = function(self)
 		self:LoadInventory()
 	end
 	// Remove null entities
-	for k,v in pairs(self.Inventory) do
+	for k,v in pairs(self.Inventory or {}) do
 		if type(v) == "table" then
 			for kk,vv in pairs(v) do
 				if not ValidEntity(vv) then
