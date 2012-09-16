@@ -192,7 +192,21 @@ _R.Player.GetInventory = function(self)
 	if SERVER and not self.Inventory then
 		self:LoadInventory()
 	end
-		
+	// Remove null entities
+	for k,v in pairs(self.Inventory) do
+		if type(v) == "table" then
+			for kk,vv in pairs(v) do
+				if not ValidEntity(vv) then
+					v[kk] = nil
+				end
+			end
+		else
+			if not ValidEntity(v) then
+				self.Inventory[k] = nil
+			end
+		end
+	end
+	
 	return self.Inventory or {}
 end
 
