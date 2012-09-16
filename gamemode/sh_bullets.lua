@@ -271,8 +271,31 @@ DefaultBullet.ReceiveShoot = function(self, umsgr, cl)
 	end
 end
 
+function Inches(units)
+	return units * 1.33333333333333
+end
+
+function Feet(units)
+	return units * 16 --* 0.75
+end
+
+function Yards(units)
+	return Feet(units * 3)
+end
+
+function Meters(units)
+	return units * 52.4934
+end
+
 DefaultBullet.GetTraceMask = function(self, bul)
-	return MASK_SHOT
+	local speed = bul.Velocity:Length()
+	local mask = MASK_SHOT
+	
+	if speed > Feet(800) then
+		mask = mask - CONTENTS_WATER
+	end
+	
+	return mask
 end
 
 local bullets_reg = {}
@@ -354,14 +377,47 @@ end
 
 local GRAVITY = Vector(0, 0, 600)
 -- return true to mark bullet as done
+local bubble_effect = "vortigaunt_beam" --"vortigaunt_beam" -- water_bubble_trail_1
+PrecacheParticleSystem(bubble_effect)
+
 DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	local PrePos = bul.Position -- Used to check for a hit
 	bul.LastPos = bul.Position
 	bul.Position = bul.Position + bul.Velocity * t
+	bul.LastSplash = bul.LastSplash or 0
 	
 	// apply drag
 	local speed = (bul.Velocity - Weather.Wind):Length()
 	local coef = self.DragCoefficient / 1000 -- i don't know...
+	
+	local cont = util.PointContents(bul.Position)
+	if cont == CONTENTS_WATER or cont == CONTENTS_TRANSLUCENT or cont == 268435488 then
+		coef = coef * 40
+		
+		cont = util.PointContents(bul.LastPos)
+		if CurTime() != bul.LastSplash and not (cont == CONTENTS_WATER or cont == CONTENTS_TRANSLUCENT or cont == 268435488) then
+			local tr = {}
+			tr.start = PrePos
+			tr.endpos = bul.Position
+			tr.filter = bul.TraceIgnore
+			tr.mask = MASK_SHOT - CONTENTS_WATER
+			
+			local res = util.TraceLine(tr)
+			
+			local ed = EffectData()
+			ed:SetStart(res.HitPos)
+			ed:SetOrigin(res.HitPos)
+			ed:SetNormal(res.HitNormal)
+			ed:SetScale(8)
+			util.Effect("gunshotsplash", ed)
+			bul.LastSplash = CurTime()
+			// Splash effect
+		end
+		
+		// Bubbles!!!
+		util.ParticleTracerEx(bubble_effect, bul.LastPos, bul.Position, false, 0, -1)
+	end
+	
 	local x = ((math.sqrt(1 + 4 * speed * coef * t) - 1.0) / (2.0 * speed * coef * t))
 
 	bul.Velocity = bul.Velocity * x
@@ -379,14 +435,14 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	end
 	
 	if not bul.Cracked then
-		local dist1 = (LocalPlayer():GetShootPos() - bul.Position):Length()
-		local dist2 = (LocalPlayer():GetShootPos() - bul.LastPos):Length()
+		local dist1 = (EyePos() - bul.Position):Length()
+		local dist2 = (EyePos() - bul.LastPos):Length()
 		
 		if dist1 > dist2 then
 			bul.Cracked = true
 			
 			local u = bul.Position - bul.LastPos
-			local v = LocalPlayer():GetShootPos() - bul.LastPos
+			local v = EyePos() - bul.LastPos
 			
 			u:Normalize()
 			local dot = u:Dot(v)
@@ -396,12 +452,12 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 				pos = bul.Position
 			end
 					
-			debugoverlay.Line(LocalPlayer():GetShootPos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
+			debugoverlay.Line(EyePos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
 			
-			local tr = util.TraceLine({ startpos = pos, endpos = LocalPlayer():GetShootPos(), mask = MASK_SHOT})
+			local tr = util.TraceLine({ startpos = pos, endpos = EyePos(), mask = MASK_SHOT})
 						
-			if (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
-				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
+			if (EyePos() - pos):Length() < 150 * 10 then
+				if bul.Velocity:Length() > Feet(1120) then
 					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
 				elseif not bul.Mine then
 					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)
@@ -409,8 +465,8 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			end
 		end
 	else
-		local dist1 = (LocalPlayer():GetShootPos() - bul.Position):Length()
-		local dist2 = (LocalPlayer():GetShootPos() - bul.LastPos):Length()
+		local dist1 = (EyePos() - bul.Position):Length()
+		local dist2 = (EyePos() - bul.LastPos):Length()
 		
 		if dist1 < dist2 then
 			self.Cracked = false
@@ -429,8 +485,27 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	
 	local res = util.TraceLine(tr)
 	local dot = -bul.Direction:Dot(res.HitNormal)
-		
-	if not res.HitSky and res.HitWorld and (bul.Velocity:Length() > 100) and dot < 0.5 then -- about 45 deg
+	
+	local maxbounce = 0.5 /* About 45 deg */
+	--CONTENTS_TRANSLUCENT
+	if res.Hit then
+		local cont = util.PointContents(res.HitPos - res.HitNormal)
+		if cont == CONTENTS_WATER or cont == CONTENTS_TRANSLUCENT or cont == 268435488 then
+			maxbounce = 0.2
+			if bul.LastSplash != CurTime() then
+				local scale = bul.Velocity:Length() / bul.Bullet.Velocity
+				local ed = EffectData()
+				ed:SetStart(res.HitPos)
+				ed:SetOrigin(res.HitPos)
+				ed:SetNormal(res.HitNormal)
+				ed:SetScale(8 * scale)
+				util.Effect("gunshotsplash", ed)
+				bul.LastSplash = CurTime()
+			end
+		end
+	end
+	
+	if not res.HitSky and res.HitWorld and (bul.Velocity:Length() > 100) and dot < maxbounce then
 		
 		local vellen = bul.Velocity:Length()
 		
@@ -456,7 +531,7 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 		local vel_new = bul.Direction - 2 * (bul.Direction:Dot(norm)) * norm
 		--bul.Velocity:Normalize() + (res.HitNormal * (1 - dot))
 		
-		bul.Velocity = ( randomspread + vel_new ) * vellen * (0.5 - dot)
+		bul.Velocity = ( randomspread + vel_new ) * vellen * (maxbounce - dot)
 		bul.Position = res.HitPos + res.HitNormal
 		
 		self:Decal(nil, nil, res)	
@@ -494,10 +569,10 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			bul.Cracked = true
 			local pos = bul.Position
 					
-			debugoverlay.Line(LocalPlayer():GetShootPos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
-			local tr = util.TraceLine({ startpos = pos, endpos = LocalPlayer():GetShootPos(), mask = MASK_SHOT})
+			debugoverlay.Line(EyePos() - Vector(0, 0, 10), pos, 5, Color(255, 0, 0))
+			local tr = util.TraceLine({ startpos = pos, endpos = EyePos(), mask = MASK_SHOT})
 			
-			if math.abs(dot) < 150 * 10 and (LocalPlayer():GetShootPos() - pos):Length() < 150 * 10 then
+			if math.abs(dot) < 150 * 10 and (EyePos() - pos):Length() < 150 * 10 then
 				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
 					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
 				elseif not bul.Mine then
@@ -513,7 +588,7 @@ end
 RegisterBullet(DefaultBullet)
 
 local path = (GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/*.lua", "gamemodes/"
-local files = file.Find(path,  LUA_PATH) or {}
+local files = file.Find(path, LUA_PATH) or {}
 
 print(path)
 print("Files:")
@@ -524,10 +599,6 @@ for k, v in pairs(files) do
 	--include((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v)
 	if SERVER then AddCSLuaFile((GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/" .. v) end
 end
-
-timer.Simple(10, function()
-	RunConsoleCommand("say", "Nato_556: " .. tostring(Nato_556))
-end)
 
 if SERVER then
 	AddCSLuaFile("sh_bullets.lua")	

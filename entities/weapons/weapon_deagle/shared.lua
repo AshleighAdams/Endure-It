@@ -53,5 +53,5 @@ SWEP.IronSightsPos = Vector (3.8266, 0, 2.947)
 SWEP.IronSightsAng = Vector (0, 0, 0)
 
 function SWEP:CanTakeMagazine(mag)
-	return mag:GetClass() == "sent_mag_deagle"
+	return mag:GetClass() == "sent_mag_acp"
 end

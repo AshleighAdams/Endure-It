@@ -122,12 +122,13 @@ function ENT:Drop(pl)
 	self:SetNoDraw(false)
 	self:GetPhysicsObject():Wake()
 	self.Owner = nil
+	self:SetNWEntity("Owner", NullEntity())
 	self:OnDrop(pl)
 end
 
 function ENT:PickUp(pl)
 	self.Owner = pl
-	--self:SetNWEntity("Owner", self.Owner)
+	self:SetNWEntity("Owner", self.Owner)
 	self:SetSolid(SOLID_NONE)
 	self:SetNoDraw(true)
 	self:StateChanged(SYNCSTATE_OWNER)

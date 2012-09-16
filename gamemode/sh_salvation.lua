@@ -72,13 +72,42 @@ function Player:ResetStanima()
 end
 
 function Player:StanimaThink(time)
+	if not self:Alive() then return end
 	if SERVER and (self.NextBleed == nil or CurTime() > self.NextBleed) then
-		self.NextBleed = CurTime() + 1
+		local total = 0
+		local takedmg = 1
 		for k, v in pairs(self.Bleeders or {}) do
-			self:SetHealth(self:Health() - v[2])
-			if self:Health() <= 0 and self:Alive() then
-				self:Kill()
+			total = total + v[2]
+		end
+		
+		if total == 0 then
+			self.NextBleed = CurTime() + 1
+		else
+			local next_time = 1 / total
+			
+			while next_time < 1 / 5 do -- Max of 5 updates per second
+				takedmg = takedmg + 1 // double the time and damage, the tick isn't enough...
+				next_time = (1 / total) * takedmg
 			end
+			
+			self.NextBleed = CurTime() + next_time
+		end
+		
+		if total > 0 then
+			self:SetHealth(self:Health() - takedmg)
+			if self:Health() <= 0 then
+				--self:CreateRagdoll()
+				self:KillSilent()
+				self:CreateRagdoll()
+			end
+			local ed = EffectData()
+			ed:SetStart(self:GetShootPos())
+			ed:SetOrigin(self:GetShootPos())
+			ed:SetScale(1)
+			ed:SetRadius(1)
+			--util.Effect("BloodImpact", ed)
+			
+			util.Decal("Blood", self:GetPos() - Vector(0, 0, 0.01), self:GetPos() - Vector(0, 0, 100))
 		end
 	end
 	

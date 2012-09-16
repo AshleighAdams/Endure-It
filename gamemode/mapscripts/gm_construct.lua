@@ -1,6 +1,7 @@
 Weather.Wind = Vector(50, 0, 0)
 
 -- Spawn ents here, and things
+if CLIENT then return end
 
 concommand.Add("mag", function(pl, cmd, arg)
 	local lst = scripted_ents.GetList()

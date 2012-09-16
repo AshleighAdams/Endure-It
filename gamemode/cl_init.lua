@@ -6,15 +6,17 @@ include( "cl_weapon_drawing.lua" )
 include( "cl_legs.lua" )
 
 hook.Add( "PreDrawHalos", "ShowItems", function()
+	local tbl_ents = {}
     for _, ent in pairs(ents.GetAll()) do
 		local add = false
 		
 		local lp = LocalPlayer()
 		
-		if not ValidEntity(ent) or not ValidEntity(lp) then return end
+		if not ValidEntity(ent) or not ValidEntity(lp) then continue end
+		if ValidEntity(ent:GetNWEntity("Owner", NullEntity())) then continue end
 		
-		if ent:GetPos():Distance(LocalPlayer():GetShootPos()) > 500 then continue end
-		if lp:GetAimVector():Dot( (ent:GetPos() - lp:GetShootPos()):GetNormal() ) > 0.2 then continue end
+		if ent:GetPos():Distance(LocalPlayer():GetShootPos()) > 100 then continue end
+		if lp:GetAimVector():Dot( (ent:GetPos() - lp:GetShootPos()):GetNormal() ) < 0.95 then continue end
 		
 		local base = ent.BaseClass
 		while base != nil do
@@ -25,24 +27,53 @@ hook.Add( "PreDrawHalos", "ShowItems", function()
 			base = base.BaseClass
 		end
 		
-		if add or true then
-			halo.Add({ent}, Color( 255, 0, 0 )) --, 5, 5, 2)
+		if add then
+			table.insert(tbl_ents, ent)
 		end
     end
+	
+	halo.Add(tbl_ents, Color( 255, 0, 0 )) --, 5, 5, 2)
 end )
 
 function ModifyBloodColor()
+	local lp = LocalPlayer()
+	
+	lp.TargetContrast = math.Clamp(LocalPlayer():Health() / 33, 0, 1)
+	lp.CurrentContrast = lp.CurrentContrast or 1
+	lp.CurrentContrast = math.Approach(lp.CurrentContrast, lp.TargetContrast, FrameTime() / 3)
+	
 	local tab = {}
 	tab[ "$pp_colour_addr" ] = 0
 	tab[ "$pp_colour_addg" ] = 0
 	tab[ "$pp_colour_addb" ] = 0
 	tab[ "$pp_colour_brightness" ] = 0
-	tab[ "$pp_colour_contrast" ] = 1
-	tab[ "$pp_colour_colour" ] = LocalPlayer():Health() / 100
+	tab[ "$pp_colour_contrast" ] = lp.CurrentContrast
+	tab[ "$pp_colour_colour" ] = math.Clamp(LocalPlayer():Health() / 100, 0, 1)
 	tab[ "$pp_colour_mulr" ] = 0
 	tab[ "$pp_colour_mulg" ] = 0
 	tab[ "$pp_colour_mulb" ] = 0
- 
+	
+	if not LocalPlayer():Alive() or LocalPlayer():Health() <= 0 then
+		tab[ "$pp_colour_contrast" ] = 0
+		if LocalPlayer().ORIG_VOL == nil then
+			print("Setting volume to 0")
+			LocalPlayer().ORIG_VOL = GetConVar("volume"):GetFloat()
+			RunConsoleCommand("volume", "0")
+		end
+	else
+		if LocalPlayer().ORIG_VOL != nil then
+			RunConsoleCommand("volume", tostring(LocalPlayer().ORIG_VOL))
+			LocalPlayer().ORIG_VOL = nil
+		end
+	end
+	
 	DrawColorModify( tab )
 end
 hook.Add("RenderScreenspaceEffects", "BloodColour", ModifyBloodColor)
+
+function HideThings( name )
+    if (name == "CHudDamageIndicator" ) then
+        return false
+    end
+end
+hook.Add( "HUDShouldDraw", "HideThings", HideThings )
