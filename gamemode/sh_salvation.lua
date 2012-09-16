@@ -75,6 +75,7 @@ function Player:StanimaThink(time)
 	if not self:Alive() then return end
 	if SERVER and (self.NextBleed == nil or CurTime() > self.NextBleed) then
 		local total = 0
+		local takedmg = 1
 		for k, v in pairs(self.Bleeders or {}) do
 			total = total + v[2]
 		end
@@ -82,11 +83,20 @@ function Player:StanimaThink(time)
 		if total == 0 then
 			self.NextBleed = CurTime() + 1
 		else
-			self.NextBleed = CurTime() + 1 / total
+			local next_time = 1 / total
+			
+			while next_time < 1 / 5 do -- Max of 5 updates per second
+				takedmg = takedmg + 1 // double the time and damage, the tick isn't enough...
+				next_time = (1 / total) * takedmg
+			end
+			
+			print(1 / 33, next_time, takedmg)
+			
+			self.NextBleed = CurTime() + next_time
 		end
 		
 		if total > 0 then
-			self:SetHealth(self:Health() - 1)
+			self:SetHealth(self:Health() - takedmg)
 			if self:Health() <= 0 then
 				self:Kill()
 			end
