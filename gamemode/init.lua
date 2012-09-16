@@ -107,6 +107,8 @@ function GM:ScalePlayerDamage(pl, hitbox, dmginf)
 			pl:Bleed(dmginf)
 		end
 	end
+	
+	dmginf:ScaleDamage(0.5)
 end
 
 local ZOMBIE_HEADSHOT_TIME = 0

@@ -373,6 +373,9 @@ end
 
 local GRAVITY = Vector(0, 0, 600)
 -- return true to mark bullet as done
+local bubble_effect = "vortigaunt_beam" --"vortigaunt_beam" -- water_bubble_trail_1
+PrecacheParticleSystem(bubble_effect)
+
 DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	local PrePos = bul.Position -- Used to check for a hit
 	bul.LastPos = bul.Position
@@ -385,7 +388,8 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 	
 	local cont = util.PointContents(bul.Position)
 	if cont == CONTENTS_WATER or cont == CONTENTS_TRANSLUCENT or cont == 268435488 then
-		coef = coef * 20
+		coef = coef * 40
+		
 		cont = util.PointContents(bul.LastPos)
 		if CurTime() != bul.LastSplash and not (cont == CONTENTS_WATER or cont == CONTENTS_TRANSLUCENT or cont == 268435488) then
 			local tr = {}
@@ -405,6 +409,9 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			bul.LastSplash = CurTime()
 			// Splash effect
 		end
+		
+		// Bubbles!!!
+		util.ParticleTracerEx(bubble_effect, bul.LastPos, bul.Position, false, 0, -1)
 	end
 	
 	local x = ((math.sqrt(1 + 4 * speed * coef * t) - 1.0) / (2.0 * speed * coef * t))
@@ -577,7 +584,7 @@ end
 RegisterBullet(DefaultBullet)
 
 local path = (GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/*.lua", "gamemodes/"
-local files = file.Find(path,  LUA_PATH) or {}
+local files = file.Find(path, LUA_PATH) or {}
 
 print(path)
 print("Files:")

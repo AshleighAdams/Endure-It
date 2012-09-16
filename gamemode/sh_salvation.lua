@@ -72,13 +72,32 @@ function Player:ResetStanima()
 end
 
 function Player:StanimaThink(time)
+	if not self:Alive() then return end
 	if SERVER and (self.NextBleed == nil or CurTime() > self.NextBleed) then
-		self.NextBleed = CurTime() + 1
+		local total = 0
 		for k, v in pairs(self.Bleeders or {}) do
-			self:SetHealth(self:Health() - v[2])
-			if self:Health() <= 0 and self:Alive() then
+			total = total + v[2]
+		end
+		
+		if total == 0 then
+			self.NextBleed = CurTime() + 1
+		else
+			self.NextBleed = CurTime() + 1 / total
+		end
+		
+		if total > 0 then
+			self:SetHealth(self:Health() - 1)
+			if self:Health() <= 0 then
 				self:Kill()
 			end
+			local ed = EffectData()
+			ed:SetStart(self:GetShootPos())
+			ed:SetOrigin(self:GetShootPos())
+			ed:SetScale(1)
+			ed:SetRadius(1)
+			--util.Effect("BloodImpact", ed)
+			
+			util.Decal("Blood", self:GetPos() - Vector(0, 0, 1), self:GetPos() - Vector(0, 0, 100))
 		end
 	end
 	

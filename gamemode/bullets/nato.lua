@@ -41,7 +41,7 @@ RegisterBullet(Nato_556_Para, Nato_556)
 
 Nato_9mm = {}
 
-Nato_9mm.Velocity = 940 * 12 * 0.75 -- 940 feet per second
+Nato_9mm.Velocity = Feet(940) -- 940 feet per second
 Nato_9mm.Damage = 20
 Nato_9mm.GravityModifier = 1
 Nato_9mm.Name = "Nato_9mm"

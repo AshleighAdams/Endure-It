@@ -41,12 +41,23 @@ function ModifyBloodColor()
 	tab[ "$pp_colour_addg" ] = 0
 	tab[ "$pp_colour_addb" ] = 0
 	tab[ "$pp_colour_brightness" ] = 0
-	tab[ "$pp_colour_contrast" ] = 1
-	tab[ "$pp_colour_colour" ] = LocalPlayer():Health() / 100
+	tab[ "$pp_colour_contrast" ] = math.Clamp(LocalPlayer():Health() / 33, 0, 1) - 0.05
+	tab[ "$pp_colour_colour" ] = math.Clamp(LocalPlayer():Health() / 100, 0, 1)
 	tab[ "$pp_colour_mulr" ] = 0
 	tab[ "$pp_colour_mulg" ] = 0
 	tab[ "$pp_colour_mulb" ] = 0
- 
+	
+	if not LocalPlayer():Alive() or LocalPlayer():Health() <= 0 then
+		tab[ "$pp_colour_contrast" ] = 0
+	end
+	
 	DrawColorModify( tab )
 end
 hook.Add("RenderScreenspaceEffects", "BloodColour", ModifyBloodColor)
+
+function HideThings( name )
+    if (name == "CHudDamageIndicator" ) then
+        return false
+    end
+end
+hook.Add( "HUDShouldDraw", "HideThings", HideThings )
