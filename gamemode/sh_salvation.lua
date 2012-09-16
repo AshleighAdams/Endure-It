@@ -96,7 +96,9 @@ function Player:StanimaThink(time)
 		if total > 0 then
 			self:SetHealth(self:Health() - takedmg)
 			if self:Health() <= 0 then
-				self:Kill()
+				--self:CreateRagdoll()
+				self:KillSilent()
+				self:CreateRagdoll()
 			end
 			local ed = EffectData()
 			ed:SetStart(self:GetShootPos())
@@ -105,7 +107,7 @@ function Player:StanimaThink(time)
 			ed:SetRadius(1)
 			--util.Effect("BloodImpact", ed)
 			
-			util.Decal("Blood", self:GetPos() - Vector(0, 0, 1), self:GetPos() - Vector(0, 0, 100))
+			util.Decal("Blood", self:GetPos() - Vector(0, 0, 0.01), self:GetPos() - Vector(0, 0, 100))
 		end
 	end
 	
