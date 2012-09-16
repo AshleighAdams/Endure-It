@@ -90,8 +90,6 @@ function Player:StanimaThink(time)
 				next_time = (1 / total) * takedmg
 			end
 			
-			print(1 / 33, next_time, takedmg)
-			
 			self.NextBleed = CurTime() + next_time
 		end
 		

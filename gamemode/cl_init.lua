@@ -36,12 +36,18 @@ hook.Add( "PreDrawHalos", "ShowItems", function()
 end )
 
 function ModifyBloodColor()
+	local lp = LocalPlayer()
+	
+	lp.TargetContrast = math.Clamp(LocalPlayer():Health() / 33, 0, 1)
+	lp.CurrentContrast = lp.CurrentContrast or 1
+	lp.CurrentContrast = math.Approach(lp.CurrentContrast, lp.TargetContrast, FrameTime() / 3)
+	
 	local tab = {}
 	tab[ "$pp_colour_addr" ] = 0
 	tab[ "$pp_colour_addg" ] = 0
 	tab[ "$pp_colour_addb" ] = 0
 	tab[ "$pp_colour_brightness" ] = 0
-	tab[ "$pp_colour_contrast" ] = math.Clamp(LocalPlayer():Health() / 33, 0, 1) - 0.05
+	tab[ "$pp_colour_contrast" ] = lp.CurrentContrast
 	tab[ "$pp_colour_colour" ] = math.Clamp(LocalPlayer():Health() / 100, 0, 1)
 	tab[ "$pp_colour_mulr" ] = 0
 	tab[ "$pp_colour_mulg" ] = 0
@@ -52,6 +58,7 @@ function ModifyBloodColor()
 		if LocalPlayer().ORIG_VOL == nil then
 			print("Setting volume to 0")
 			LocalPlayer().ORIG_VOL = GetConVar("volume"):GetFloat()
+			RunConsoleCommand("volume", "0")
 		end
 	else
 		if LocalPlayer().ORIG_VOL != nil then
