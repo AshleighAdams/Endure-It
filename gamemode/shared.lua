@@ -18,7 +18,45 @@ function GM:Initialize()
 	
 end
 
+_R.Entity.OldEmitSound = _R.Entity.OldEmitSound or _R.Entity.EmitSound
+if SERVER then util.AddNetworkString("EMIT_SND") end
+function _R.Entity.EmitSound(self, ...)
+	if SERVER then
+		net.Start("EMIT_SND")
+			net.WriteEntity(self)
+			net.WriteTable({...})
+		net.SendPAS(self:GetPos())
+	else
+		local sound_vel = Meters(340.29)
+		local dist = (EyePos() - self:GetPos()):Length()
+		if dist == 0 then
+			dist = 0.0001 -- no div by 0
+		end
+		
+		local t = dist / sound_vel
+		local tbl = {...}
+		
+		if not IsFirstTimePredicted() then return end
+		
+		print(tbl[1] .. " will be emited in " .. tostring(t) .. " seconds")
+		
+		if t < 0.05 then -- Why bother?
+			self:OldEmitSound(unpack(tbl))
+		else
+			timer.Simple(t, function()
+				self:OldEmitSound(unpack(tbl))
+			end)
+		end
+	end
+end
 
+net.Receive("EMIT_SND", function()
+	local ent = net.ReadEntity()
+	local tbl = net.ReadTable()
+	if not ValidEntity(ent) then return end
+	
+	ent:EmitSound(unpack(tbl))
+end)
 
 -- Make sure I'm last
 local path = (GM or GAMEMODE).Folder .. "/gamemode/mapscripts/" .. game.GetMap() .. ".lua"
