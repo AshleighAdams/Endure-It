@@ -70,7 +70,7 @@ function _R.Entity.EmitSound(self, ...)
 		
 		print(tbl[1] .. " will be emited in " .. tostring(t) .. " seconds")
 		
-		if false and t < 0.05 then -- Why bother?
+		if t < 0.002 then -- Why bother?
 			self:OldEmitSound(...)
 		else
 			timer.Simple(t, function()
