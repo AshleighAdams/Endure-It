@@ -111,9 +111,10 @@ function PutFlashlights()
 		local rt = v.FlashInc
 		local wob_yaw = math.sin(rt) * intensity * 5
 		local wob_p = math.cos(rt * 2) * intensity * 2
-				
-		if v == LocalPlayer() then
-			local lp = LocalPlayer()
+		
+
+		local lp = LocalPlayer()
+		if v == lp and ValidEntity(lp:GetViewModel()) then
 			local vm = lp:GetViewModel()
 			
 			local ang = vm:GetAngles() - lp:GetAimVector():Angle()
