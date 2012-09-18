@@ -14,9 +14,3 @@ function ENT:UpdateState(state) -- called on the client
 		self.Inside:SetClip1(self.Rounds)
 	end
 end
-
-net.Receive("sent_base_item_OnDrop", function()
-	local e1 = net.ReadEntity()
-	local e2 = net.ReadEntity()
-	e1:OnDrop(e2)
-end)

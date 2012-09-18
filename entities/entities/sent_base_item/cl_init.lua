@@ -8,6 +8,9 @@ function ENT:Draw()
 	
 end
 
+
+
+
 function ENT:SetupPanel(pan)
 --SpawnIcon DButton
 	local btn = vgui.Create("DButton", pan)
@@ -76,4 +79,15 @@ net.Receive("item_state_update", function(len, pl)
 	local itm = net.ReadEntity()
 	local tbl = net.ReadTable()
 	itm:UpdateState(tbl)
+end)
+
+net.Receive("sent_base_item_OnDrop", function()
+	local e1 = net.ReadEntity()
+	local e2 = net.ReadEntity()
+	
+	if not e1.OnDrop then
+		print("WARNING: No CS OnDrop for entity " .. e1:GetClass())
+		return
+	end
+	e1:OnDrop(e2)
 end)

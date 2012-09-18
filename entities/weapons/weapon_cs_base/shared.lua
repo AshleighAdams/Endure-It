@@ -17,6 +17,7 @@ if ( CLIENT ) then
 	SWEP.CSMuzzleFlashes	= true
 	SWEP.SwayScale = 2; -- Causes shaking after a while
 	SWEP.BobScale = 2;
+	SWEP.MagBone 			= "ValveBiped.weapon_bone_Clip"
 	
 	local fd1 = {}
 	fd1.font = "csd"
@@ -582,6 +583,14 @@ function SWEP:ModifyViewModelBones(vm, num, numphys)
 	local bone = vm:LookupBone(self.MagBone)
 	if not bone then
 		print("MagBone for " .. self:GetClass() .. "(" .. self.MagBone .. ") doesn't exist!")
+		if self.MagBone == "ValveBiped.weapon_bone_Clip" then
+			local class = self:GetClass()
+			class = string.Replace(class, "weapon_", "")
+			class = string.Replace(class, "_sd", "") -- remove the _sd too
+			
+			self.MagBone = "v_weapon." .. class .. "_Clip"
+			print("Attempting to get from class name: " .. self.MagBone)
+		end
 		return
 	end
 	

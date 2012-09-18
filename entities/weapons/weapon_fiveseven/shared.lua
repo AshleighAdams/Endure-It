@@ -9,6 +9,7 @@ if ( CLIENT ) then
 	SWEP.Slot				= 1
 	SWEP.SlotPos			= 5
 	SWEP.IconLetter			= "u"
+	SWEP.MagBone 			= "ValveBiped.weapon_bone_Clip"
 	
 	killicon.AddFont( "pistol_fiveseven", "CSKillIcons", SWEP.IconLetter, Color( 255, 80, 0, 255 ) )
 	
