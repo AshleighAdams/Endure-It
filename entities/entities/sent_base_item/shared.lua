@@ -52,3 +52,6 @@ function ENT:GetActions()
 	--table.insert(ret, { Name = "Hello", ID = "hello" })
 	return ret
 end
+
+function ENT:OnDrop(pl)
+end

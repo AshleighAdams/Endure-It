@@ -103,9 +103,6 @@ function ENT:GetState()
 	return {}
 end
 
-function ENT:OnDrop(pl)
-end
-
 function ENT:Move(newpos)
 	
 end
@@ -124,7 +121,14 @@ function ENT:Drop(pl)
 	self.Owner = nil
 	self:SetNWEntity("Owner", NullEntity())
 	self:OnDrop(pl)
+	net.Start("sent_base_item_OnDrop")
+		net.WriteEntity(self)
+		net.WriteEntity(pl)
+	net.Broadcast()
+	
 end
+
+util.AddNetworkString("sent_base_item_OnDrop")
 
 function ENT:PickUp(pl)
 	self.Owner = pl
