@@ -242,9 +242,14 @@ function SWEP:Reload(invoker)
 		if self.Owner:GetActiveWeapon() != self then return end
 		
 		if self.Owner and ValidEntity(self.Owner) and ValidEntity(self.Owner:GetViewModel()) then
-			local vm = self.Owner:GetViewModel()
-			vm:ResetSequence(vm:LookupSequence("idle") or 0)
-			vm:SetPlaybackRate(1)
+			--local vm = self.Owner:GetViewModel()
+			--vm:ResetSequence(vm:LookupSequence("idle") or 0)
+			--vm:SetPlaybackRate(1)
+			if self.Suppressed then
+				self.Weapon:SendWeaponAnim(ACT_VM_IDLE_SILENCED)
+			else
+				self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+			end
 		end
 		
 		if self:GetMagazine() == nil or self:GetMagazine().Rounds == 0 then
