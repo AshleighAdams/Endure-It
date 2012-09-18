@@ -177,6 +177,8 @@ function SWEP:Reload(invoker)
 			if bestmag != nil then
 				if self.Magazine and not manual then
 					self.Owner:InvDrop(self.Magazine)
+				elseif self.Magazine then
+					self.Magazine:InvokeAction("top") -- So when we put the new one in, the old one is garruenteed to be taken out...
 				end
 				
 				bestmag:InvokeAction("pip")
@@ -219,6 +221,12 @@ function SWEP:Reload(invoker)
 		if not self.Owner then return end
 		if self.Owner != oldowner then return end
 		if self.Owner:GetActiveWeapon() != self then return end
+		
+		if self.Owner and ValidEntity(self.Owner) and ValidEntity(self.Owner:GetViewModel()) then
+			local vm = self.Owner:GetViewModel()
+			vm:ResetSequence(vm:LookupSequence("idle") or 0)
+			vm:SetPlaybackRate(1)
+		end
 		
 		if self:GetMagazine() == nil or self:GetMagazine().Rounds == 0 then
 			if self.Suppressed then
