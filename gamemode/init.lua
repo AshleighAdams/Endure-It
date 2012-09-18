@@ -60,7 +60,7 @@ function SpawnFlashlight(pl)
 		-- Looks like only one flashlight can have shadows enabled!
 		pl.flashlight:SetKeyValue( "enableshadows", 1 )
 		pl.flashlight:SetKeyValue( "farz", 1024 )
-		pl.flashlight:SetKeyValue( "nearz", 8 )
+		pl.flashlight:SetKeyValue( "nearz", 16 )
 		pl.flashlight:SetKeyValue( "lightfov", 45 )
 		
 		local c = Color(255,255,255,255)

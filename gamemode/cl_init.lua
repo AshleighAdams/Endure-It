@@ -85,7 +85,7 @@ function PutFlashlights()
 		
 		if not ValidEntity(fl) then continue end
 		
-		fl:SetPos(v:GetShootPos() + v:GetAimVector() * 10)
+		fl:SetPos(v:GetShootPos() + v:GetAimVector() * 10 + v:GetAimVector():Angle():Right() * 3)
 		fl:SetAngles(v:GetAimVector():Angle())
 		v.FlashLerp = v.FlashLerp or 0
 		
@@ -124,6 +124,7 @@ function PutFlashlights()
 			ang = lp:GetAimVector():Angle() + ang
 			
 			fl:SetAngles(ang)
+			fl:SetPos(lp:GetShootPos() + ang:Right() * 3 + ang:Forward() * 5 + ang:Up() * -3)
 		else
 			fl:SetAngles(v:GetAimVector():Angle() + Angle(20 * v.FlashLerp + wob_p, wob_yaw, 0))
 		end
