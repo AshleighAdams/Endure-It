@@ -71,12 +71,30 @@ SWEP.ZoomSpeed = 0.25;
 SWEP.HoldType = "ar2"
 SWEP.Suppressed = false
 
+if CLIENT then
+	hook.Add("Think", "Setup VM Bones", function()
+		local vm = LocalPlayer():GetViewModel()
+		
+		if not ValidEntity(vm) then return end
+		
+		vm.BuildBonePositions = function(vm, a, b)
+			local self = LocalPlayer():GetActiveWeapon() /* Nope, active weapon... */
+			if self.ModifyViewModelBones then
+				self:ModifyViewModelBones(vm, a, b)
+			end
+		end
+		
+		hook.Remove("Think", "Setup VM Bones") -- We don't need to be called anymore
+	end)
+end
 
 function SWEP:Initialize()	
 	self:SetWeaponHoldType( self.HoldType )
 	self.IronTime = 0;
 	
 	self.Zero = { ClicksY = 0, ClicksX = 0 }
+	
+
 end
 
 function SWEP:Deploy()
@@ -555,4 +573,17 @@ end
 function SWEP:AdjustMouseSensitivity()
 	local fov = self.Owner:GetFOV()
 	return (fov / 90)
+end
+
+function SWEP:ModifyViewModelBones(vm, num, numphys)
+	if self.MagBone == nil then return end
+	if self.Magazine != nil then return end
+	
+	local bone = vm:LookupBone(self.MagBone)
+	if not bone then
+		print("MagBone for " .. self:GetClass() .. "(" .. self.MagBone .. ") doesn't exist!")
+		return
+	end
+	
+	vm:SetBonePosition(bone, vm:GetAngles(), vm:GetPos() + vm:GetAngles():Up() * 1000 /* you'll never see me */)
 end
