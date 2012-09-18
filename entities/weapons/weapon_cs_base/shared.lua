@@ -284,9 +284,8 @@ function SWEP:Special()
 end
 
 function SWEP:SecondaryAttack()
-	if(self.Owner:KeyDown(IN_USE)) then
-		self.IsZoomedIn = false;
-		self:Special();
+	if self.Owner:KeyDown(IN_USE) and IsFirstTimePredicted() then
+		self:Special()
 	end
 end
 
