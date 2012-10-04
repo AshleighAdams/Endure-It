@@ -43,7 +43,7 @@ SYNCSTATE_OWNER = 3
 
 local net_sends = {}
 net_sends[SYNCSTATE_OWNER] = function(self)
-	if not self.Owner or not ValidEntity(self.Owner) then
+	if not self.Owner or not IsValid(self.Owner) then
 		net.Broadcast()
 		return
 	end
@@ -65,7 +65,7 @@ function ENT:StateChanged(towhom, wait_time, updateowner)
 	self.SendNextUpdate = CurTime() + wait_time
 	print(self:GetClass() .. " will send state in " .. tostring(wait_time) .. " seconds")
 	
-	if updateowner and updateowner == true and self.Owner and ValidEntity(self.Owner) then
+	if updateowner and updateowner == true and self.Owner and IsValid(self.Owner) then
 		self.UpdateInventory = true
 	end
 end
@@ -83,7 +83,7 @@ function ENT:Think()
 	if self.UpdateInventory then
 		self.UpdateInventory = false
 		
-		if self.Owner and ValidEntity(self.Owner) then
+		if self.Owner and IsValid(self.Owner) then
 			self.Owner:InventoryChange()
 		end
 	end
@@ -119,7 +119,7 @@ function ENT:Drop(pl)
 	self:SetNoDraw(false)
 	self:GetPhysicsObject():Wake()
 	self.Owner = nil
-	self:SetNWEntity("Owner", NullEntity())
+	self:SetNWEntity("Owner", Entity(-1))
 	self:OnDrop(pl)
 	net.Start("sent_base_item_OnDrop")
 		net.WriteEntity(self)

@@ -49,7 +49,7 @@ function ENT:InvokeAction(id, gun)
 		end
 		
 		if gun.SetMagazine != nil and gun.CanTakeMagazine and gun:CanTakeMagazine(self) then
-			if self.Inside and ValidEntity(self.Inside) then
+			if self.Inside and IsValid(self.Inside) then
 				self.Inside:SetMagazine(nil)
 				self.Inside = nil
 			end
@@ -68,7 +68,7 @@ function ENT:InvokeAction(id, gun)
 			net.SendToServer()
 		end
 		if self.Inside then
-			if self.Inside and ValidEntity(self.Inside) then
+			if self.Inside and IsValid(self.Inside) then
 				self.Inside:SetMagazine(nil)
 			end
 			self.Inside = nil
@@ -101,7 +101,7 @@ if SERVER then
 end
 
 function ENT:OnDrop()
-	if self.Inside != nil and ValidEntity(self.Inside) and self.Inside.SetMagazine then
+	if self.Inside != nil and IsValid(self.Inside) and self.Inside.SetMagazine then
 		self.Inside:SetMagazine(nil)
 		self.Inside = nil
 	end

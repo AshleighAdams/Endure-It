@@ -18,9 +18,9 @@ function GM:Initialize()
 	
 end
 
-OldWorldSound = OldWorldSound or WorldSound
+Oldsound = Oldsound or sound.Play
 if SERVER then util.AddNetworkString("WRLD_SND") end
-function WorldSound(name, pos, ...)
+function sound.Play(name, pos, ...)
 	if SERVER then
 		net.Start("WRLD_SND")
 			net.WriteTable({name, pos, ...})
@@ -35,10 +35,10 @@ function WorldSound(name, pos, ...)
 		print(name .. " will be emited in " .. tostring(t) .. " seconds")
 		
 		if t < 0.05 then
-			OldWorldSound(name, pos, ...)
+			Oldsound(name, pos, ...)
 		else
 			timer.Simple(t, function()
-				OldWorldSound(name, pos, unpack(tbl))
+				Oldsound(name, pos, unpack(tbl))
 			end)
 		end
 	end
@@ -47,7 +47,7 @@ end
 if CLIENT then
 	net.Receive("WRLD_SND", function()
 		local tbl = net.ReadTable()
-		WorldSound(unpack(tbl))
+		sound.Play(unpack(tbl))
 	end)
 end
 
@@ -90,7 +90,7 @@ function _R.Entity.EmitSound(self, ...)
 					pos = EyePos() + direction * fakedist
 				end
 				
-				OldWorldSound(snd, pos, lvl, pit) -- Can be used to simulate loudness, just having a direction
+				Oldsound.Play(snd, pos, lvl, pit) -- Can be used to simulate loudness, just having a direction
 				--self:OldEmitSound(unpack(tbl)) -- This isn't directional on the client...
 			end)
 		end
@@ -101,7 +101,7 @@ if CLIENT then
 	net.Receive("EMIT_SND", function()
 		local ent = net.ReadEntity()
 		local tbl = net.ReadTable()
-		if not ValidEntity(ent) then return end
+		if not IsValid(ent) then return end
 		
 		ent:EmitSound(unpack(tbl))
 	end)

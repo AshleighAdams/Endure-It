@@ -12,8 +12,8 @@ hook.Add( "PreDrawHalos", "ShowItems", function()
 		
 		local lp = LocalPlayer()
 		
-		if not ValidEntity(ent) or not ValidEntity(lp) then continue end
-		if ValidEntity(ent:GetNWEntity("Owner", NullEntity())) then continue end
+		if not IsValid(ent) or not IsValid(lp) then continue end
+		if IsValid(ent:GetNWEntity("Owner", Entity(-1))) then continue end
 		
 		if ent:GetPos():Distance(LocalPlayer():GetShootPos()) > 100 then continue end
 		if lp:GetAimVector():Dot( (ent:GetPos() - lp:GetShootPos()):GetNormal() ) < 0.95 then continue end
@@ -83,7 +83,7 @@ function PutFlashlights()
 		local fl = v:GetNWEntity("Flashlight")
 		
 		
-		if not ValidEntity(fl) then continue end
+		if not IsValid(fl) then continue end
 		
 		fl:SetPos(v:GetShootPos() + v:GetAimVector() * 10 + v:GetAimVector():Angle():Right() * 3)
 		fl:SetAngles(v:GetAimVector():Angle())
@@ -114,7 +114,7 @@ function PutFlashlights()
 		
 
 		local lp = LocalPlayer()
-		if v == lp and ValidEntity(lp:GetViewModel()) then
+		if v == lp and IsValid(lp:GetViewModel()) then
 			local vm = lp:GetViewModel()
 			
 			local ang = vm:GetAngles() - lp:GetAimVector():Angle()

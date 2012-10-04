@@ -68,7 +68,7 @@ function SWEP:Think()
 	if self.NeedsReload and not self.Owner:KeyDown(IN_ATTACK) then
 		self.NeedsReload = false
 		self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-		if ( (SinglePlayer() && SERVER) || CLIENT ) then
+		if ( CLIENT ) then
 			self.Weapon:SetNetworkedFloat( "LastShootTime", CurTime() )
 		end
 	

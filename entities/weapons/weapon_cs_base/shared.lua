@@ -76,7 +76,7 @@ if CLIENT then
 	hook.Add("Think", "Setup VM Bones", function()
 		local vm = LocalPlayer():GetViewModel()
 		
-		if not ValidEntity(vm) then return end
+		if not IsValid(vm) then return end
 		
 		vm.BuildBonePositions = function(vm, a, b)
 			local self = LocalPlayer():GetActiveWeapon() /* Nope, active weapon... */
@@ -241,7 +241,7 @@ function SWEP:Reload(invoker)
 		if self.Owner != oldowner then return end
 		if self.Owner:GetActiveWeapon() != self then return end
 		
-		if self.Owner and ValidEntity(self.Owner) and ValidEntity(self.Owner:GetViewModel()) then
+		if self.Owner and IsValid(self.Owner) and IsValid(self.Owner:GetViewModel()) then
 			--local vm = self.Owner:GetViewModel()
 			--vm:ResetSequence(vm:LookupSequence("idle") or 0)
 			--vm:SetPlaybackRate(1)
@@ -285,7 +285,7 @@ function SWEP:PrimaryAttack()
 	end
 	self.CanPrimaryAttack_Reload = false
 	
-	if self.Magazine and ValidEntity(self.Magazine) then
+	if self.Magazine and IsValid(self.Magazine) then
 		if SERVER then
 			self.Magazine:StateChanged(SYNCSTATE_OWNER, self.Primary.Delay + 0.25)
 		end
@@ -306,7 +306,7 @@ function SWEP:PrimaryAttack()
 	// In singleplayer this function doesn't get called on the client, so we use a networked float
 	// to send the last shoot time. In multiplayer this is predicted clientside so we don't need to 
 	// send the float.
-	if ( (SinglePlayer() && SERVER) || CLIENT ) then
+	if (CLIENT ) then
 		self.Weapon:SetNetworkedFloat( "LastShootTime", CurTime() )
 	end
 	
@@ -393,7 +393,7 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	if ( self.Owner:IsNPC() ) then return end
 	
 	// CUSTOM RECOIL !
-	if ( (SinglePlayer() && SERVER) || ( !SinglePlayer() && CLIENT && IsFirstTimePredicted() ) ) then
+	if CLIENT && IsFirstTimePredicted() then
 	
 		local eyeang = self.Owner:EyeAngles()
 		

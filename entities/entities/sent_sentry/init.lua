@@ -66,7 +66,7 @@ function ENT:Think()
 			if(!HasFiredThisIt) then
 				HasFiredThisIt = true;
 				ent:SetAngles(ang);
-				WorldSound("npc/strider/strider_minigun.wav", pos, 160, 200);
+				sound.Play("npc/strider/strider_minigun.wav", pos, 160, 200);
 				ent:FireBullets(bullet);
 			end
 		end

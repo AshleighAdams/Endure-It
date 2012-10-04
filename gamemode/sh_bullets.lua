@@ -112,7 +112,7 @@ if CLIENT then
 		
 		end
 		local type_prfx = BulletHitSounds[mat] or "Default"
-		WorldSound( type_prfx.. ".BulletImpact", pos, 50 )
+		sound.Play( type_prfx.. ".BulletImpact", pos, 50 )
 	end
 	
 	
@@ -131,7 +131,7 @@ if CLIENT then
 			Sparks:SetScale( self.Scale )
 			Sparks:SetRadius( self.Scale )
 		util.Effect( "Sparks", Sparks )
-		WorldSound("Metal_Barrel.BulletImpact", pos, 50)
+		sound.Play("Metal_Barrel.BulletImpact", pos, 50)
 	end
 
 	DefaultBullet.Decal = function(self, umsg, b, tbl)
@@ -179,7 +179,7 @@ DefaultBullet.ReceiveHit = function(self, len, cl, tbl)
 		local mat = net.ReadUInt(32)
 		local hg = net.ReadUInt(8)
 				
-		if ent and ValidEntity(ent) and not ent:IsVehicle() then
+		if ent and IsValid(ent) and not ent:IsVehicle() then
 			local dmginfo = DamageInfo()
 			dmginfo:SetDamage( (vel:Length() / self.Velocity) * self.Damage )
 			dmginfo:SetDamageType(DMG_BULLET) --Bullet damage
@@ -370,7 +370,7 @@ local function EmitWorldSound(name, pos, shush)
 		to = 1
 	end
 	for i = 1, to do
-		WorldSound(name, pos)
+		sound.Play(name, pos)
 	end
 	--te:EmitSound(name, pos, 100, 200)
 end
@@ -574,9 +574,9 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			
 			if math.abs(dot) < 150 * 10 and (EyePos() - pos):Length() < 150 * 10 then
 				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
-					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
+					Emitsound.Play("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
 				elseif not bul.Mine then
-					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)
+					Emitsound.Play("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)
 				end
 			end
 		end
@@ -587,8 +587,8 @@ end
 
 RegisterBullet(DefaultBullet)
 
-local path = (GM or GAMEMODE).Folder:sub(11) .. "/gamemode/bullets/*.lua", "gamemodes/"
-local files = file.Find(path, LUA_PATH) or {}
+local path = "Endure-It/gamemode/bullets/*.lua"
+local files = file.Find(path, "LUA") or {}
 
 print(path)
 print("Files:")

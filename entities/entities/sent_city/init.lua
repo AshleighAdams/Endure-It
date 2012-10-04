@@ -130,7 +130,7 @@ function ENT:UnPopulate(pl)
 end
 
 function ENT:Populate(pl)
-	if not pl or not ValidEntity(pl) then return end
+	if not pl or not IsValid(pl) then return end
 	
 	if self.PlayersInHotzone[pl] then return end -- We're already in the zone, get lost!
 	
@@ -176,7 +176,7 @@ function ENT:Think()
 	local count = 0 -- Used for spawning when near
 	for v,k in pairs(self.PlayersInHotzone) do
 		if not k then continue end
-		if not ValidEntity(v) then return end
+		if not IsValid(v) then return end
 		
 		self.CleanUpTime =  CurTime() + self.ClearAllTimeThreshold -- Reset the counter.
 		

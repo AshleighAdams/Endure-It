@@ -196,12 +196,12 @@ _R.Player.GetInventory = function(self)
 	for k,v in pairs(self.Inventory or {}) do
 		if type(v) == "table" then
 			for kk,vv in pairs(v) do
-				if not ValidEntity(vv) then
+				if not IsValid(vv) then
 					v[kk] = nil
 				end
 			end
 		else
-			if not ValidEntity(v) then
+			if not IsValid(v) then
 				self.Inventory[k] = nil
 			end
 		end
@@ -221,7 +221,7 @@ _R.Player.InvEquip = function(self, itm)
 		local place = itm:GetEquipSlot()
 		if place == "" then return end
 		
-		if self.Inventory[place] != nil and ValidEntity(self.Inventory[place]) then
+		if self.Inventory[place] != nil and IsValid(self.Inventory[place]) then
 			self.Inventory[place]:Equip(false)
 			self:InvDrop(self.Inventory[place])
 			self.Inventory[place] = nil

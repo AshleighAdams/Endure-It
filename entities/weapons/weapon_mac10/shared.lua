@@ -84,7 +84,7 @@ function SWEP:ViewModelDrawn()
 
 	
 	local vm = self.Owner:GetViewModel()
-	if !ValidEntity(vm) || self.Owner:GetActiveWeapon() != self then return end
+	if !IsValid(vm) || self.Owner:GetActiveWeapon() != self then return end
 		
 	vm.BuildBonePositions = function()	
 		local bone = vm:LookupBone("v_weapon.Right_Arm")

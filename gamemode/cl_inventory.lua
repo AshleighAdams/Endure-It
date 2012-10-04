@@ -27,11 +27,11 @@ function RemakeFrame()
 	backpack:SetPos(10 + 5 * 2 + SlotSize * 9, 5 + 25)
 	backpack:SetSize(SlotSize * 3, SlotSize * 2)
 	
-	if LocalPlayer():GetInventory().Primary and ValidEntity(LocalPlayer():GetInventory().Primary) then
+	if LocalPlayer():GetInventory().Primary and IsValid(LocalPlayer():GetInventory().Primary) then
 		LocalPlayer():GetInventory().Primary:SetupPanel(primary)
 	end
 	
-	if LocalPlayer():GetInventory().Secondary and ValidEntity(LocalPlayer():GetInventory().Secondary) then
+	if LocalPlayer():GetInventory().Secondary and IsValid(LocalPlayer():GetInventory().Secondary) then
 		LocalPlayer():GetInventory().Secondary:SetupPanel(secondary)
 	end
 	

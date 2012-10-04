@@ -146,7 +146,7 @@ function stanima:Think()
 		local t = CurTime() - self.LastThink -- Time difference, so each call to StanimaThink is proportional
 		
 		for k, v in pairs(player.GetAll()) do
-			if not ValidEntity(v) then continue end
+			if not IsValid(v) then continue end
 			v:StanimaThink(t)
 		end
 	end

@@ -44,7 +44,7 @@ include("sv_inventory.lua")
 
 function SpawnFlashlight(pl)
 	if pl.flashlight then
-		if ValidEntity(pl.flashlight) then pl.flashlight:Remove() end
+		if IsValid(pl.flashlight) then pl.flashlight:Remove() end
 		pl.flashlight = nil
 	end
 	
@@ -84,14 +84,14 @@ function GM:PlayerLoadout( pl )
 	stanima:PlayerSpawn(pl)
 	
 	if pl.flashlight then
-		if ValidEntity(pl.flashlight) then pl.flashlight:Remove() end
+		if IsValid(pl.flashlight) then pl.flashlight:Remove() end
 		pl.flashlight = nil
 	end
 end
 
 function GM:PlayerSwitchFlashlight(pl, on)
 	if pl.flashlight then
-		if ValidEntity(pl.flashlight) then pl.flashlight:Remove() end
+		if IsValid(pl.flashlight) then pl.flashlight:Remove() end
 		pl.flashlight = nil
 	else
 		SpawnFlashlight(pl)
@@ -124,7 +124,7 @@ function GM:ScalePlayerDamage(pl, hitbox, dmginf)
 		local prim = inv.Primary
 		local sec = inv.Secondary
 		
-		if ValidEntity(pl:GetActiveWeapon()) then		
+		if IsValid(pl:GetActiveWeapon()) then		
 			local acw = pl:GetActiveWeapon():GetClass()
 			
 			if prim and prim.Weapon_Class and acw == prim.Weapon_Class then

@@ -39,8 +39,8 @@ function ENT:InvokeAction(id)
 	else
 		local mag = id
 		
-		if not self.Owner or not ValidEntity(self.Owner) then return end
-		if mag == nil or not ValidEntity(mag) then return end
+		if not self.Owner or not IsValid(self.Owner) then return end
+		if mag == nil or not IsValid(mag) then return end
 		if self.Count <= 0 then return end
 		
 		local maxrounds = 1
