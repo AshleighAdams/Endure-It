@@ -38,6 +38,8 @@ end )
 function ModifyBloodColor()
 	local lp = LocalPlayer()
 	
+	if not IsValid(lp) then return end
+	
 	lp.TargetContrast = math.Clamp(LocalPlayer():Health() / 33, 0, 1)
 	lp.CurrentContrast = lp.CurrentContrast or 1
 	lp.CurrentContrast = math.Approach(lp.CurrentContrast, lp.TargetContrast, FrameTime() / 3)

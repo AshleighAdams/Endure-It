@@ -1,3 +1,4 @@
+local _R = {Player = FindMetaTable("Player"), Entity = FindMetaTable("Entity")}
 
 AddCSLuaFile("sh_bullets.lua")
 include("sh_bullets.lua")

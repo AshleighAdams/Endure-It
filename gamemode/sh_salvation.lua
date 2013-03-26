@@ -1,4 +1,6 @@
 AddCSLuaFile()
+
+local _R = {Player = FindMetaTable("Player")}
 local Player = _R.Player
 
 --[[ 
@@ -172,7 +174,7 @@ function stanima.Breath(pl)
 			
 		end
 		
-		pl.BreathSound:ChangeVolume(1 - (pl:GetStanima() / 100))
+		pl.BreathSound:ChangeVolume(1 - (pl:GetStanima() / 100), 1)
 		
 		if not pl.BreathSound:IsPlaying() then
 			pl.BreathSound:Play()

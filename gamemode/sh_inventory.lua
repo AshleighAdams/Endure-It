@@ -1,7 +1,13 @@
-require("glon")
+--require("glon")
+AddCSLuaFile()
+
+local _R = {Player = FindMetaTable("Player")}
 
 if SERVER then
 	AddCSLuaFile()
+	
+	include("sv_von.lua")
+	
 	_R.Player.SaveInventory = function(self)
 		if CLIENT then return end
 		local savetbl = {}
@@ -10,15 +16,15 @@ if SERVER then
 			table.insert(savetbl, {Class = v:GetClass(), State = v:GetState()})
 		end
 		
-		local contents = glon.encode(savetbl)
+		local contents = von.serialize(savetbl)
 		file.Write(string.Replace(self:SteamID(), ":", "_"), "DATA", contents)
 	end
 	
 	_R.Player.LoadInventory = function(self)
 		if CLIENT then return end
 		
-		local contents = file.Read(string.Replace(self:SteamID(), ":", "_"), "DATA")
-		local dec = glon.decode(contents) or {}
+		local contents = file.Read(string.Replace(self:SteamID(), ":", "_"), "DATA") or ""
+		local dec = von.deserialize(contents) or {}
 		self.Inventory = {}
 		
 		for kk,tbl in pairs(dec) do

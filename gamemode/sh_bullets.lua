@@ -574,9 +574,9 @@ DefaultBullet.Simulate = function(self, bul, t) -- t is time passed in seconds
 			
 			if math.abs(dot) < 150 * 10 and (EyePos() - pos):Length() < 150 * 10 then
 				if bul.Velocity:Length() > (1120 * 12 * 0.75) then
-					Emitsound.Play("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
+					EmitWorldSound("arma2/sscrack" .. tostring(math.random(1, 2)) .. ".wav", pos, tr.HitWorld or bul.Mine)
 				elseif not bul.Mine then
-					Emitsound.Play("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)
+					EmitWorldSound("arma2/bullet_by" .. tostring(math.random(1, 5)) .. ".wav", pos, true)
 				end
 			end
 		end

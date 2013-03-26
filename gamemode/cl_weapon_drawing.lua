@@ -5,7 +5,8 @@
     WARNING:drawfunction will NOT draw the model,it will draw an effect or whatever you want,the model is drawn before this function gets called
     i know,there's no gui/derma to modify the bones,i'm used to modify them directly in the .lua file,just look at the these hl2 weapons examples
 */
- 
+if true then return end
+
 local holsteredgunsconvar = CreateConVar( "cl_holsteredguns", "1", { FCVAR_ARCHIVE, }, "Enable/Disable the rendering of the weapons on any player" )
  
 local NEXT_WEAPONS_UPDATE=CurTime();
@@ -260,7 +261,7 @@ local function thinkdamnit()
                     pl.CL_CS_WEPS[v:GetClass()].AttachedModel:SetNoDraw(true)
                     pl.CL_CS_WEPS[v:GetClass()].AttachedModel:SetSkin(v:GetSkin())
                     pl.CL_CS_WEPS[v:GetClass()].AttachedModel:SetParent(pl.CL_CS_WEPS[v:GetClass()])
-                    pl.CL_CS_WEPS[v:GetClass()].AttachedModel:AddEffects(EF_BONEMERGE|EF_BONEMERGE_FASTCULL|EF_PARENT_ANIMATES)
+                    pl.CL_CS_WEPS[v:GetClass()].AttachedModel:AddEffects(bit.bor(EF_BONEMERGE,EF_BONEMERGE_FASTCULL,EF_PARENT_ANIMATES))
                 end
             end
         end

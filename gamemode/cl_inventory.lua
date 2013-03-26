@@ -1,3 +1,5 @@
+local _R = {Player = FindMetaTable("Player")}
+
 include("sh_inventory.lua")
 local Frame = nil
 
